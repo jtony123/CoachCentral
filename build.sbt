@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   // JPA dependencies to avoid conflicts.
   //javaJpa,
   "org.hibernate" % "hibernate-entitymanager" % "5.2.4.Final",
-  "dom4j" % "dom4j" % "1.6.1" intransitive()
+  "dom4j" % "dom4j" % "1.6.1" intransitive(),
+  "be.objectify" %% "deadbolt-java" % "2.5.3"
 )
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"

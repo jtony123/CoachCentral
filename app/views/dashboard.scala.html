@@ -1,0 +1,23 @@
+@* dashboard Template File *@
+@*@(subject: be.objectify.deadbolt.java.models.Subject)*@
+
+
+@main("Welcome to Play") {
+    <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+    
+    <h1>subject roles</h1>
+@*<ul>
+    @for(role <- subject.getRoles()){
+    <li>@role.getName</li>
+    }
+</ul>*@
+<br>
+
+    <ul id="users"></ul>
+
+    <form method="POST" action="@routes.Application.addUser()">
+        <input type="text" name="userName"/>
+        <input type="text" name="email"/>
+        <button>Add User</button>
+    </form>
+}

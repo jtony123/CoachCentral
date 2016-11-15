@@ -1,13 +1,21 @@
-@()
 
 @main("Welcome to Play") {
     <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+    
+<H1>This is the main index page</H1> 
 
-    <ul id="persons"></ul>
-
-    <form method="POST" action="@routes.Application.addPerson()">
-        <input type="text" name="name"/>
+    @*<form method="POST" action="@routes.Application.addUser()">
+        <input type="text" name="userName"/>
         <input type="text" name="email"/>
-        <button>Add Person</button>
+        <button>Add User</button>
+    </form>*@
+    <br>
+    <form method="POST" action="@routes.AccessControl.login()">
+        <input type="text" name="userName"/>
+        <input type="password" name="password"/>
+        <button>Login</button>
     </form>
+    
 }
+
+@flash.get("success")
