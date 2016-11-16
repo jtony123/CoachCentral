@@ -1,21 +1,84 @@
-
-@main("Welcome to Play") {
+@import play.i18n._
+@main(title = "CoachCentral") {
     <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")" />
     
-<H1>This is the main index page</H1> 
+   
 
-    @*<form method="POST" action="@routes.Application.addUser()">
-        <input type="text" name="userName"/>
-        <input type="text" name="email"/>
-        <button>Add User</button>
-    </form>*@
-    <br>
-    <form method="POST" action="@routes.AccessControl.login()">
-        <input type="text" name="userName"/>
-        <input type="password" name="password"/>
-        <button>Login</button>
-    </form>
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-lg-12">
+			<nav class="navbar navbar-inverse navbar-fixed-top">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">
+					<span> 
+						<img src="@routes.Assets.at("images/orreco-logo.png")" alt="Orreco" />
+						CoachCentral
+					</span>
+					</a>
+				</div>
+			</nav>
+
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-xs-5 col-sm-6 col-lg-7" style="background-color: grey; padding:0;">
+		
+			<img class="img-responsive" src="@routes.Assets.at("images/LoginBG.jpg")" width="100%" alt="Orreco" />			
+		</div>
+		<div class="col-xs-7 col-sm-6 col-lg-5"">
+			
+			<br>
+				<h1 class="loginTitle">@Messages.get("login.welcome")</h1>
+				
+		@if(flash.get("error") != null){
+		<p class="error">@flash.get("error")</p>
+		} else {
+		
+			@if((flash.get("success") != null) ){
+				<p class="success">@flash.get("success")</p>
+			} else {
+				<p class="loginSubtitle">@Messages.get("login.instruction")</p>
+			}
+		
+		} 
+				
+			
+			<div class="form-signin">
+
+    			<form method="POST" action="@routes.AccessControl.login()">
+    			
+    							
+
+				<div>
+					<label for="userName">@Messages.get("login.username")</label> <input
+						type="text" name="userName" id="userName" class="form-control"/>
+				</div>
+
+				<div>
+					<label for="password">@Messages.get("login.password")</label> <input
+						type="password" name="password" id="password" class="form-control"/>
+				</div>
+
+				<br>
+				<button class="btn btn-lg btn-primary btn-block">@Messages.get("login.signin")</button>
+				</form>
+
+			</div>
+		</div>
+	</div>
+	<div class="row" style="background-color: lightgrey;">
+		<div class="col-xs-6"><a href="#"> CoachCentral @play.Play.application().configuration.getString("app.version")</div>
+		<div class="col-xs-6"><a href="http://www.orreco.com/" class="pull-right" target="_blank">&copy; @org.joda.time.DateTime.now().year().getAsText() ORRECO</a></div>
+	</div>
+	
+</div>
+
     
 }
 
-@flash.get("success")
+
+

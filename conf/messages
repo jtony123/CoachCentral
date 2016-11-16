@@ -1,0 +1,37 @@
+# You can specialize this file for each language.
+# For example, for French create a messages.fr file
+#
+
+login.username=Username
+login.password=Password
+login.remember=Remember me
+login.signin=Log in
+login.welcome=Next stop CoachCentral
+login.instruction= Enter your login credentials below
+login.nousername = CoachCentral does not recognise this username
+login.nopassword = You must enter your password
+login.usernamenotrecognised = No details for this username found
+login.passwordmismatch = Incorrect password for this username
+
+logout.success = Successfully logged out.
+
+
+playername=Player Name
+playernumber=Player ID
+dateadded=Date added
+playerPhoto=Player Photo
+coach=Coached by
+categories=Categorised as
+
+
+email=Email
+password=Password
+fullname=Full Name
+isAdmin=User is admin?
+
+name=Category name
+
+player=Player name
+playerIdentityNo= Player ID
+dataDate=Data logged date
+tT_Time=Total training time

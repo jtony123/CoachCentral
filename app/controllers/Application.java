@@ -46,30 +46,27 @@ public class Application extends Controller {
     public CompletionStage<Result> index() {
     	System.out.println("index called");
     	return CompletableFuture.completedFuture(ok(index.render()));
-    	
-//        return CompletableFuture.supplyAsync(() -> User.findByUserName("steve"))
-//                .thenApplyAsync(user -> ok(index.render(user)),
-//                                ec.current());
     }
     
 
-    
-    
-    
     @Restrict({@Group({"foo"})})
     public CompletionStage<Result> dashboard() {
     	System.out.println("dashboard called");
-    	System.out.println("saved in seesion : "+session().get("connected"));
-    	return CompletableFuture.completedFuture(ok(dashboard.render()));
+    	User user = User.findByUserName(session().get("connected"));
+    	
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
     	
     }
+    
+    
+    
     
     @Restrict({@Group({"foo"})})
     public CompletionStage<Result> addUser() {
     	System.out.println("addUser called");
     	User user = formFactory.form(User.class).bindFromRequest().get();
         user.save();
-        return CompletableFuture.completedFuture(redirect(routes.Application.index()));
+        return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
     }
    
     

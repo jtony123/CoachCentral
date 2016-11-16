@@ -1,0 +1,36 @@
+@import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
+@import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
+@(user : models.User, active: String)
+
+<div class="container-fluid">
+	<nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #FED202;">
+
+		<div class="navbar-header" >
+			<a class="navbar-brand" href="#"> <span> <img
+					src="@routes.Assets.at("images/orreco-logo.png")" alt="Orreco" />
+			</span>
+			</a>
+		</div>
+		<ul class="nav navbar-nav">
+		@if(active.equals("dashboard")){
+		<li class="active"><a href="#">Dashboard</a></li>
+		} else {
+		<li><a href="@routes.Application.index()">Home</a></li>
+		}
+		
+		
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="#"> <span class="glyphicon glyphicon-user"></span>
+					@user.userName
+			</a></li> 
+		@restrict(roles = allOfGroup("bar")) {
+        <li>
+				<a href="@routes.Application.index()">Admin Area</a>
+			</li>
+        }
+			<li><a href="@routes.AccessControl.logout()"><span
+					class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+		</ul>
+	</nav>
+</div>

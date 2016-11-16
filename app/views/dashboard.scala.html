@@ -1,23 +1,15 @@
-@* dashboard Template File *@
-@*@(subject: be.objectify.deadbolt.java.models.Subject)*@
+@import tags._
+@(user : models.User, active: String)
 
+@user.userName
+@user.password
+<p>Now connected @session.get("connected")</p>
 
-@main("Welcome to Play") {
+@main("CoachCentral") {
     <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
     
-    <h1>subject roles</h1>
-@*<ul>
-    @for(role <- subject.getRoles()){
-    <li>@role.getName</li>
-    }
-</ul>*@
-<br>
+    @navigationbar(user: models.User, active: String)
 
-    <ul id="users"></ul>
-
-    <form method="POST" action="@routes.Application.addUser()">
-        <input type="text" name="userName"/>
-        <input type="text" name="email"/>
-        <button>Add User</button>
-    </form>
 }
+
+
