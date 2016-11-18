@@ -1,14 +1,32 @@
 @import tags._
-@(user : models.User, active: String)
+@(user : models.User, active: String, players: List[models.Player])
 
-@user.userName
-@user.password
-<p>Now connected @session.get("connected")</p>
 
-@main("CoachCentral") {
-    <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+
+
+@main(title = "CoachCentral") {
+    
     
     @navigationbar(user: models.User, active: String)
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <ul>
+    @for(p<-players){
+    <li>@p.playername : @p.playernumber
+	    @for(n<-p.categories){
+	    <p>@n.name</p>
+	    }
+	    @for(m<-p.users){
+	    <p>@m.email</p>
+	    }
+	</li>
+    }
+    </ul>
+
 
 }
 

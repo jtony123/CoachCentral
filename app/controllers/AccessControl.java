@@ -1,10 +1,12 @@
 package controllers;
 
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
+import models.Category;
 import models.User;
 import play.data.FormFactory;
 import play.i18n.Messages;
@@ -23,16 +25,18 @@ public class AccessControl extends Controller {
     	User user = formFactory.form(User.class).bindFromRequest().get();
     	User userDB;
     	
-    	if(user.userName != null){
+    	if(user.email != null){
     		
     		if (user.password != null) {
     			
-    			userDB = User.findByUserName(user.userName);
+    			userDB = User.findByEmail(user.email);
     			
     			if(userDB != null){
     		    	if(userDB.password.equalsIgnoreCase(user.password)){
     		    		System.out.println("authenticated user");
-    		    		session("connected", userDB.userName);
+    		    		session("connected", userDB.email);
+    		    		String time = Long.toString(new Date().getTime());
+    		    		session("sessiontime", time);
     		    		
     		    	} else {
     		    		System.out.println("password mismatch");
@@ -61,8 +65,8 @@ public class AccessControl extends Controller {
     		return CompletableFuture.completedFuture(redirect(routes.Application.index()));
     	}
     	
-    	
-    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard()));
+    	//Category category = Category.findByName("All");
+    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard("All")));
     	
     }
     

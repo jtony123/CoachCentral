@@ -4,13 +4,13 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-POST    /user                    controllers.Application.addUser()
-GET     /users                    controllers.Application.getUsers
+#POST    /user                    controllers.Application.addUser()
+#GET     /users                    controllers.Application.getUsers
 
 POST	/login						controllers.AccessControl.login()
 GET		/logout						controllers.AccessControl.logout()
 
-GET     /dashboard                          controllers.Application.dashboard()
+GET     /dashboard/:category                         controllers.Application.dashboard(category :String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

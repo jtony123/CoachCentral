@@ -13,6 +13,8 @@ login.nopassword = You must enter your password
 login.usernamenotrecognised = No details for this username found
 login.passwordmismatch = Incorrect password for this username
 
+login.inactive = Security has logged you out due to inactivity
+
 logout.success = Successfully logged out.
 
 

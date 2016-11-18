@@ -4,6 +4,8 @@ import play.*;
 import play.mvc.*;
 //import play.db.jpa.*;
 import views.html.*;
+import models.Category;
+import models.Player;
 import models.User;
 import play.data.FormFactory;
 import play.libs.F;
@@ -49,30 +51,31 @@ public class Application extends Controller {
     }
     
 
-    @Restrict({@Group({"foo"})})
-    public CompletionStage<Result> dashboard() {
+    @Restrict({@Group({"admin", "coach"})})
+    public CompletionStage<Result> dashboard(String category) {
     	System.out.println("dashboard called");
-    	User user = User.findByUserName(session().get("connected"));
+    	User user = User.findByEmail(session().get("connected"));
+    	Category categoryFound = Category.findByName(category);
+    	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", players)));
     	
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
-    	
     }
     
     
     
     
-    @Restrict({@Group({"foo"})})
-    public CompletionStage<Result> addUser() {
-    	System.out.println("addUser called");
-    	User user = formFactory.form(User.class).bindFromRequest().get();
-        user.save();
-        return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
-    }
-   
-    
-    public CompletionStage<Result> getUsers() {
-    	List<User> users = User.find.all();
-        return CompletableFuture.completedFuture(ok(toJson(users)));
-    }
+//    @Restrict({@Group({"advanced"})})
+//    public CompletionStage<Result> addUser() {
+//    	System.out.println("addUser called");
+//    	User user = formFactory.form(User.class).bindFromRequest().get();
+//        user.save();
+//        return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
+//    }
+//   
+//    
+//    public CompletionStage<Result> getUsers() {
+//    	List<User> users = User.find.all();
+//        return CompletableFuture.completedFuture(ok(toJson(users)));
+//    }
     
 }

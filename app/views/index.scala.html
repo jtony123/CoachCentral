@@ -1,5 +1,6 @@
 @import play.i18n._
 @main(title = "CoachCentral") {
+
     <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
     <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")" />
     
@@ -55,7 +56,7 @@
 
 				<div>
 					<label for="userName">@Messages.get("login.username")</label> <input
-						type="text" name="userName" id="userName" class="form-control"/>
+						type="text" name="email" id="email" class="form-control"/>
 				</div>
 
 				<div>

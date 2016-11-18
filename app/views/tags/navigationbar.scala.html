@@ -13,9 +13,9 @@
 		</div>
 		<ul class="nav navbar-nav">
 		@if(active.equals("dashboard")){
-		<li class="active"><a href="#">Dashboard</a></li>
+		<li class="active"><a href='@routes.Application.dashboard("First Team")'>Dashboard</a></li>
 		} else {
-		<li><a href="@routes.Application.index()">Home</a></li>
+		<li><a href="#">Home</a></li>
 		}
 		
 		
@@ -24,7 +24,7 @@
 			<li><a href="#"> <span class="glyphicon glyphicon-user"></span>
 					@user.userName
 			</a></li> 
-		@restrict(roles = allOfGroup("bar")) {
+		@restrict(roles = allOfGroup("admin")) {
         <li>
 				<a href="@routes.Application.index()">Admin Area</a>
 			</li>
