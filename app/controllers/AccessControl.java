@@ -66,7 +66,7 @@ public class AccessControl extends Controller {
     	}
     	
     	//Category category = Category.findByName("All");
-    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard("All")));
+    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(1, "All")));
     	
     }
     

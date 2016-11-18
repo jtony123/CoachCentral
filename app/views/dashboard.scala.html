@@ -1,5 +1,6 @@
 @import tags._
-@(user : models.User, active: String, players: List[models.Player])
+@(user : models.User, active: String, player: models.Player, players: List[models.Player], category:String)
+
 
 
 
@@ -8,24 +9,346 @@
     
     
     @navigationbar(user: models.User, active: String)
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <ul>
-    @for(p<-players){
-    <li>@p.playername : @p.playernumber
-	    @for(n<-p.categories){
-	    <p>@n.name</p>
-	    }
-	    @for(m<-p.users){
-	    <p>@m.email</p>
-	    }
-	</li>
-    }
-    </ul>
+<style> 
+
+body {
+	font:12px Arial;
+}
+
+
+.chart_centre {
+	
+}
+
+path {
+/* 	stroke: steelblue; */
+
+	/* the width of the plotted line */
+	/* stroke-width: 0.1; */
+
+	fill: lightblue;
+}
+
+
+
+.area {
+/* 	fill : lightblue; */
+/* 	stroke-width: 0; */
+}
+
+.flag {
+  fill: red;
+  stroke: red;
+}
+
+
+.axis path, 
+.axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 0;
+	shape-rendering: crispEdges;
+}
+
+/* the styling of the grid lines on the graph */
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+   	stroke-width: 0;
+}
+
+.legend {
+	font-size: 16px;         
+	font-weight: bold;         
+	text-anchor: start;
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 80px;                  
+  height: 20px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+
+div.datatip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+
+th, td {
+    padding: 2px;
+}
+
+.cell {
+	color: red;
+}
+
+#datatiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#datatiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #FFFFFF;
+}
+
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+#notestiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#notestiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #EEEEEE;
+}
+
+#player_icon {
+  position: relative;
+  perspective: 1000;
+}
+
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
+}
+
+@@-webkit-keyframes player_icon_flip {
+
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
+}
+
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
+
+
+
+</style>
+
+@*
+<div class="container-fluid" id="groupings_toggle_buttons">
+	<div>
+		#{list items:categories, as:'cat'}
+			#{if category.equals(cat.name)}
+	         			<a href="@{Application.index(0, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
+	     	#{/if}
+   			#{else}
+   				<a href="@{Application.index(0, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
+   			#{/else}
+	    #{/list}
+	</div>
+</div>
+*@
+
+
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	  @*
+	   @if(players.size() > 5){
+	   
+	   <a href='@routes.Application.dashboard(players.get(@(playerIndex - 4 % players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+	   }
+	  @if(players.size() > 5){
+	  
+	  @(player : models.Player, category: String, active: String)
+	  		@player_icon(players.get(@( ()playerIndex - 3 % players.size() )):models.Player, category:String, active: String)
+	  		
+	  }
+	  
+	  @if(players.size() > 3){
+	  		@player_icon(players[(playerIndex - 2) % players.size()]:models.Player, category:String, active: String)
+	  }
+	  
+	  @if(players.size() > 1){
+	  		@player_icon(players[(playerIndex - 1) % players.size()]:models.Player, category:String, active: String)
+	  }
+		
+	  </div>
+	  </div>
+	  
+	  *@
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.dashboard(players.get(0).playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px;"/>
+						}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						
+						<div style="margin: 0 auto; max-width:150px;height:150px;">
+						alerts go here<br>
+						alert 1<br>
+						alert 2<br>
+						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg">
+          				<span class="glyphicon glyphicon-plus"></span> Add data
+        				</a>
+						
+						</div>
+						
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+							
+						</div>
+						
+					</a>
+				</h4>
+			</div>
+			</div>
+	  </div>
+	  
+	  @*
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	 @if(players.size() > 2){
+	 	@player_icon(players[(playerIndex + 1) % players.size()]:models.Player, category:String, active: String)
+	 }
+	 
+	  @if(players.size() > 4){
+	  	@player_icon(players[(playerIndex + 2) % players.size()]:models.Player, category:String, active: String)
+	 }
+	 
+	  @if(players.size() > 6){
+	  	@player_icon(players[(playerIndex + 3) % players.size()]:models.Player, category:String, active: String)
+	 }
+	 
+	  @if(players.size() > 6){
+	 		<a href="@{Application.dashboard(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+						
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>		
+			</a>
+	 }
+
+	 	</div>
+	 	
+	  </div>
+	  
+	  *@
+</div><!-- end div player carousel -->
 
 
 }

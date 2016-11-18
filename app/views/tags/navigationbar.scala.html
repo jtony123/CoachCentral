@@ -13,7 +13,7 @@
 		</div>
 		<ul class="nav navbar-nav">
 		@if(active.equals("dashboard")){
-		<li class="active"><a href='@routes.Application.dashboard("First Team")'>Dashboard</a></li>
+		<li class="active"><a href='@routes.Application.dashboard(1, "First Team")'>Dashboard</a></li>
 		} else {
 		<li><a href="#">Home</a></li>
 		}
@@ -26,7 +26,7 @@
 			</a></li> 
 		@restrict(roles = allOfGroup("admin")) {
         <li>
-				<a href="@routes.Application.index()">Admin Area</a>
+				<a href="@routes.Application.admin()">Admin Area</a>
 			</li>
         }
 			<li><a href="@routes.AccessControl.logout()"><span

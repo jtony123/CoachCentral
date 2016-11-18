@@ -12,6 +12,8 @@ import play.libs.F;
 import play.libs.concurrent.HttpExecutionContext;
 
 import javax.inject.Inject;
+
+import java.util.Date;
 import java.util.List;
 
 import com.avaje.ebean.Ebean;
@@ -50,16 +52,69 @@ public class Application extends Controller {
     	return CompletableFuture.completedFuture(ok(index.render()));
     }
     
+    public CompletionStage<Result> admin() {
+    	System.out.println("get admin called");
+
+    	return CompletableFuture.completedFuture(ok(admin.render()));
+    }
+    
 
     @Restrict({@Group({"admin", "coach"})})
-    public CompletionStage<Result> dashboard(String category) {
+    public CompletionStage<Result> dashboard(int playernumber, String category) {
+    	System.out.println("dashboard called");
+    	User user = User.findByEmail(session().get("connected"));
+    	Category categoryFound = Category.findByName("All");
+    	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
+    	
+    	//List<Player> players = Player.find.all();
+    	Player player = Player.find.byId((long) 1);
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, players, category)));
+    	
+    }
+    
+    @Restrict({@Group({"admin", "coach"})})
+    public CompletionStage<Result> record(int playernumber, String category) {
     	System.out.println("dashboard called");
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
     	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", players)));
+    	Player player = Player.find.byId((long) 1);
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, players, category)));
     	
     }
+    
+    @Restrict({@Group({"admin", "coach"})})
+    public CompletionStage<Result> playerPhoto(Long playerId) {
+    	System.out.println("dashboard called");
+
+    	return CompletableFuture.completedFuture(ok(dashboard.render(null, "dashboard", null, null, null)));
+    	
+    }
+    
+    //@Restrict({@Group({"admin", "coach"})})
+//    public CompletionStage<Result> admin() {
+//    	System.out.println("get admin called");
+//
+//    	return CompletableFuture.completedFuture(ok(admin.render()));
+//    	
+//    }
+//    
+//    public CompletionStage<Result> savePlayer() {
+//    	System.out.println("savePlayer called");
+//    	
+//    	Player player = formFactory.form(Player.class).bindFromRequest().get();
+//    	
+//    	System.out.println("player name retrieved = "+player.playername);
+//    	
+//    	player.dateadded = new Date();
+//    	player.save();
+//    	
+//    	User user = User.findByEmail(session().get("connected"));
+//    	user.players.add(player);
+//
+//    	return CompletableFuture.completedFuture(ok(admin.render()));
+//    	
+//    }
     
     
     

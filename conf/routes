@@ -10,7 +10,30 @@ GET     /                           controllers.Application.index()
 POST	/login						controllers.AccessControl.login()
 GET		/logout						controllers.AccessControl.logout()
 
-GET     /dashboard/:category                         controllers.Application.dashboard(category :String)
+GET     /dashboard/:category       	controllers.Application.dashboard(playernumber: Integer, category :String)
+
+GET		/record/:category			controllers.Application.record(playernumber: Integer, category :String)
+
+GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
+
+
+# admin routes
+
+GET		/admin					controllers.Application.admin()
+
+
+GET		/playersList				controllers.PlayerAdmin.playersList()
+GET		/playerAdd					controllers.PlayerAdmin.playerAdd()
+POST	/savePlayer				controllers.PlayerAdmin.savePlayer()
+POST	/updatePlayer			controllers.PlayerAdmin.updatePlayer()
+POST	/deletePlayer			controllers.PlayerAdmin.deletePlayer()
+
+GET		/questionsList				controllers.QuestionAdmin.playersList()
+GET		/questionAdd					controllers.QuestionAdmin.playerAdd()
+POST	/questionSave				controllers.QuestionAdmin.savePlayer()
+POST	/questionUpdate			controllers.QuestionAdmin.updatePlayer()
+POST	/questionDelete			controllers.QuestionAdmin.deletePlayer()
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

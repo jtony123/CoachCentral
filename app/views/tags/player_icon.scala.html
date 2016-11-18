@@ -1,0 +1,37 @@
+@(player : models.Player, category: String, active: String)
+
+
+
+@if(active.equals("record")){
+<a href='@routes.Application.record(player.playernumber, category)' class="btn btn-default" style="margin-bottom: 0px; border:none;">
+	<div >
+	@if(player.playerPhoto != null){
+		<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:100px"/>
+	} else {
+		<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt='@player.playername' style="margin: 0 auto; max-width:150px;height:100px"/>
+	}
+			
+	</div>
+	<div class="text-nowrap" style="text-align: center;">
+		@player.playername
+	</div>
+</a>
+
+} else {
+<a href="@routes.Application.dashboard(player.playernumber, category)" class="btn btn-default" style="margin-bottom: 0px; border:none;">
+	<div >
+	@if(player.playerPhoto != null){
+		<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:100px"/>
+	} else {
+		<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt='@player.playername' style="margin: 0 auto; max-width:150px;height:100px"/>
+	}		
+	</div>
+	<div class="text-nowrap" style="text-align: center;">
+		@player.playername
+	</div>
+</a>
+}
+
+
+
+
