@@ -1,3 +1,4 @@
+
 package controllers;
 
 import java.util.Date;
@@ -17,7 +18,7 @@ import play.mvc.*;
 import views.html.*;
 import views.html.Admin.*;
 
-public class PlayerAdmin extends Controller {
+public class AnswerAdmin extends Controller {
 	
 	
 	   @Inject
@@ -26,30 +27,29 @@ public class PlayerAdmin extends Controller {
 	    private final HttpExecutionContext ec;
 
 	    @Inject
-	    public PlayerAdmin(final HttpExecutionContext ec)
+	    public AnswerAdmin(final HttpExecutionContext ec)
 	    {
 	        this.ec = ec;
 	    }
 	    
-
 	    
-	    public CompletionStage<Result> playersList() {
-	    	System.out.println("get playersList called");
+	    public CompletionStage<Result> answersList() {
+	    	System.out.println("get answersList called");
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(answersList.render()));
 	    	
 	    }
 	    
 	    
-	    public CompletionStage<Result> playerAdd() {
-	    	System.out.println("get playerAdd called");
+	    public CompletionStage<Result> answerAdd() {
+	    	System.out.println("get answerAdd called");
 
-	    	return CompletableFuture.completedFuture(ok(playerAdd.render()));
+	    	return CompletableFuture.completedFuture(ok(answerAdd.render()));
 	    	
 	    }
 	    
-	    public CompletionStage<Result> savePlayer() {
-	    	System.out.println("savePlayer called");
+	    public CompletionStage<Result> answerSave() {
+	    	System.out.println("answerSave called");
 	    	
 	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
 	    	
@@ -61,12 +61,12 @@ public class PlayerAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(answersList.render()));
 	    	
 	    }
 	    
-	    public CompletionStage<Result> updatePlayer() {
-	    	System.out.println("updatePlayer called");
+	    public CompletionStage<Result> answerUpdate() {
+	    	System.out.println("answerUpdate called");
 	    	
 	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
 	    	
@@ -78,12 +78,12 @@ public class PlayerAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(answersList.render()));
 	    	
 	    }
 	    
-	    public CompletionStage<Result> deletePlayer() {
-	    	System.out.println("deletePlayer called");
+	    public CompletionStage<Result> answerDelete() {
+	    	System.out.println("answerDelete called");
 	    	
 	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
 	    	
@@ -95,9 +95,11 @@ public class PlayerAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(answersList.render()));
 	    	
 	    }
 	    
 
 }
+
+

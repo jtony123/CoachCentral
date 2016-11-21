@@ -1,5 +1,5 @@
 @import tags._
-@(user : models.User, active: String, player: models.Player, players: List[models.Player], category:String)
+@(user : models.User, active: String, player: models.Player, playerIndex: Integer, players: List[models.Player], category:String)
 
 
 
@@ -214,9 +214,17 @@ position: absolute;
 
 </style>
 
-@*
+
 <div class="container-fluid" id="groupings_toggle_buttons">
 	<div>
+	just something
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	@*
 		#{list items:categories, as:'cat'}
 			#{if category.equals(cat.name)}
 	         			<a href="@{Application.index(0, cat.name)}" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">${cat}</span></a>
@@ -225,9 +233,11 @@ position: absolute;
    				<a href="@{Application.index(0, cat.name)}" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">${cat}</span></a>
    			#{/else}
 	    #{/list}
+	    
+	    *@
 	</div>
 </div>
-*@
+
 
 
 
@@ -235,10 +245,10 @@ position: absolute;
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
 	  
 	  <div class="btn-group btn-group-justified">
-	  @*
+	  
 	   @if(players.size() > 5){
 	   
-	   <a href='@routes.Application.dashboard(players.get(@(playerIndex - 4 % players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+	   <a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
 						<div >
 					
 						</div>
@@ -247,25 +257,27 @@ position: absolute;
 						</div>
 					</a>
 	   }
+	   
+	  
 	  @if(players.size() > 5){
 	  
 	  @(player : models.Player, category: String, active: String)
-	  		@player_icon(players.get(@( ()playerIndex - 3 % players.size() )):models.Player, category:String, active: String)
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
 	  		
 	  }
 	  
 	  @if(players.size() > 3){
-	  		@player_icon(players[(playerIndex - 2) % players.size()]:models.Player, category:String, active: String)
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
 	  }
 	  
 	  @if(players.size() > 1){
-	  		@player_icon(players[(playerIndex - 1) % players.size()]:models.Player, category:String, active: String)
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
 	  }
-		
+	
 	  </div>
 	  </div>
 	  
-	  *@
+	  
 	  
 	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
 	  	<div id="player_icon_card">
@@ -273,7 +285,7 @@ position: absolute;
 	  		
 	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
-					<a href="@routes.Application.dashboard(players.get(0).playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
 						<div>
 						
 						@if(player.playerPhoto != null){
@@ -316,26 +328,26 @@ position: absolute;
 			</div>
 	  </div>
 	  
-	  @*
+	  
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
 	 
 	 	<div class="btn-group btn-group-justified">
 	 		
 	 @if(players.size() > 2){
-	 	@player_icon(players[(playerIndex + 1) % players.size()]:models.Player, category:String, active: String)
+	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
 	 }
 	 
 	  @if(players.size() > 4){
-	  	@player_icon(players[(playerIndex + 2) % players.size()]:models.Player, category:String, active: String)
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
 	 }
 	 
 	  @if(players.size() > 6){
-	  	@player_icon(players[(playerIndex + 3) % players.size()]:models.Player, category:String, active: String)
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
 	 }
 	 
 	  @if(players.size() > 6){
-	 		<a href="@{Application.dashboard(players[(playerIndex + 4) % players.size()].playernumber, category)}" class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
-						
+	 		<a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+					
 			<div class="text-nowrap" style="text-align: center;">
 				>>
 				
@@ -347,7 +359,7 @@ position: absolute;
 	 	
 	  </div>
 	  
-	  *@
+	  
 </div><!-- end div player carousel -->
 
 

@@ -16,6 +16,7 @@ import play.mvc.Result;
 import play.*;
 import play.mvc.*;
 import views.html.*;
+import views.html.Admin.*;
 
 public class QuestionAdmin extends Controller {
 	
@@ -35,7 +36,7 @@ public class QuestionAdmin extends Controller {
 	    public CompletionStage<Result> questionsList() {
 	    	System.out.println("get playersList called");
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(questionsList.render()));
 	    	
 	    }
 	    
@@ -43,7 +44,7 @@ public class QuestionAdmin extends Controller {
 	    public CompletionStage<Result> questionAdd() {
 	    	System.out.println("get playerAdd called");
 
-	    	return CompletableFuture.completedFuture(ok(playerAdd.render()));
+	    	return CompletableFuture.completedFuture(ok(questionAdd.render()));
 	    	
 	    }
 	    
@@ -60,7 +61,7 @@ public class QuestionAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(questionsList.render()));
 	    	
 	    }
 	    
@@ -77,7 +78,7 @@ public class QuestionAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(questionsList.render()));
 	    	
 	    }
 	    

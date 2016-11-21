@@ -60,7 +60,12 @@ public class Player extends Model {
 		// this.questionnaire = new ArrayList<Questionnaire>();
 		this.categories = new TreeSet<Category>();
 		// all players are automatically categorised in All
-		this.categoriseItWith("All");
+		if(playerName.equalsIgnoreCase("no players")){
+			// dont categorise the 'no players'
+		} else {
+			this.categoriseItWith("All");
+		}
+		
 
 		// this.questions = new TreeSet<Question>();
 
@@ -89,6 +94,19 @@ public class Player extends Model {
 		this.playerPhoto = photo;
 		this.save();
 		return this;
+	}
+	
+	public static Player findByNumber(Integer playernumber){
+		
+		Player player = Player.find.where().eq("playernumber", playernumber).findUnique();
+		// TODO: catch exception for no player found
+		return player;
+		
+	}
+	
+	public static Player findByPlayername(String playername){
+		Player player = Player.find.where().eq("playername", playername).findUnique();
+		return player;
 	}
 
 	// public Player previous() {

@@ -1,0 +1,23 @@
+@main(title = "Player Admin") {
+
+
+
+
+ 			<form method="POST" action="@routes.PlayerAdmin.savePlayer()">
+    			
+    			<div>
+				<label for="playername">Player name</label> <input
+						type="text" name="playername" id="playername" class="form-control"/>
+				</div>
+
+				<div>
+					<label for="playernumber">Player unique identifier number</label> <input
+						type="text" name="playernumber" id="playernumber" class="form-control"/>
+				</div>
+
+				<br>
+				<button class="btn btn-lg btn-primary btn-block">Save</button>
+				</form>
+
+ 
+}

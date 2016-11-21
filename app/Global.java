@@ -18,7 +18,9 @@ public class Global extends GlobalSettings {
     {
     	
     	System.out.println("onStart called");
-        if (SecurityRole.find.findRowCount() == 0)
+    	
+    	// add default security roles
+        if (SecurityRole.find.findRowCount() < 5)
         {
         	System.out.println("adding default SecurityRoles");
         	
@@ -30,7 +32,8 @@ public class Global extends GlobalSettings {
             }
         }
 
-        if (UserPermission.find.findRowCount() == 0)
+        // add default permissions
+        if (UserPermission.find.findRowCount() < 1)
         {
         	
         	System.out.println("sadding default UserPermissions");
@@ -39,9 +42,11 @@ public class Global extends GlobalSettings {
             permission.save();
         }
         
-        if (User.find.findRowCount() == 0)
+        // add default users
+        if (User.find.findRowCount() < 2)
         {
         	System.out.println("adding default Users");
+        	
             User user1 = new User();
             user1.email = "bob@gmail.com";
             user1.userName = "Bob";
@@ -75,6 +80,8 @@ public class Global extends GlobalSettings {
             
             
         }
+        
+        // add default category "All"
         if (Category.find.findRowCount() == 0)
         {
         	System.out.println("adding default player Categorys");
@@ -83,33 +90,45 @@ public class Global extends GlobalSettings {
         	
         }
         
-        if (Player.find.findRowCount() < 1)
+        // adding default players
+        if (Player.find.findRowCount() < 4)
         {
-        	User prev = User.findByEmail("bob@gmail.com");
+        	User prev1 = User.findByEmail("bob@gmail.com");
+        	User prev2 = User.findByEmail("alice@gmail.com");
         	
         	System.out.println("adding default Players");
-        	System.out.println("bob found " + prev.email);
-        	Player player1 = new Player("Jed Klump", 1, null, prev);
+        	
+        	Player player0 = new Player("no players", 0, null, prev1);
+        	prev1.players.add(player0);
+        	prev2.players.add(player0);
+        	player0.save();
+        	
+        	Player player1 = new Player("Jed Klump", 1, null, prev1);
+        	prev1.players.add(player1);
         	player1.save();
         	
-            User user2 = new User();
-            user2.email = "alice@gmail.com";
-            user2.userName = "Alice";
-            user2.password = "aaa";
-            user2.roles = new ArrayList<SecurityRole>();
-            user2.roles.add(SecurityRole.findByName("coach"));
-            user2.permissions = new ArrayList<UserPermission>();
-            user2.permissions.add(UserPermission.findByValue("view"));
+        	
 
-            user2.save();
-            Ebean.saveManyToManyAssociations(user2,
-                    "roles");
-            Ebean.saveManyToManyAssociations(user2,
-                    "permissions");
-        	Player player2 = new Player("Nelson Riemann", 2, null, User.findByEmail("bob@gmail.com"));
+        	Player player2 = new Player("Nelson Riemann", 2, null, prev1);
+        	prev1.players.add(player2);
         	player2.save();
-        	Player player3 = new Player("Melvin Meriwether", 3, null, User.findByEmail("alice@gmail.com"));
+        	
+        	
+        	Player player3 = new Player("Melvin Meriwether", 3, null, prev2);
+        	prev2.players.add(player3);
         	player3.save();
+        	
+        	
+        	Player player4 = new Player("Jack Sharp", 4, null, prev1);
+        	prev1.players.add(player4);
+        	player4.save();
+        	
+        	Player player5 = new Player("Justin Dickens", 5, null, prev1);
+        	prev1.players.add(player5);
+        	player5.save();
+        	
+        	Ebean.saveManyToManyAssociations(prev1, "players");
+        	Ebean.saveManyToManyAssociations(prev2, "players");
         	
         }
     }

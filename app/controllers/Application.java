@@ -4,6 +4,7 @@ import play.*;
 import play.mvc.*;
 //import play.db.jpa.*;
 import views.html.*;
+import views.html.Admin.*;
 import models.Category;
 import models.Player;
 import models.User;
@@ -59,27 +60,59 @@ public class Application extends Controller {
     }
     
 
-    @Restrict({@Group({"admin", "coach"})})
+    @Restrict({@Group({"coach"})})
     public CompletionStage<Result> dashboard(int playernumber, String category) {
+    	
     	System.out.println("dashboard called");
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName("All");
     	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
     	
-    	//List<Player> players = Player.find.all();
-    	Player player = Player.find.byId((long) 1);
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, players, category)));
+    	
+    	Player player;
+    	if (playernumber == 0) {
+    		player = players.get(0);
+    	} else {
+    		player = Player.findByNumber(playernumber);
+    		Category cat = Category.findByName(category);
+    		if (!player.categories.contains(cat)){
+    			List<Player> playersInThisCategory = user.getPlayersCategorisedWith(categoryFound);//Player.findClientsPlayersCategorisedWith(connectedClient, category);
+    			if(playersInThisCategory.isEmpty()){
+    				player = Player.findByPlayername("no players");//.find("byPlayername", "no players").first();
+    			} else {
+    				player = playersInThisCategory.get(0);
+    			}
+    		}
+    		//
+    	}
+    	
+//    	Player player = Player.findByNumber(playernumber);
+//    	if(player == null) {
+//    		player = Player.find.byId((long) 1);
+//    	}
+    	System.out.println("player count = " + players.size());
+    	int playerIndex = players.indexOf(player);
+    			
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category)));
     	
     }
     
-    @Restrict({@Group({"admin", "coach"})})
+    @Restrict({@Group({"coach"})})
     public CompletionStage<Result> record(int playernumber, String category) {
-    	System.out.println("dashboard called");
+    	System.out.println("record called");
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
     	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
-    	Player player = Player.find.byId((long) 1);
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, players, category)));
+    	
+    	Player player = Player.findByNumber(playernumber);
+    	if(player == null) {
+    		player = Player.find.byId((long) 1);
+    	}
+    	
+    	System.out.println("player count = " + players.size());
+    	int playerIndex = players.indexOf(player);
+    	
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category)));
     	
     }
     
@@ -87,7 +120,7 @@ public class Application extends Controller {
     public CompletionStage<Result> playerPhoto(Long playerId) {
     	System.out.println("dashboard called");
 
-    	return CompletableFuture.completedFuture(ok(dashboard.render(null, "dashboard", null, null, null)));
+    	return CompletableFuture.completedFuture(ok(dashboard.render(null, "dashboard", null, null, null, null)));
     	
     }
     

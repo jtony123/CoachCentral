@@ -24,15 +24,27 @@ GET		/admin					controllers.Application.admin()
 
 GET		/playersList				controllers.PlayerAdmin.playersList()
 GET		/playerAdd					controllers.PlayerAdmin.playerAdd()
-POST	/savePlayer				controllers.PlayerAdmin.savePlayer()
-POST	/updatePlayer			controllers.PlayerAdmin.updatePlayer()
-POST	/deletePlayer			controllers.PlayerAdmin.deletePlayer()
+POST	/savePlayer					controllers.PlayerAdmin.savePlayer()
+POST	/updatePlayer				controllers.PlayerAdmin.updatePlayer()
+POST	/deletePlayer				controllers.PlayerAdmin.deletePlayer()
 
-GET		/questionsList				controllers.QuestionAdmin.playersList()
-GET		/questionAdd					controllers.QuestionAdmin.playerAdd()
-POST	/questionSave				controllers.QuestionAdmin.savePlayer()
-POST	/questionUpdate			controllers.QuestionAdmin.updatePlayer()
-POST	/questionDelete			controllers.QuestionAdmin.deletePlayer()
+GET		/questionsList				controllers.QuestionAdmin.questionsList()
+GET		/questionAdd				controllers.QuestionAdmin.questionAdd()
+POST	/questionSave				controllers.QuestionAdmin.questionSave()
+POST	/questionUpdate				controllers.QuestionAdmin.questionUpdate()
+POST	/questionDelete				controllers.QuestionAdmin.questionDelete()
+
+GET		/answersList				controllers.AnswerAdmin.answersList()
+GET		/answerAdd					controllers.AnswerAdmin.answerAdd()
+POST	/answerSave					controllers.AnswerAdmin.answerSave()
+POST	/answerUpdate				controllers.AnswerAdmin.answerUpdate()
+POST	/answerDelete				controllers.AnswerAdmin.answerDelete()
+
+GET		/categorysList				controllers.CategoryAdmin.categorysList()
+GET		/categoryAdd					controllers.CategoryAdmin.categoryAdd()
+POST	/categorySave					controllers.CategoryAdmin.categorySave()
+POST	/categoryUpdate				controllers.CategoryAdmin.categoryUpdate()
+POST	/categoryDelete				controllers.CategoryAdmin.categoryDelete()
 
 
 # Map static resources from the /public folder to the /assets URL path
