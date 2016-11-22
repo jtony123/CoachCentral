@@ -31,8 +31,8 @@ create table player (
 
 create table player_user (
   player_id                     bigint not null,
-  user_email                    varchar(255) not null,
-  constraint pk_player_user primary key (player_id,user_email)
+  user_id                       bigint not null,
+  constraint pk_player_user primary key (player_id,user_id)
 );
 
 create table player_category (
@@ -82,22 +82,23 @@ create table security_role (
 );
 
 create table user (
-  email                         varchar(255) not null,
+  id                            bigint auto_increment not null,
+  email                         varchar(255),
   user_name                     varchar(255),
   password                      varchar(255),
-  constraint pk_user primary key (email)
+  constraint pk_user primary key (id)
 );
 
 create table user_security_role (
-  user_email                    varchar(255) not null,
+  user_id                       bigint not null,
   security_role_id              bigint not null,
-  constraint pk_user_security_role primary key (user_email,security_role_id)
+  constraint pk_user_security_role primary key (user_id,security_role_id)
 );
 
 create table user_user_permission (
-  user_email                    varchar(255) not null,
+  user_id                       bigint not null,
   user_permission_id            bigint not null,
-  constraint pk_user_user_permission primary key (user_email,user_permission_id)
+  constraint pk_user_user_permission primary key (user_id,user_permission_id)
 );
 
 create table user_permission (
@@ -115,8 +116,8 @@ create index ix_answer_questionnaire_id on answer (questionnaire_id);
 alter table player_user add constraint fk_player_user_player foreign key (player_id) references player (id) on delete restrict on update restrict;
 create index ix_player_user_player on player_user (player_id);
 
-alter table player_user add constraint fk_player_user_user foreign key (user_email) references user (email) on delete restrict on update restrict;
-create index ix_player_user_user on player_user (user_email);
+alter table player_user add constraint fk_player_user_user foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_player_user_user on player_user (user_id);
 
 alter table player_category add constraint fk_player_category_player foreign key (player_id) references player (id) on delete restrict on update restrict;
 create index ix_player_category_player on player_category (player_id);
@@ -139,14 +140,14 @@ create index ix_question_question_category_question_category on question_questio
 alter table questionnaire add constraint fk_questionnaire_player_id foreign key (player_id) references player (id) on delete restrict on update restrict;
 create index ix_questionnaire_player_id on questionnaire (player_id);
 
-alter table user_security_role add constraint fk_user_security_role_user foreign key (user_email) references user (email) on delete restrict on update restrict;
-create index ix_user_security_role_user on user_security_role (user_email);
+alter table user_security_role add constraint fk_user_security_role_user foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_user_security_role_user on user_security_role (user_id);
 
 alter table user_security_role add constraint fk_user_security_role_security_role foreign key (security_role_id) references security_role (id) on delete restrict on update restrict;
 create index ix_user_security_role_security_role on user_security_role (security_role_id);
 
-alter table user_user_permission add constraint fk_user_user_permission_user foreign key (user_email) references user (email) on delete restrict on update restrict;
-create index ix_user_user_permission_user on user_user_permission (user_email);
+alter table user_user_permission add constraint fk_user_user_permission_user foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_user_user_permission_user on user_user_permission (user_id);
 
 alter table user_user_permission add constraint fk_user_user_permission_user_permission foreign key (user_permission_id) references user_permission (id) on delete restrict on update restrict;
 create index ix_user_user_permission_user_permission on user_user_permission (user_permission_id);

@@ -16,6 +16,11 @@ GET		/record/:category			controllers.Application.record(playernumber: Integer, c
 
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 
+GET		/getCSV/:playernumber						controllers.Application.getCSV(playernumber: Integer)
+
+GET		/loadCSV					controllers.Application.loadCSV()
+POST	/uploadCSV					controllers.Application.uploadCSV()
+
 
 # admin routes
 

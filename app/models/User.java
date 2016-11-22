@@ -19,11 +19,10 @@ import play.data.format.*;
 @Entity
 public class User extends Model implements Subject{
 
-//	@EmbeddedId
-//	public Long id;
-  
 	@Id
-	@Constraints.Email
+	public Long id;
+  
+	//@Constraints.Email
   	public String email;
 
     public String userName;

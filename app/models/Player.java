@@ -35,7 +35,7 @@ public class Player extends Model {
 	 public String filename;
 
 	// @Required
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	public List<User> users;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
@@ -54,12 +54,12 @@ public class Player extends Model {
 			this.playerPhoto = playerPhoto;
 		}
 		this.users = new ArrayList<User>();
-		//this.users.add(user);
 		this.dateadded = new Date();
 
 		// this.questionnaire = new ArrayList<Questionnaire>();
 		this.categories = new TreeSet<Category>();
-		// all players are automatically categorised in All
+		// all players are automatically categorised in All except for the 'no players'
+		
 		if(playerName.equalsIgnoreCase("no players")){
 			// dont categorise the 'no players'
 		} else {

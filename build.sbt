@@ -1,6 +1,6 @@
 name := """CoachCentral"""
 
-version := "1.0.0"
+version := "1.0.2"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 

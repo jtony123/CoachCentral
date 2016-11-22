@@ -88,6 +88,15 @@ public class Global extends GlobalSettings {
         	Category category = new Category("All");
         	category.save();
         	
+        	Category cat2 = new Category("First Team");
+        	cat2.save();
+        	
+        	Category reserves = new Category("Reserves");
+        	reserves.save();
+        	
+        	Category inj = new Category("Injured");
+        	inj.save();
+        	
         }
         
         // adding default players
@@ -104,12 +113,14 @@ public class Global extends GlobalSettings {
         	player0.save();
         	
         	Player player1 = new Player("Jed Klump", 1, null, prev1);
+        	player1.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player1);
         	player1.save();
         	
         	
 
         	Player player2 = new Player("Nelson Riemann", 2, null, prev1);
+        	player2.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player2);
         	player2.save();
         	

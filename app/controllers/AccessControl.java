@@ -66,9 +66,12 @@ public class AccessControl extends Controller {
     	}
     	
     	//Category category = Category.findByName("All");
-    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(1, "All")));
+    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(0, "All")));
     	
     }
+    
+    
+    
     
     public CompletionStage<Result> logout() {
     	session().remove("connected");
