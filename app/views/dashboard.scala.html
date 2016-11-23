@@ -250,7 +250,6 @@ position: absolute;
 	  
 	  @if(players.size() > 5){
 	  
-	  @(player : models.Player, category: String, active: String)
 	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
 	  		
 	  }

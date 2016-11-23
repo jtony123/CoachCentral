@@ -1,6 +1,6 @@
 name := """CoachCentral"""
 
-version := "1.0.2"
+version := "1.0.21"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   //javaJpa,
   "org.hibernate" % "hibernate-entitymanager" % "5.2.4.Final",
   "dom4j" % "dom4j" % "1.6.1" intransitive(),
-  "be.objectify" %% "deadbolt-java" % "2.5.3"
+  "be.objectify" %% "deadbolt-java" % "2.5.3",
+  "org.mindrot" % "jbcrypt" % "0.3m"
 )
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"

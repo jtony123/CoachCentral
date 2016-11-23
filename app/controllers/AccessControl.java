@@ -8,6 +8,8 @@ import javax.inject.Inject;
 
 import models.Category;
 import models.User;
+import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.Messages;
 import play.mvc.Controller;
@@ -23,6 +25,9 @@ public class AccessControl extends Controller {
     public CompletionStage<Result> login() {
     	System.out.println("login called");
     	User user = formFactory.form(User.class).bindFromRequest().get();
+    	
+    	DynamicForm form = Form.form().bindFromRequest();
+    	
     	User userDB;
     	
     	if(user.email != null){
@@ -32,7 +37,8 @@ public class AccessControl extends Controller {
     			userDB = User.findByEmail(user.email);
     			
     			if(userDB != null){
-    		    	if(userDB.password.equalsIgnoreCase(user.password)){
+    		    	//if(userDB.password.equalsIgnoreCase(user.password)){
+    		    	if(userDB.checkPassword(form.get("password"))){
     		    		System.out.println("authenticated user");
     		    		session("connected", userDB.email);
     		    		String time = Long.toString(new Date().getTime());

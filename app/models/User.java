@@ -14,6 +14,8 @@ import be.objectify.deadbolt.java.models.Permission;
 import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import play.data.format.*;
 
 @Entity
@@ -42,6 +44,24 @@ public class User extends Model implements Subject{
 
 
     public static Finder<Long,User> find = new Finder<>(User.class);
+    
+    
+
+
+//	public String getPassword() {
+//		return password;
+//	}
+	
+	public boolean checkPassword(String pw){
+		return BCrypt.checkpw(pw, this.password);
+	}
+
+
+	public void setPassword(String password) {
+		
+		
+		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+	}
 
 
 	@Override

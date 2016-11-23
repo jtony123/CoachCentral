@@ -48,9 +48,9 @@ public class Global extends GlobalSettings {
         	System.out.println("adding default Users");
         	
             User user1 = new User();
-            user1.email = "bob@gmail.com";
+            user1.email = "bob@orreco.com";
             user1.userName = "Bob";
-            user1.password = "aaa";
+            user1.setPassword("bobpass");
             user1.roles = new ArrayList<SecurityRole>();
             user1.roles.add(SecurityRole.findByName("admin"));
             user1.roles.add(SecurityRole.findByName("coach"));
@@ -64,9 +64,9 @@ public class Global extends GlobalSettings {
                     "permissions");
             
             User user2 = new User();
-            user2.email = "alice@gmail.com";
+            user2.email = "alice@orreco.com";
             user2.userName = "Alice";
-            user2.password = "aaa";
+            user2.setPassword("alicepass");
             user2.roles = new ArrayList<SecurityRole>();
             user2.roles.add(SecurityRole.findByName("coach"));
             user2.permissions = new ArrayList<UserPermission>();
@@ -76,6 +76,21 @@ public class Global extends GlobalSettings {
             Ebean.saveManyToManyAssociations(user2,
                     "roles");
             Ebean.saveManyToManyAssociations(user2,
+                    "permissions");
+            
+            User user3 = new User();
+            user3.email = "player@orreco.com";
+            user3.userName = "Charlie";
+            user3.setPassword("playerpass");
+            user3.roles = new ArrayList<SecurityRole>();
+            user3.roles.add(SecurityRole.findByName("player"));
+            user3.permissions = new ArrayList<UserPermission>();
+            user3.permissions.add(UserPermission.findByValue("view"));
+
+            user3.save();
+            Ebean.saveManyToManyAssociations(user3,
+                    "roles");
+            Ebean.saveManyToManyAssociations(user3,
                     "permissions");
             
             
@@ -91,6 +106,9 @@ public class Global extends GlobalSettings {
         	Category cat2 = new Category("First Team");
         	cat2.save();
         	
+        	Category starting5 = new Category("Starting 5");
+        	starting5.save();
+        	
         	Category reserves = new Category("Reserves");
         	reserves.save();
         	
@@ -102,41 +120,97 @@ public class Global extends GlobalSettings {
         // adding default players
         if (Player.find.findRowCount() < 4)
         {
-        	User prev1 = User.findByEmail("bob@gmail.com");
-        	User prev2 = User.findByEmail("alice@gmail.com");
+        	User prev1 = User.findByEmail("bob@orreco.com");
+        	User prev2 = User.findByEmail("alice@orreco.com");
         	
         	System.out.println("adding default Players");
+        	
         	
         	Player player0 = new Player("no players", 0, null, prev1);
         	prev1.players.add(player0);
         	prev2.players.add(player0);
         	player0.save();
         	
-        	Player player1 = new Player("Jed Klump", 1, null, prev1);
-        	player1.categories.add(Category.findByName("First Team"));
-        	prev1.players.add(player1);
-        	player1.save();
-        	
-        	
-
-        	Player player2 = new Player("Nelson Riemann", 2, null, prev1);
-        	player2.categories.add(Category.findByName("First Team"));
-        	prev1.players.add(player2);
-        	player2.save();
-        	
-        	
-        	Player player3 = new Player("Melvin Meriwether", 3, null, prev2);
-        	prev2.players.add(player3);
-        	player3.save();
-        	
-        	
-        	Player player4 = new Player("Jack Sharp", 4, null, prev1);
+        	Player player4 = new Player("Jed Klump", 4, null, prev1);
+        	player4.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player4);
+        	prev2.players.add(player4);
         	player4.save();
         	
-        	Player player5 = new Player("Justin Dickens", 5, null, prev1);
+        	Player player5 = new Player("Nelson Riemann", 5, null, prev1);
+        	player5.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player5);
+        	prev2.players.add(player5);
         	player5.save();
+        	
+        	Player player6 = new Player("Melvin Meriwether", 6, null, prev2);
+        	prev1.players.add(player6);
+        	prev2.players.add(player6);
+        	player6.save();
+        	
+        	Player player7 = new Player("Blake Lyman", 7, null, prev1);
+        	player7.categories.add(Category.findByName("First Team"));
+        	prev1.players.add(player7);
+        	prev2.players.add(player7);
+        	player7.save();
+        	
+        	Player player8 = new Player("Keith Payne", 8, null, prev1);
+        	player8.categories.add(Category.findByName("First Team"));
+        	prev1.players.add(player8);
+        	prev2.players.add(player8);
+        	player8.save();
+        	
+        	Player player9 = new Player("Alexander Davidson", 9, null, prev1);
+        	prev1.players.add(player9);
+        	prev2.players.add(player9);
+        	player9.save();
+        	
+        	Player player10 = new Player("James Wallace", 10, null, prev1);
+        	player10.categories.add(Category.findByName("First Team"));
+        	prev1.players.add(player10);
+        	prev2.players.add(player10);
+        	player10.save();
+        	
+        	Player player11 = new Player("Keith Gray", 11, null, prev1);
+        	player10.categories.add(Category.findByName("First Team"));
+        	prev1.players.add(player11);
+        	prev2.players.add(player11);
+        	player11.save();
+        	
+        	Player player12 = new Player("Dan Peake", 12, null, prev1);
+        	player12.categories.add(Category.findByName("Reserves"));
+        	prev1.players.add(player12);
+        	prev2.players.add(player12);
+        	player12.save();
+        	
+        	Player player13 = new Player("Benjamin Nash", 13, null, prev1);
+        	prev1.players.add(player13);
+        	prev2.players.add(player13);
+        	player13.save();
+        	
+        	Player player14 = new Player("William Hudson", 14, null, prev1);
+        	player14.categories.add(Category.findByName("Reserves"));
+        	prev1.players.add(player14);
+        	prev2.players.add(player14);
+        	player14.save();
+        	
+        	Player player15 = new Player("Isaac Davies", 15, null, prev1);
+        	prev1.players.add(player15);
+        	prev2.players.add(player15);
+        	player15.save();
+        	
+        	Player player16 = new Player("Jack Sharp", 16, null, prev1);
+        	player12.categories.add(Category.findByName("Injured"));
+        	prev1.players.add(player16);
+        	prev2.players.add(player16);
+        	player16.save();
+        	
+        	Player player17 = new Player("Justin Dickens", 17, null, prev1);
+        	prev1.players.add(player17);
+        	prev2.players.add(player17);
+        	player17.save();
+        	
+        	
         	
         	Ebean.saveManyToManyAssociations(prev1, "players");
         	Ebean.saveManyToManyAssociations(prev2, "players");
