@@ -95,7 +95,7 @@ public class QuestionAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	user.players.add(player);
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render()));
+	    	return CompletableFuture.completedFuture(ok(questionsList.render()));
 	    	
 	    }
 	    

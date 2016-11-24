@@ -1,0 +1,134 @@
+@import tags._
+@(user : models.User, active: String, player: models.Player,  categories: List[models.Category])
+
+@main(title = "Player Admin") {
+
+@navigationbar(user: models.User, active: String)
+
+
+<div class="container">
+
+<div class="row">
+  <div class="col-sm-6">
+  	<h2>@player.playername</h2>
+  </div>
+  <div class="col-sm-6">
+  	<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="None" style="margin: 0 auto; max-width:150px;height:150px"/>
+  
+  </div>
+</div>
+
+  
+  <br>
+
+<div class="">
+<form action="@routes.PlayerAdmin.updatePlayer(player.playernumber)" method="POST"  enctype="multipart/form-data" >
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playername">Player Name</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="playername" class="" type="text" name="playername" value="@player.playername" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span>Required. </span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playernumber">Player Number</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="playernumber" type="text" name="playernumber" value="@player.playernumber" size="5" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span> Numeric. Required. </span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="dateadded">Date added</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="dateadded" class="" type="text" name="dateadded" value="@player.dateadded" size="10" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Updated automatically</span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playerPhoto">Player Photo</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="playerPhoto" class="" type="file" name="playerPhoto" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Not required</span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="categories">Categories</label>
+	</div>
+	
+	<div class="col-sm-6">
+
+	<div class="btn-group">
+		@for(c <- categories){
+		@if(c.name.equals("All")){
+			<label class="btn btn-success disabled">
+		    		<a href="#" role="button">@c.name</a>
+	        	
+	        	</label>
+		} else {
+			@if(player.categories.contains(c)){
+		    	<label class="btn btn-success active">
+		    		<a href="@routes.PlayerAdmin.removePlayerFromCategory(player.playernumber, c.name)" role="button">@c.name</a>
+	        		@*<input type="checkbox" name="cats" id="cats" value="@c.name" checked="checked">@c.name*@
+	        	</label>
+	    	} else {
+		    	<label class="btn btn-default">
+		    	<a href="@routes.PlayerAdmin.addPlayerToCategory(player.playernumber, c.name)"role="button">@c.name</a>
+	            	
+	            </label>
+	    	}
+		}
+	    }
+	</div>
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">All is checked by default</span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-12">
+		<button class="btn btn-lg btn-primary btn-block">Update</button>
+	</div>
+	
+</div><!-- end row -->
+
+</form>
+<br><br><br><br><br><br>
+<a class="btn btn-lg btn-warning" role="button">!! Delete this player !!</a>
+
+</div>
+	
+
+}

@@ -1,10 +1,13 @@
+@import tags._
+@(user : models.User, active: String)
 
 @main(title = "Admin") {
 
-<H1>This is the main portal to the admin section</H1>
+@navigationbar(user: models.User, active: String)
+
+<H1>Admin Portal</H1>
 
 <div class="container">
-  <h2>Model Objects</h2><h3>Click model object to view list and add, modify and delete entities</h3>
 <a href="@routes.PlayerAdmin.playersList()" class="btn btn-primary" role="button">Players</a>
 <a href="@routes.QuestionAdmin.questionsList()" class="btn btn-primary" role="button">Questions</a>
 <a href="@routes.AnswerAdmin.answersList()" class="btn btn-primary" role="button">Answers</a>

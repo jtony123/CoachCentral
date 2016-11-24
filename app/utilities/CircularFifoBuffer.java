@@ -4,6 +4,14 @@ package utilities;
 
 import java.util.LinkedList;
 
+/**
+ * @author Anthony Jackson
+ *
+ *	CircularFifoBuffer does as the name suggests, 
+ *	the limit is the max size of the buffer
+ *
+ */
+
 public class CircularFifoBuffer<E> extends LinkedList<E> {
     private int limit;
 

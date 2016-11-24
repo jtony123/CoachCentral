@@ -13,9 +13,9 @@
 		</div>
 		<ul class="nav navbar-nav">
 		@if(active.equals("dashboard")){
-		<li class="active"><a href='@routes.Application.dashboard(1, "First Team")'>Dashboard</a></li>
+		<li class="active"><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
 		} else {
-		<li><a href="#">Home</a></li>
+		<li class="active"><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
 		}
 		
 		

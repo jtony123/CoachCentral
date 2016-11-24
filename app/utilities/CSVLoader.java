@@ -3,31 +3,20 @@ package utilities;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 
-//import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
-//import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
-//import org.apache.commons.collections.Buffer;
-//import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
-//import models.GPSData;
-//import models.Player;
-//import play.jobs.OnApplicationStart;
-
+/**
+ * @author Anthony Jackson
+ *
+ *	CSVLoader parses the csv file that contains all the players gps data and
+ *	generates an individual file for each player with the acute, chronic and squad statistics added
+ *
+ */
 
 public class CSVLoader {
 
@@ -72,9 +61,9 @@ public class CSVLoader {
 			int playerloadindex = headerstrings.indexOf("T_PLAYER_LOAD");
 			int dateindex = headerstrings.indexOf("date");
 			
-			System.out.println("id index found"+idindex);
-			System.out.println("load index found"+playerloadindex);
-			System.out.println("date index found"+dateindex);
+//			System.out.println("id index found"+idindex);
+//			System.out.println("load index found"+playerloadindex);
+//			System.out.println("date index found"+dateindex);
 			
 			//Read the file line by line
 
@@ -183,7 +172,7 @@ public class CSVLoader {
 	    		        	variance = variance/deviations.size();
 	    		        	
 	    		        	int standardDeviation = (int) Math.sqrt(variance);
-	    		        	System.out.println("sd = " + standardDeviation);
+	    		        	//System.out.println("sd = " + standardDeviation);
 	    		        	
 	    		        	
 	    		        	// append the squad average to this data line for this player

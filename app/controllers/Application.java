@@ -58,13 +58,20 @@ public class Application extends Controller {
     
     public CompletionStage<Result> index() {
     	System.out.println("index called");
+    	System.out.println("testing reload");
+    	User user = User.findByEmail(session().get("connected"));
+    	if(user != null) {
+    		System.out.println("user found = "+user.email);
+    		return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(4, "All")));
+    	} 
     	return CompletableFuture.completedFuture(ok(index.render()));
     }
     
+    @Restrict({@Group({"admin"})})
     public CompletionStage<Result> admin() {
     	System.out.println("get admin called");
-
-    	return CompletableFuture.completedFuture(ok(admin.render()));
+    	User user = User.findByEmail(session().get("connected"));
+    	return CompletableFuture.completedFuture(ok(admin.render(user, "admin")));
     }
     
 
@@ -152,11 +159,17 @@ public class Application extends Controller {
     	
     }
     
-    @Restrict({@Group({"admin", "coach"})})
+    // TODO: work out whether this needs to be restricted, as its only called directly by the page, not the user
+    //@Restrict({@Group({"admin", "coach"})})
     public CompletionStage<Result> playerPhoto(Long playerId) {
-    	System.out.println("dashboard called");
+    	System.out.println("playerPhoto called");
+    	
+		final Player player = Player.find.byId(playerId);
+//		response.setContentTypeIfNotSet(player.playerPhoto.type());
+//		java.io.InputStream binaryData = player.playerPhoto.get();
+//		renderBinary(binaryData);
 
-    	return CompletableFuture.completedFuture(ok(dashboard.render(null, "dashboard", null, null, null, null, null)));
+    	return CompletableFuture.completedFuture(ok(player.playerPhoto).as("playerPhoto"));
     	
     }
     

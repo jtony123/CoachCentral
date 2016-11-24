@@ -1,10 +1,93 @@
 
+@import tags._
+
+@(user : models.User, active: String, players: List[models.Player],  categories: List[models.Category])
+
 @main(title = "Player Admin") {
 
-<h1>this page will list the players</h1>
-<h3>with buttons to add at the bottom and a column of buttons to delete a player</h3>
-<h4>and a column of buttons to modify(update) a player</h4>
+@navigationbar(user: models.User, active: String)
 
-<a href="@routes.PlayerAdmin.playerAdd()" class="btn btn-primary" role="button">Add a new player</a>
+
+
+<div class="container">
+  <h2>Players</h2>
+  <a href="@routes.PlayerAdmin.playerAdd()" class="btn btn-primary" role="button">Add a new player</a>
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Player name</th>
+        <th>Player number</th>
+        <th>Date added</th>
+        <th>Player categories</th>
+        <th>Player questions</th>
+        <th>Photo uploaded</th>
+        <th>Edit</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+    
+    @for(p <- players) {
+          <tr>
+        <td>@p.playername</td>
+        <td>@p.playernumber</td>
+        <td>@p.dateadded</td>
+        <td>
+        @if(p.categories != null || !p.categories.isEmpty()){
+        	@for(c <- p.categories){
+        		@c.name
+        	}
+        } else {
+        empty
+        }
+        </td>
+        <td>
+        @if(p.questions != null || !p.questions.isEmpty()){
+        	@for(q <- p.questions){
+        		<p>@q.question</p>
+        	}
+        } else {
+        <p>empty</p>
+        }
+        </td>
+        <td>
+        @if(p.playerPhoto != null) {
+        Yes
+        } else {
+        None
+        }
+        </td>
+        <td><a href='@routes.PlayerAdmin.editPlayer(p.playernumber)' class="btn btn-info" role="button">Edit</a></td>
+      </tr>
+    
+    }
+
+    </tbody>
+  </table>
+</div>
+@*
+
+    			<form method="POST" action="@routes.AccessControl.login()">
+    			
+				<div>
+					<label for="userName">@Messages.get("login.username")</label> <input
+						type="text" name="email" id="email" class="form-control"/>
+				</div>
+
+				<div>
+					<label for="password">@Messages.get("login.password")</label> <input
+						type="password" name="password" id="password" class="form-control"/>
+				</div>
+
+				<br>
+				<button class="btn btn-lg btn-primary btn-block">@Messages.get("login.signin")</button>
+				</form>
+
+*@
+
+
+
+
  
 }

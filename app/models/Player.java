@@ -27,7 +27,10 @@ public class Player extends Model {
 
 	public Date dateadded;
 
-	public Blob playerPhoto;
+	public String playerPhotofilename;
+	
+	@Lob
+	public byte[] playerPhoto;
 
 	@Column(columnDefinition = "VARBINARY")
 	 public File file;
@@ -50,9 +53,9 @@ public class Player extends Model {
 	public Player(String playerName, Integer playerNumber, Blob playerPhoto, User user) {
 		this.playername = playerName;
 		this.playernumber = playerNumber;
-		if (playerPhoto != null) {
-			this.playerPhoto = playerPhoto;
-		}
+//		if (playerPhoto != null) {
+//			this.playerPhoto = playerPhoto;
+//		}
 		this.users = new ArrayList<User>();
 		this.dateadded = new Date();
 
@@ -76,6 +79,16 @@ public class Player extends Model {
 	public Set<Category> getCategories() {
 		return categories;
 	}
+	
+	public void addToCategory(String cat){
+		this.categories.add(Category.findByName(cat));
+		this.save();
+	}
+	
+	public void removeFromCategory(String cat){
+		this.categories.remove(Category.findByName(cat));
+		this.save();
+	}
 
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
@@ -89,12 +102,12 @@ public class Player extends Model {
 		this.users = users;
 	}
 
-	public Player updatePhoto(Blob photo) {
-
-		this.playerPhoto = photo;
-		this.save();
-		return this;
-	}
+//	public Player updatePhoto(Blob photo) {
+//
+//		this.playerPhoto = photo;
+//		this.save();
+//		return this;
+//	}
 	
 	public static Player findByNumber(Integer playernumber){
 		

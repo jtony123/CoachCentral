@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Anthony Jackson
  *
- *	CSVOutput writes out 
+ *	CSVOutput writes out each players gps data file in csv format
  *
  */
 public class CSVOutput {

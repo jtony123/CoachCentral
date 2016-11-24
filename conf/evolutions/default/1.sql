@@ -24,6 +24,8 @@ create table player (
   playername                    varchar(255),
   playernumber                  integer,
   dateadded                     datetime(6),
+  player_photofilename          varchar(255),
+  player_photo                  longblob,
   file                          varbinary(255),
   filename                      varchar(255),
   constraint pk_player primary key (id)
