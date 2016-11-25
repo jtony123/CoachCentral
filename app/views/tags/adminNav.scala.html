@@ -1,0 +1,47 @@
+
+@(active: String)
+
+<div class="container">
+@if(active.equals("users")){
+	<a href="@routes.UserAdmin.getUsers()" class="btn btn-primary active" role="button">Users</a>
+} else {
+	<a href="@routes.UserAdmin.getUsers()" class="btn btn-default" role="button">Users</a>
+}
+
+@if(active.equals("players")){
+	<a href="@routes.PlayerAdmin.playersList()" class="btn btn-primary active" role="button">Players</a>
+} else {
+	<a href="@routes.PlayerAdmin.playersList()" class="btn btn-default" role="button">Players</a>
+}
+
+@if(active.equals("playercategories")){
+	<a href="@routes.CategoryAdmin.categorysList()" class="btn btn-primary active" role="button">Player Categories</a>
+} else {
+	<a href="@routes.CategoryAdmin.categorysList()" class="btn btn-default" role="button">Player Categories</a>
+}
+
+@if(active.equals("questions")){
+	<a href="@routes.QuestionAdmin.questionsList()" class="btn btn-primary active" role="button">Questions</a>
+} else {
+	<a href="@routes.QuestionAdmin.questionsList()" class="btn btn-default" role="button">Questions</a>
+}
+
+@if(active.equals("questioncategories")){
+	<a href="#" class="btn btn-primary active" role="button">Question Categories</a>
+} else {
+	<a href="#" class="btn btn-default" role="button">Question Categories</a>
+}
+
+@if(active.equals("answers")){
+	<a href="@routes.AnswerAdmin.answersList()" class="btn btn-primary active" role="button">Answers</a>
+} else {
+	<a href="@routes.AnswerAdmin.answersList()" class="btn btn-default" role="button">Answers</a>
+}
+
+@if(active.equals("userroles")){
+	<a href="#" class="btn btn-primary active" role="button">User Roles</a>
+} else {
+	<a href="#" class="btn btn-default" role="button">User Roles</a>
+}
+
+</div>

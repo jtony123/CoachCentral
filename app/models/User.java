@@ -69,6 +69,28 @@ public class User extends Model implements Subject{
 
 		return roles;
 	}
+	
+	public void addRole(String role){
+		this.roles.add(SecurityRole.findByName(role));
+		this.save();
+	}
+	
+	public void removeRole(String role){
+		this.roles.remove(SecurityRole.findByName(role));
+		this.save();
+	}
+	
+	public void addPlayer(Integer playernumber) {
+		this.players.add(Player.findByNumber(playernumber));
+		this.save();
+	}
+
+
+	public void removePlayer(Integer playernumber) {
+		this.players.remove(Player.findByNumber(playernumber));
+		this.save();
+		
+	}
 
 
 	@Override
@@ -120,6 +142,9 @@ public class User extends Model implements Subject{
                        email)
                    .findUnique();
     }
+
+
+
 	
 	
 }

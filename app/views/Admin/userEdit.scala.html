@@ -1,0 +1,177 @@
+@import tags._
+@(user : models.User, active: String, thisuser: models.User,  roles: List[models.SecurityRole], players: List[models.Player])
+
+@main(title = "Player Admin") {
+
+@navigationbar(user: models.User, active: String)
+
+
+<div class="container">
+
+<div class="row">
+  <div class="col-sm-6">
+  	<h2>@thisuser.userName</h2>
+  </div>
+</div>
+
+  
+  <br>
+
+<div class="">
+<form action="@routes.UserAdmin.updateUser(thisuser.email)" method="POST"  enctype="multipart/form-data" >
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="username">User Name</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="username" class="" type="text" name="username" value="@thisuser.userName" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span>Required. </span>
+	</div>
+</div><!-- end row -->
+<br>
+<div class="row">
+	<div class="col-sm-3">
+		<label for="useremail">User Email</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="useremail" type="text" name="useremail" value="@thisuser.email" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span> Numeric. Required. </span>
+	</div>
+</div><!-- end row -->
+<br>
+<div class="row">
+	<div class="col-sm-3">
+		<label for="password">User Password</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="password" class="" type="text" name="password" value="@thisuser.password" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Cannot be changed</span>
+	</div>
+</div><!-- end row -->
+<br>
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="roles">Roles</label>
+	</div>
+	
+	<div class="col-sm-6">
+
+	<div class="btn-group">
+		@for(r <- roles){
+			@if(thisuser.roles.contains(r)){
+		    	<label class="btn btn-success active">
+		    		<a href="@routes.UserAdmin.removeRoleFromUser(thisuser.email, r.roleName)" role="button">@r.roleName</a>
+	        	</label>
+	    	} else {
+		    	<label class="btn btn-default">
+		    	<a href="@routes.UserAdmin.addRoleToUser(thisuser.email, r.roleName)"role="button">@r.roleName</a>
+	            </label>
+	    	}
+		}
+	    
+	</div>
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Be careful with roles granted</span>
+	</div>
+</div><!-- end row -->
+
+
+<br><br>
+<div class="container">
+  <h2>Players</h2>
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Player name</th>
+        <th>Player number</th>
+        <th>Player categories</th>
+        <th>Edit</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+    
+    @for(p <- players) {
+    	<tr>
+         @if(thisuser.players.contains(p)){
+         	<td>@p.playername</td>
+	        <td>@p.playernumber</td>
+	        <td>
+		        @if(p.categories != null || !p.categories.isEmpty()){
+		        	@for(c <- p.categories){
+		        		@c.name
+		        	}
+		        } else {
+		        empty
+		        }
+	        </td>
+	        <td><a href='@routes.UserAdmin.removePlayerFromUser(thisuser.email, p.playernumber)' class="btn btn-info" role="button">Remove</a></td>
+	        
+         } else {
+         
+         
+                  	<td>@p.playername</td>
+	        <td>@p.playernumber</td>s
+	        <td>
+		        @if(p.categories != null || !p.categories.isEmpty()){
+		        	@for(c <- p.categories){
+		        		@c.name
+		        	}
+		        } else {
+		        empty
+		        }
+	        </td>
+	        <td><a href='@routes.UserAdmin.addPlayerToUser(thisuser.email, p.playernumber)' class="btn btn-default" role="button">Add</a></td>
+	        
+         
+         
+         }
+          
+          
+
+        
+        
+      	</tr>
+    
+    }
+
+    </tbody>
+  </table>
+</div>
+
+<br><br><br>
+
+<div class="row">
+	<div class="col-sm-12">
+		<button class="btn btn-lg btn-primary btn-block">Update this user</button>
+	</div>
+	
+</div><!-- end row -->
+
+</form>
+<br><br><br><br><br><br>
+<a class="btn btn-lg btn-warning" role="button">!! Delete this user !!</a>
+
+</div>
+	
+
+}

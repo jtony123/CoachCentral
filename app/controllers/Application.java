@@ -71,8 +71,10 @@ public class Application extends Controller {
     public CompletionStage<Result> admin() {
     	System.out.println("get admin called");
     	User user = User.findByEmail(session().get("connected"));
-    	return CompletableFuture.completedFuture(ok(admin.render(user, "admin")));
+    	List<User> allusers = User.find.all();
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
     }
+    
     
 
     @Restrict({@Group({"coach"})})

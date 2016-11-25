@@ -4,8 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-#POST    /user                    controllers.Application.addUser()
-#GET     /users                    controllers.Application.getUsers
+#POST    /user                    	controllers.Application.addUser()
+#GET     /users                    	controllers.Application.getUsers
 
 POST	/login						controllers.AccessControl.login()
 GET		/logout						controllers.AccessControl.logout()
@@ -16,7 +16,7 @@ GET		/record/:category			controllers.Application.record(playernumber: Integer, c
 
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 
-GET		/getCSV/:playernumber						controllers.Application.getCSV(playernumber: Integer)
+GET		/getCSV/:playernumber		controllers.Application.getCSV(playernumber: Integer)
 
 GET		/loadCSV					controllers.Application.loadCSV()
 POST	/uploadCSV					controllers.Application.uploadCSV()
@@ -24,7 +24,17 @@ POST	/uploadCSV					controllers.Application.uploadCSV()
 
 # admin routes
 
-GET		/admin					controllers.Application.admin()
+GET		/admin						controllers.Application.admin()
+GET		/users						controllers.UserAdmin.getUsers()
+GET		/newUser					controllers.UserAdmin.newUser()
+POST	/addUser					controllers.UserAdmin.addUser()
+GET		/editUser					controllers.UserAdmin.editUser(useremail: String)
+POST	/updateUser					controllers.UserAdmin.updateUser(useremail: String)
+GET		/removeRoleFromUser			controllers.UserAdmin.removeRoleFromUser(useremail: String, role: String)
+GET		/addRoleToUser				controllers.UserAdmin.addRoleToUser(useremail: String, role: String)
+GET		/removePlayerFromUser		controllers.UserAdmin.removePlayerFromUser(useremail: String, playernumber: Integer)
+GET		/addPlayerToUser			controllers.UserAdmin.addPlayerToUser(useremail: String, playernumber: Integer)
+
 
 
 GET		/playersList				controllers.PlayerAdmin.playersList()

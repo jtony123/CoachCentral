@@ -1,0 +1,44 @@
+ @import tags._ 
+ @(user : models.User, active: String, users:
+List[models.User]) 
+
+@main(title = "Player Admin") { 
+@navigationbar(user: models.User, active: String) 
+@adminNav(active: String)
+
+
+<div class="container">
+	<h2>Users</h2>
+
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>User email</th>
+				<th>User username</th>
+				<th>User password</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			@for(u <- users) {
+			<tr>
+				<td>@u.email</td>
+				<td>@u.userName</td>
+				<td>@u.password</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td><a href='@routes.UserAdmin.editUser(u.email)'
+					class="btn btn-info" role="button">Edit</a></td>
+			</tr>
+			}
+
+		</tbody>
+	</table>
+	<br> <a href="@routes.UserAdmin.newUser()" class="btn btn-primary"
+		role="button">Add a new user</a>
+</div>
+
+
+}

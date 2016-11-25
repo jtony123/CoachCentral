@@ -1,0 +1,94 @@
+@import tags._
+@(user : models.User, active: String, roles: List[models.SecurityRole])
+
+@main(title = "Player Admin") {
+
+@navigationbar(user: models.User, active: String)
+
+
+<div class="container">
+
+<div class="row">
+  <div class="col-sm-6">
+  	<h2>userName</h2>
+  </div>
+</div>
+
+  
+  <br>
+
+<div class="">
+<form action="@routes.UserAdmin.addUser()" method="POST"  enctype="multipart/form-data" >
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="username">User Name</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="username" class="" type="text" name="username" value="" placeholder="User name" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span>Required. </span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="useremail">User Email</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="useremail" type="text" name="useremail" value="" placeholder="User email" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span> Required. </span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="password">User Password</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="password" class="" type="text" name="password" value="" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Enter a strong password</span>
+	</div>
+</div><!-- end row -->
+
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="roles">Roles</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<label for="roles">Manage the users roles via the edit button on the list of users page</label>
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">.</span>
+	</div>
+</div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-12">
+		<button class="btn btn-lg btn-primary btn-block">Add this user</button>
+	</div>
+	
+</div><!-- end row -->
+
+</form>
+
+</div>
+	
+
+}

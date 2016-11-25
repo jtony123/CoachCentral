@@ -51,7 +51,7 @@ public class PlayerAdmin extends Controller {
 	    	List<Player> players = user.getPlayersCategorisedWith(Category.findByName("All"));
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "admin", players, categories)));
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
 	    	
 	    }
 	    
@@ -70,7 +70,7 @@ public class PlayerAdmin extends Controller {
 	    	Player player = Player.findByNumber(playernumber);
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "admin", player, categories)));
+	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "players", player, categories)));
 	    	
 	    }
 	    
@@ -84,7 +84,7 @@ public class PlayerAdmin extends Controller {
 	    	player.addToCategory(cat);
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "admin", player, categories)));
+	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "players", player, categories)));
 	    	
 	    	
 	    }
@@ -99,7 +99,7 @@ public class PlayerAdmin extends Controller {
 	    	player.removeFromCategory(cat);
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "admin", player, categories)));
+	    	return CompletableFuture.completedFuture(ok(playerEdit.render(user, "players", player, categories)));
 	    	
 	    	
 	    }
@@ -110,19 +110,6 @@ public class PlayerAdmin extends Controller {
 	    	System.out.println("updatePlayer called");
 	    	
 	    	DynamicForm form = Form.form().bindFromRequest();
-//	    	System.out.println(form.get("playername"));
-//	    	System.out.println(form.get("playernumber"));
-//	    	System.out.println(form.get("dateadded"));
-//	    	System.out.println(form.get("playerPhoto"));
-//	    	System.out.println(form.get("cats"));
-	    	//String[] c = form.get("cats");
-//	    	if(cats != null){
-//	    		for(String s : cats){
-//	    			System.out.println(s);
-//	    		}
-//	    	}else{
-//	    		System.out.println("selected is null");
-//	    	}
 	    	
 	    	Player player = Player.findByNumber(playernumber);
 	    	player.playername = form.get("playername");
@@ -132,37 +119,39 @@ public class PlayerAdmin extends Controller {
 	        FilePart<File> filename = body.getFile("playerPhoto");
 	        
 	        if (filename != null) {
+	        	System.out.println("filename not null");
 	            String fileName = filename.getFilename();
 	            String contentType = filename.getContentType();
 	            File file = filename.getFile();
-	            player.playerPhotofilename = fileName;
-	            player.playerPhoto = new byte[(int)file.length()];
-	            
-	            InputStream inStream = null;
-	            try {
-	                inStream = new BufferedInputStream(new FileInputStream(file));
-	                inStream.read(player.playerPhoto);
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	            } finally {
-	                if (inStream != null) {
-	                    try {
-	                        inStream.close();
-	                    } catch (IOException e) {
-	                        e.printStackTrace();
-	                    }
-	                }
+	            System.out.println("size = "+file.length());
+	            if(file.length() > 0){
+	            	 player.playerPhotofilename = fileName;
+	 	            player.playerPhoto = new byte[(int)file.length()];
+	 	            
+	 	            InputStream inStream = null;
+	 	            try {
+	 	                inStream = new BufferedInputStream(new FileInputStream(file));
+	 	                inStream.read(player.playerPhoto);
+	 	            } catch (IOException e) {
+	 	                e.printStackTrace();
+	 	            } finally {
+	 	                if (inStream != null) {
+	 	                    try {
+	 	                        inStream.close();
+	 	                    } catch (IOException e) {
+	 	                        e.printStackTrace();
+	 	                    }
+	 	                }
+	 	            }
 	            }
 	        }
-	            
 	        player.save();   
 	            
-	    	
 	    	User user = User.findByEmail(session().get("connected"));
 	    	List<Player> players = user.getPlayersCategorisedWith(Category.findByName("All"));
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "admin", players, categories)));
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
 	    	
 	    }
 	    
