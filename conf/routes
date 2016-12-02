@@ -17,9 +17,10 @@ GET		/record/:category			controllers.Application.record(playernumber: Integer, c
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 
 GET		/getCSV/:playernumber		controllers.Application.getCSV(playernumber: Integer)
+GET		/getCalendarCSV				controllers.Application.getCalendarCSV()
 
-GET		/loadCSV					controllers.Application.loadCSV()
 POST	/uploadCSV					controllers.Application.uploadCSV()
+POST	/uploadCalender				controllers.Application.uploadCalender()
 
 
 # admin routes
@@ -44,7 +45,7 @@ GET		/editPlayer					controllers.PlayerAdmin.editPlayer(playernumber: Integer)
 GET		/addPlayerToCategory		controllers.PlayerAdmin.addPlayerToCategory(playernumber: Integer, cat: String)
 GET		/removePlayerFromCategory	controllers.PlayerAdmin.removePlayerFromCategory(playernumber: Integer, cat: String)
 POST	/updatePlayer				controllers.PlayerAdmin.updatePlayer(playernumber: Integer)
-POST	/deletePlayer				controllers.PlayerAdmin.deletePlayer()
+POST	/deletePlayer				controllers.PlayerAdmin.deletePlayer(playernumber: Integer)
 
 GET		/questionsList				controllers.QuestionAdmin.questionsList()
 GET		/questionAdd				controllers.QuestionAdmin.questionAdd()
@@ -59,10 +60,8 @@ POST	/answerUpdate				controllers.AnswerAdmin.answerUpdate()
 POST	/answerDelete				controllers.AnswerAdmin.answerDelete()
 
 GET		/categorysList				controllers.CategoryAdmin.categorysList()
-GET		/categoryAdd					controllers.CategoryAdmin.categoryAdd()
-POST	/categorySave					controllers.CategoryAdmin.categorySave()
-POST	/categoryUpdate				controllers.CategoryAdmin.categoryUpdate()
-POST	/categoryDelete				controllers.CategoryAdmin.categoryDelete()
+POST	/categoryAdd				controllers.CategoryAdmin.categoryAdd()
+GET		/categoryDelete				controllers.CategoryAdmin.categoryDelete(catname: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

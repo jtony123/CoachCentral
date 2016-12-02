@@ -41,7 +41,7 @@ public class Player extends Model {
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	public List<User> users;
 
-	@ManyToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany(cascade = CascadeType.MERGE)
 	public Set<Category> categories;
 
 	 @ManyToMany(cascade=CascadeType.PERSIST)

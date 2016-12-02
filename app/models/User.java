@@ -39,7 +39,7 @@ public class User extends Model implements Subject{
     @ManyToMany
     public List<UserPermission> permissions;
     
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE)
     public List<Player> players = new ArrayList<Player>();
 
 

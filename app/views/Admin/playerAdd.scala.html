@@ -1,23 +1,87 @@
+
+@import tags._
+@(user : models.User, active: String)
+
 @main(title = "Player Admin") {
 
+@navigationbar(user: models.User, active: String)
+@adminNav(active: String)
 
 
+<div class="container">
 
- 			<form method="POST" action="@routes.PlayerAdmin.savePlayer()">
-    			
-    			<div>
-				<label for="playername">Player name</label> <input
-						type="text" name="playername" id="playername" class="form-control"/>
-				</div>
+<div class="row">
+  <div class="col-sm-6">
+  	<h2>Add a new player</h2>
+  </div>
+</div>
 
-				<div>
-					<label for="playernumber">Player unique identifier number</label> <input
-						type="text" name="playernumber" id="playernumber" class="form-control"/>
-				</div>
+  
+  <br>
 
-				<br>
-				<button class="btn btn-lg btn-primary btn-block">Save</button>
-				</form>
+<div class="">
+<form action="@routes.PlayerAdmin.savePlayer()" method="POST"  enctype="multipart/form-data" >
 
- 
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playername">Player Name</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="playername" class="" type="text" name="playername" value="" placeholder="player name" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span>Required. </span>
+	</div>
+</div><!-- end row -->
+<br>
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playernumber">Player number</label>
+	</div>
+	
+	<div class="col-sm-6">
+	@if(flash.get("error") != null){
+		<p class="error">@flash.get("error")</p>
+		}
+		<input id="playernumber" type="text" name="playernumber" value="" placeholder="player number" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span> Required(unique). </span>
+	</div>
+</div><!-- end row -->
+
+<br>
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="playerPhoto">Player Photo</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="playerPhoto" class="" type="file" name="playerPhoto" />
+	</div>
+	
+	<div class="col-sm-3">
+		 <span class="">Not required</span>
+	</div>
+</div><!-- end row -->
+
+<br>
+
+<div class="row">
+	<div class="col-sm-12">
+		<button class="btn btn-lg btn-primary btn-block">Add this player</button>
+	</div>
+	
+</div><!-- end row -->
+
+</form>
+
+</div>
+	
+
 }

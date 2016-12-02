@@ -4,8 +4,13 @@ import play.*;
 import play.mvc.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
+import utilities.AcuteChronicUpdater;
+import utilities.CSVAppender;
 import utilities.CSVLoader;
+import utilities.CSVLoader2;
+import utilities.CSVLoader3;
 import utilities.CSVOutput;
+import utilities.CSVTemplateGenerator;
 //import play.db.jpa.*;
 import views.html.*;
 import views.html.Admin.*;
@@ -13,6 +18,7 @@ import models.Category;
 import models.Player;
 import models.User;
 import play.data.FormFactory;
+import play.i18n.Messages;
 import play.libs.F;
 import play.libs.concurrent.HttpExecutionContext;
 
@@ -165,26 +171,50 @@ public class Application extends Controller {
     //@Restrict({@Group({"admin", "coach"})})
     public CompletionStage<Result> playerPhoto(Long playerId) {
     	System.out.println("playerPhoto called");
-    	
 		final Player player = Player.find.byId(playerId);
-//		response.setContentTypeIfNotSet(player.playerPhoto.type());
-//		java.io.InputStream binaryData = player.playerPhoto.get();
-//		renderBinary(binaryData);
-
     	return CompletableFuture.completedFuture(ok(player.playerPhoto).as("playerPhoto"));
-    	
     }
     
     
-    public CompletionStage<Result> loadCSV() {
-    	System.out.println("loadCSV called");
-
-    	return CompletableFuture.completedFuture(ok(getCSV.render()));
+   public Result getCalendarCSV(){
     	
+    	System.out.println("getCalendarCSV called");
+   	 
+   	
+   	//data/attachments/GraphCSVFiles/
+   	 return ok(new java.io.File("data/attachments/Schedule1.csv"));
+   	 
+   	 // production mode
+   	//return ok(new java.io.File("/tmp/" +player.filename));
+   	 
     }
     
     
-    public Result uploadCSV() {
+    public CompletionStage<Result> uploadCalender() {
+    	
+    	System.out.println("uploadCalender called");
+    	String filepath = "data/attachments/GraphCSVFiles/";
+    	//String filepath = "/tmp/";
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	List<User> allusers = User.find.all();
+    	
+        MultipartFormData<File> body = request().body().asMultipartFormData();
+        FilePart<File> filename = body.getFile("filename");
+        
+    	
+    	return null;
+    }
+    
+    
+    public CompletionStage<Result> uploadCSV() {
+    	
+    	String filepath = "data/attachments/GraphCSVFiles/";
+    	//String filepath = "/tmp/";
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	List<User> allusers = User.find.all();
+    	
         MultipartFormData<File> body = request().body().asMultipartFormData();
         FilePart<File> filename = body.getFile("filename");
         String playroot = Play.application().path().getPath();
@@ -196,36 +226,57 @@ public class Application extends Controller {
             File file = filename.getFile();
             
 
-    		CSVLoader csvloader = new CSVLoader();
+    		CSVLoader3 csvloader = new CSVLoader3();
     		csvloader.loadCSVFile(file.getAbsolutePath());
 
-    		Map<Integer, ArrayList<String>> playerfiles = csvloader.getPlayerfiles();
+    		Map<String, ArrayList<String>> playerfiles = csvloader.getPlayerfilesbyname();
     		Iterator it = playerfiles.entrySet().iterator();
     		while (it.hasNext()) {
     			Map.Entry pair = (Map.Entry) it.next();
     			CSVOutput output = new CSVOutput();
     			
-    			
-
-    			Player player = Player.findByNumber((Integer) pair.getKey());
+    			Player player = Player.findByPlayername((String) pair.getKey());
+    			//player.filename = null;
+    			// dumping the file into 'no players' if no play by this name found
     			if(player == null){
     				player =  Player.findByNumber(0);
+    				//player.filename = null;
+    			} else {
+    				//player.filename = null;
+
+        			if(player.filename == null){
+        				// generate default file with headers
+        				CSVTemplateGenerator cSVTemplateGenerator = new CSVTemplateGenerator();
+            			player.filename = cSVTemplateGenerator.createFile(filepath, player.playername +"_"+player.playernumber+"_");
+        			}
+        			
+        			
+        			CSVAppender cSVAppender = new CSVAppender();
+        			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
+        			
+        			// here recalculate the acute, chronic loads
+        			AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
+        			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
+        			
+        			// write out the new file
+        			CSVOutput cSVOutput = new CSVOutput();
+        			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
+        			player.filename = newFileName;
+        			
+        			
+        			player.save();
     			}
     			
-    			System.out.println("writing out " + player.playername);
-    			
-    			player.filename = output.writeOutFile("/tmp/",
-    					"player" + player.playernumber + "_1", csvloader.getHeader(), (List<String>) pair.getValue());
 
-    			player.save();
     		}
-    		
-    		
-            
-            return ok("File uploaded");
+
+
+        	flash("success", "File uploaded successfully");
+        	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+            //return ok("File uploaded");
         } else {
             flash("error", "Missing file");
-            return badRequest();
+            return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
         }
     }
    
@@ -236,10 +287,14 @@ public class Application extends Controller {
     	System.out.println("getCSV called");
    	 Player player = Player.findByNumber(playernumber);//.find("byPlayernumber", playerNumber).first();
    	 System.out.println("player found = " + player.playername);
+   	 System.out.println("filename is "+ player.filename);
    	String playroot = Play.application().path().getPath();
    	
+   	//data/attachments/GraphCSVFiles/
+   	 return ok(new java.io.File("data/attachments/GraphCSVFiles/" +player.filename));
    	 
-   	 return ok(new java.io.File("/tmp/" +player.filename));
+   	 // production mode
+   	//return ok(new java.io.File("/tmp/" +player.filename));
    	 
     }
     

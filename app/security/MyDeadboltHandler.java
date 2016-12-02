@@ -56,7 +56,9 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     		Long currentT = new Date().getTime();
     		
     		// TODO: move this parameter into the config file
-    		Long timeout = 300000L;
+    		// use the longer timeout when developing
+    		Long timeout = 3000000L;
+    		//Long timeout = 300000L;
     		if((currentT - previousT) > timeout){
     			//System.out.println("user timed out");
     			// the user has not made a request within the timeout period, hence clearing the session

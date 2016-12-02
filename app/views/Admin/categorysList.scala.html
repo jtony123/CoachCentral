@@ -1,9 +1,63 @@
+
+@import tags._
+
+@(user : models.User, active: String, categories: List[models.Category])
+
 @main(title = "Category Admin") {
 
-<h1>this page will list the categories</h1>
-<h3>with buttons to add at the bottom and a column of buttons to delete a category</h3>
-<h4>and a column of buttons to modify(update) a category</h4>
+@navigationbar(user: models.User, active: String)
 
-<a href="@routes.CategoryAdmin.categoryAdd()" class="btn btn-primary" role="button">Add a new category</a>
+@adminNav(active: String)
+
+
+
+<div class="container">
+  <h2>Players</h2>
+ 
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Category name</th>
+        <th>Delete this category</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+    
+    @for(c <- categories) {
+          <tr>
+        <td>@c.name</td>
+        <td><a href='@routes.CategoryAdmin.categoryDelete(c.name)' class="btn btn-warning" role="button">Delete</a></td>
+      </tr>
+    
+    }
+
+    </tbody>
+  </table>
+  
+  <br> <br>
+  
+  <form action="@routes.CategoryAdmin.categoryAdd()" method="POST"  enctype="multipart/form-data" >
+
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="categoryname">Add a new catgeory</label>
+	</div>
+	
+	<div class="col-sm-6">
+		<input id="categoryname" class="" type="text" name="categoryname" placeholder="category name" size="50" />
+	</div>
+	
+	<div class="col-sm-3">
+		<button class="btn btn-primary ">Add</button>
+		 @*<a href='@routes.PlayerAdmin.editPlayer(p.playernumber)' class="btn btn-info" role="button">Edit</a>*@
+	</div>
+</div><!-- end row -->
+</form>
+  
+</div>
+
  
 }

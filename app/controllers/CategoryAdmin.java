@@ -2,13 +2,19 @@
 package controllers;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import models.Category;
 import models.Player;
 import models.User;
+import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
@@ -18,6 +24,7 @@ import play.mvc.*;
 import views.html.*;
 import views.html.Admin.*;
 
+@Restrict({@Group({"admin"})})
 public class CategoryAdmin extends Controller {
 	
 	
@@ -34,70 +41,49 @@ public class CategoryAdmin extends Controller {
 	    
 	    
 	    public CompletionStage<Result> categorysList() {
-	    	System.out.println("get answersList called");
+	    	System.out.println("get categorysList called");
+	    	
+	    	User user = User.findByEmail(session().get("connected"));
+	    	
+	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(categorysList.render()));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
+
 	    	
 	    }
-	    
 	    
 	    public CompletionStage<Result> categoryAdd() {
-	    	System.out.println("get answerAdd called");
+	    	System.out.println("categoryAdd called");
+	    	
+	    	DynamicForm form = Form.form().bindFromRequest();
+	    	
+	    	Category category = Category.findOrCreateByName(form.get("categoryname"));
+	    	category.save();
+	    	
+	    	User user = User.findByEmail(session().get("connected"));
+	    	
+	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(categoryAdd.render()));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
 	    	
 	    }
 	    
-	    public CompletionStage<Result> categorySave() {
-	    	System.out.println("answerSave called");
-	    	
-	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
-	    	
-	    	System.out.println("player name retrieved = "+player.playername);
-	    	
-	    	player.dateadded = new Date();
-	    	player.save();
-	    	
-	    	User user = User.findByEmail(session().get("connected"));
-	    	user.players.add(player);
-
-	    	return CompletableFuture.completedFuture(ok(categorysList.render()));
-	    	
-	    }
 	    
-	    public CompletionStage<Result> categoryUpdate() {
-	    	System.out.println("answerUpdate called");
+	    public CompletionStage<Result> categoryDelete(String catname) {
+	    	System.out.println("categoryDelete called");
 	    	
-	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
 	    	
-	    	System.out.println("player name retrieved = "+player.playername);
-	    	
-	    	player.dateadded = new Date();
-	    	player.save();
+	    	Category category = Category.findOrCreateByName(catname);
+	    	category.delete();
 	    	
 	    	User user = User.findByEmail(session().get("connected"));
-	    	user.players.add(player);
+	    	
+	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(categorysList.render()));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
 	    	
 	    }
-	    
-	    public CompletionStage<Result> categoryDelete() {
-	    	System.out.println("answerDelete called");
-	    	
-	    	Player player = formFactory.form(Player.class).bindFromRequest().get();
-	    	
-	    	System.out.println("player name retrieved = "+player.playername);
-	    	
-	    	player.dateadded = new Date();
-	    	player.save();
-	    	
-	    	User user = User.findByEmail(session().get("connected"));
-	    	user.players.add(player);
-
-	    	return CompletableFuture.completedFuture(ok(categorysList.render()));
-	    	
-	    }
+	
 	    
 
 }

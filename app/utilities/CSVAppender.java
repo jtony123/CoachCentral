@@ -1,31 +1,17 @@
 package utilities;
 
-
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+public class CSVAppender {
 
-/**
- * @author Anthony Jackson
- *
- *	CSVOutput writes out each players gps data file in csv format
- *
- */
-public class CSVOutput {
-	
-		//public static String destinationFile;
-		//public static int fileVersion = 1;
-		//public static String fileExtension = ".csv";
-	
-	public CSVOutput(){		
-	}
-	
-	public String writeOutFile(String filepath, String filename, List<String> datapoints){
+	public String updateFile(String filepath, List<String> datapoints){
 		
-		File file = new File(filepath + filename);
-		// find the next available filename
+		File file = new File(filepath);
 		
 		// create the new file
 		if ( !file.exists() ){
@@ -40,10 +26,10 @@ public class CSVOutput {
 		
 		PrintWriter out = null;
 		try {
-			out = new PrintWriter(file, "UTF-8");
+			out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
 			
+			for(String datapoint : datapoints){		
 
-			for(String datapoint : datapoints){				
 				out.println(datapoint);
 			}
 			
@@ -55,9 +41,9 @@ public class CSVOutput {
 			out.close();
 		}
 		
-		return filename;
+		return filepath;
 	}
 	
 	
+	
 }
-

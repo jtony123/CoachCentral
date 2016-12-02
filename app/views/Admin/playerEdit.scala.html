@@ -4,6 +4,7 @@
 @main(title = "Player Admin") {
 
 @navigationbar(user: models.User, active: String)
+@adminNav(active: String)
 
 
 <div class="container">
@@ -45,7 +46,7 @@
 	</div>
 	
 	<div class="col-sm-6">
-		<input id="playernumber" type="text" name="playernumber" value="@player.playernumber" size="5" />
+		<input id="playernumber" type="text" name="playernumber" value="@player.playernumber" size="50" />
 	</div>
 	
 	<div class="col-sm-3">
@@ -59,7 +60,7 @@
 	</div>
 	
 	<div class="col-sm-6">
-		<input id="dateadded" class="" type="text" name="dateadded" value="@player.dateadded" size="10" />
+		<input id="dateadded" class="" type="text" name="dateadded" value="@player.dateadded" size="50" />
 	</div>
 	
 	<div class="col-sm-3">
@@ -126,7 +127,9 @@
 
 </form>
 <br><br><br><br><br><br>
-<a class="btn btn-lg btn-warning" role="button">!! Delete this player !!</a>
+<form action="@routes.PlayerAdmin.deletePlayer(player.playernumber)" method="POST"  enctype="multipart/form-data" >
+<button class="btn btn-lg btn-warning">!! Delete this player !!</button>
+</form>
 
 </div>
 	
