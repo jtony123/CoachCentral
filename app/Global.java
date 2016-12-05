@@ -36,7 +36,7 @@ public class Global extends GlobalSettings {
         if (UserPermission.find.findRowCount() < 1)
         {
         	
-        	System.out.println("sadding default UserPermissions");
+        	System.out.println("adding default UserPermissions");
             UserPermission permission = new UserPermission();
             permission.value = "view";
             permission.save();
@@ -131,81 +131,81 @@ public class Global extends GlobalSettings {
         	prev2.players.add(player0);
         	player0.save();
         	
-        	Player player4 = new Player("Jed Klump", 4, null, prev1);
+        	Player player4 = new Player("Quincy Acy", 4, null, prev1);
         	player4.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player4);
         	prev2.players.add(player4);
         	player4.save();
         	
-        	Player player5 = new Player("Nelson Riemann", 5, null, prev1);
+        	Player player5 = new Player("Justin Anderson", 5, null, prev1);
         	player5.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player5);
         	prev2.players.add(player5);
         	player5.save();
         	
-        	Player player6 = new Player("Melvin Meriwether", 6, null, prev2);
+        	Player player6 = new Player("JJ Barea", 6, null, prev2);
         	prev1.players.add(player6);
         	prev2.players.add(player6);
         	player6.save();
         	
-        	Player player7 = new Player("Blake Lyman", 7, null, prev1);
+        	Player player7 = new Player("Harrison Barnes", 7, null, prev1);
         	player7.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player7);
         	prev2.players.add(player7);
         	player7.save();
         	
-        	Player player8 = new Player("Keith Payne", 8, null, prev1);
+        	Player player8 = new Player("Andrew Bogut", 8, null, prev1);
         	player8.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player8);
         	prev2.players.add(player8);
         	player8.save();
         	
-        	Player player9 = new Player("Alexander Davidson", 9, null, prev1);
+        	Player player9 = new Player("Nico Brussino", 9, null, prev1);
         	prev1.players.add(player9);
         	prev2.players.add(player9);
         	player9.save();
         	
-        	Player player10 = new Player("James Wallace", 10, null, prev1);
+        	Player player10 = new Player("Seth Curry", 10, null, prev1);
         	player10.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player10);
         	prev2.players.add(player10);
         	player10.save();
         	
-        	Player player11 = new Player("Keith Gray", 11, null, prev1);
+        	Player player11 = new Player("Jonathan Gibson", 11, null, prev1);
         	player10.categories.add(Category.findByName("First Team"));
         	prev1.players.add(player11);
         	prev2.players.add(player11);
         	player11.save();
         	
-        	Player player12 = new Player("Dan Peake", 12, null, prev1);
+        	Player player12 = new Player("AJ Hammons", 12, null, prev1);
         	player12.categories.add(Category.findByName("Reserves"));
         	prev1.players.add(player12);
         	prev2.players.add(player12);
         	player12.save();
         	
-        	Player player13 = new Player("Benjamin Nash", 13, null, prev1);
+        	Player player13 = new Player("Devin Harris", 13, null, prev1);
         	prev1.players.add(player13);
         	prev2.players.add(player13);
         	player13.save();
         	
-        	Player player14 = new Player("William Hudson", 14, null, prev1);
+        	Player player14 = new Player("Wes Matthews", 14, null, prev1);
         	player14.categories.add(Category.findByName("Reserves"));
         	prev1.players.add(player14);
         	prev2.players.add(player14);
         	player14.save();
         	
-        	Player player15 = new Player("Isaac Davies", 15, null, prev1);
+        	Player player15 = new Player("Salah Mejri", 15, null, prev1);
         	prev1.players.add(player15);
         	prev2.players.add(player15);
         	player15.save();
         	
-        	Player player16 = new Player("Jack Sharp", 16, null, prev1);
+        	Player player16 = new Player("Dirk Nowitzki", 16, null, prev1);
         	player12.categories.add(Category.findByName("Injured"));
         	prev1.players.add(player16);
         	prev2.players.add(player16);
         	player16.save();
         	
-        	Player player17 = new Player("Justin Dickens", 17, null, prev1);
+        	Player player17 = new Player("Dwight Powell", 17, null, prev1);
         	prev1.players.add(player17);
         	prev2.players.add(player17);
         	player17.save();

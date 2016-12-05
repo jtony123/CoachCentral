@@ -24,7 +24,11 @@ import play.libs.concurrent.HttpExecutionContext;
 
 import javax.inject.Inject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -47,6 +51,8 @@ import java.util.concurrent.CompletionStage;
 public class Application extends Controller {
 	
 
+	//String filepath = "data/attachments/GraphCSVFiles/";
+	String filepath = "/tmp/";
 	
 
     @Inject
@@ -179,31 +185,76 @@ public class Application extends Controller {
    public Result getCalendarCSV(){
     	
 	    System.out.println("getCalendarCSV called");
-	   	return ok(new java.io.File("data/attachments/Schedule1.csv"));
+	   	return ok(new java.io.File(filepath + "Schedule1.csv"));
     }
     
     
-   // TODO: implement some way of getting new calendar data into the calendar CSV file.
-    public CompletionStage<Result> uploadCalender() {
-    	
-    	System.out.println("uploadCalender called");
-    	String filepath = "data/attachments/GraphCSVFiles/";
-    	//String filepath = "/tmp/";
-    	
-    	User user = User.findByEmail(session().get("connected"));
-    	List<User> allusers = User.find.all();
-    	
-        MultipartFormData<File> body = request().body().asMultipartFormData();
-        FilePart<File> filename = body.getFile("filename");
-        
-    	return null;
-    }
+	// TODO: implement some way of getting new calendar data into the calendar
+	// CSV file.
+	public CompletionStage<Result> uploadCalender() {
+
+		System.out.println("uploadCalender called");
+
+		User user = User.findByEmail(session().get("connected"));
+		List<User> allusers = User.find.all();
+
+		MultipartFormData<File> body = request().body().asMultipartFormData();
+		FilePart<File> filename = body.getFile("filename");
+		
+		File file = new File(filepath + "Schedule1.csv");
+		
+		// create the new file
+		if ( !file.exists() ){
+			try {
+				//System.out.println("creating new file");
+				file.createNewFile();
+			} catch (IOException e1) {
+				// TODO return an error message to the user
+				//System.out.println("throwing file exist exception");
+				e1.printStackTrace();
+			}
+	      }	
+		
+		BufferedReader fileReader = null;
+		PrintWriter out = null;
+		
+		if (filename != null) {
+			
+            File newfile = filename.getFile();
+			
+			String line ="";
+			
+			try {
+				//System.out.println("filereader here");
+				fileReader = new BufferedReader(new FileReader(newfile.getAbsolutePath()));
+				//System.out.println("out here");
+				out = new PrintWriter(file, "UTF-8");
+				//System.out.println("while loop here");
+				
+				while ((line = fileReader.readLine()) != null) {
+					out.println(line);
+				}
+				
+			} catch (Exception e) {
+				// TODO return an error message to the user
+				e.printStackTrace();
+			}	finally {
+				out.flush();
+				out.close();
+			}
+
+			flash("success", "Calendar file uploaded successfully");
+			return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+		} else {
+			flash("error", "Missing file");
+			return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+		}
+
+	}
     
     
     public CompletionStage<Result> uploadCSV() {
     	
-    	String filepath = "data/attachments/GraphCSVFiles/";
-    	//String filepath = "/tmp/";
     	
     	User user = User.findByEmail(session().get("connected"));
     	List<User> allusers = User.find.all();
@@ -278,34 +329,10 @@ public class Application extends Controller {
     public Result getCSV(Integer playernumber){
     	
     	System.out.println("getCSV called");
-   	 Player player = Player.findByNumber(playernumber);//.find("byPlayernumber", playerNumber).first();
-   	 System.out.println("player found = " + player.playername);
-   	 System.out.println("filename is "+ player.filename);
-   	String playroot = Play.application().path().getPath();
+   	 Player player = Player.findByNumber(playernumber);
    	
-   	//data/attachments/GraphCSVFiles/
-   	 return ok(new java.io.File("data/attachments/GraphCSVFiles/" +player.filename));
-   	 
-   	 // production mode
-   	//return ok(new java.io.File("/tmp/" +player.filename));
-   	 
+   	 return ok(new java.io.File(filepath +player.filename));
     }
     
-    
-    
-    
-//    @Restrict({@Group({"advanced"})})
-//    public CompletionStage<Result> addUser() {
-//    	System.out.println("addUser called");
-//    	User user = formFactory.form(User.class).bindFromRequest().get();
-//        user.save();
-//        return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard")));
-//    }
-//   
-//    
-//    public CompletionStage<Result> getUsers() {
-//    	List<User> users = User.find.all();
-//        return CompletableFuture.completedFuture(ok(toJson(users)));
-//    }
     
 }
