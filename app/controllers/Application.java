@@ -178,18 +178,12 @@ public class Application extends Controller {
     
    public Result getCalendarCSV(){
     	
-    	System.out.println("getCalendarCSV called");
-   	 
-   	
-   	//data/attachments/GraphCSVFiles/
-   	 return ok(new java.io.File("data/attachments/Schedule1.csv"));
-   	 
-   	 // production mode
-   	//return ok(new java.io.File("/tmp/" +player.filename));
-   	 
+	    System.out.println("getCalendarCSV called");
+	   	return ok(new java.io.File("data/attachments/Schedule1.csv"));
     }
     
     
+   // TODO: implement some way of getting new calendar data into the calendar CSV file.
     public CompletionStage<Result> uploadCalender() {
     	
     	System.out.println("uploadCalender called");
@@ -202,7 +196,6 @@ public class Application extends Controller {
         MultipartFormData<File> body = request().body().asMultipartFormData();
         FilePart<File> filename = body.getFile("filename");
         
-    	
     	return null;
     }
     

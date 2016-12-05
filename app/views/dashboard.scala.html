@@ -594,6 +594,17 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 
 	var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
 	
+	var today = new Date();
+	var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
+	var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
+	
+	
+		data.today = today;
+		data.threeweeksago = threeweeksago;
+		data.oneweekahead = oneweekahead;
+		console.log("today is " + data.today);
+		console.log("3 weeks ago is " + data.threeweeksago);
+		console.log("1 week ahead is " + data.oneweekahead);
 	
 		data.forEach(function(d) {
 
@@ -625,17 +636,22 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		
 		d.OPPONENT = d.OPPONENT;
 		d.LOCATION = d.LOCATION;
+		//console.log("today is " + today);
 		//console.log("got " + d.GAME_START +" - " + d.GAME_END +" - " + d.OPPONENT +" - " + d.LOCATION);
 		
 	});
 	
 // everything must be inside these brackets
 
-	// by default on start up - showing last 28 days of data
-	var daysShown = width > 1200 ? 1:2;
-	xScale.domain([data[0].SESS_START,
-	               data[data.length -1].SESS_END
-	               ]);
+	// by default on start up - showing last 21 days of data and next 7 days of data
+	var dayspast = data[0].SESS_START;
+	//xScale.domain([data[0].SESS_START, data[data.length -1].SESS_END ]);
+	               
+    //xScale.domain([data2[0].GAME_START,  data2[data2.length -1].GAME_START  ]);
+    //var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
+	//var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
+    
+    xScale.domain([threeweeksago,  oneweekahead]);
 
 	y.domain([0, 12]);
 	y1.domain([1200, 0]);
@@ -675,10 +691,39 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 	function draw_chart() {
 	
+		innersvg.selectAll(".now").data(data).enter().append("path")
+		.attr("class", "now").attr("id", "now")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", "black")
+		.style("opacity", 0.2)
+
+		.attr("d", d3.svg.symbol().type("triangle-up").size(50))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
+	
+	
+	innersvg.selectAll('today').data(data).enter().append('rect')
+		.attr("id", "todaymarker").attr("opacity", 1.0)
+		.style("stroke", "black")
+		.style("stroke-dasharray", "10,5")
+		.style("fill", "none")
+		.attr("x", function(d) {	return xScale(data.today);})
+		.attr("y", function(d){		return 50;})
+		.attr("width", function(d){	return 1;})
+		.attr("height", function(d){return 400;});
+		
+	
+	
+	
 			// the game rects
 		innersvg.selectAll('gamerectangles').data(data2).enter().append("rect")
 		.attr("id", "game").attr("opacity", 1.0)
-		.style("stroke", "green").style("fill", "green")
+		.style("stroke", "green")
+		.style("fill", function(d) {
+			return d.GAME_START > today ? "none" : "green";
+		})
 		.attr("x", function(d) {	return xScale(d.GAME_START);})
 		.attr("y", function(d){		return 50;})
 		.attr("width", function(d){	return (xScale(d.GAME_END) - xScale(d.GAME_START));})
@@ -822,7 +867,19 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 		datatip.transition().duration(200).style("opacity", 0);
 		
-					// the game rects
+		innersvg.selectAll("#now")
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
+		
+		
+		innersvg.selectAll('#todaymarker')
+		.attr("x", function(d) {	return xScale(data.today);})
+		.attr("y", function(d){		return 50;})
+		.attr("width", function(d){	return 1;})
+		.attr("height", function(d){return 400;});
+		
+		
+		// the game rects
 		innersvg.selectAll('#game')
 		.attr("x", function(d) {	return xScale(d.GAME_START);})
 		.attr("y", function(d){		return 50;})
