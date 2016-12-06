@@ -62,8 +62,8 @@ import java.util.List;
 				
 //				System.out.println("playername index found" + playernameindex);
 //				System.out.println("playerloadindex name found" + playerloadindex);
-//				System.out.println("acuteindex found" + acuteindex);
-//				System.out.println("chronicindex  found" + chronicindex);
+				System.out.println("acuteindex found" + acuteindex);
+				System.out.println("chronicindex  found" + chronicindex);
 				
 				//Read the file line by line
 

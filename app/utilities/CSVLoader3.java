@@ -59,6 +59,14 @@ public class CSVLoader3 {
 			int endindex = headerstrings.indexOf("Unix End Time");
 			int playerloadindex = headerstrings.indexOf("Total Player Load");
 
+			// getting the accel/decel values
+			int playeraccelindex1 = headerstrings.indexOf("IMA Accel Low");
+			int playeraccelindex2 = headerstrings.indexOf("IMA Accel Medium");
+			int playeraccelindex3 = headerstrings.indexOf("IMA Accel High");
+			int playerdecelindex1 = headerstrings.indexOf("IMA Decel Low");
+			int playerdecelindex2 = headerstrings.indexOf("IMA Decel Medium");
+			int playerdecelindex3 = headerstrings.indexOf("IMA Decel High");
+
 			// System.out.println("id index found"+idindex);
 			System.out.println("playername index found" + nameindex);
 			System.out.println("period name found" + periodname);
@@ -81,6 +89,21 @@ public class CSVLoader3 {
 				String endtime = tokens[endindex];
 				String period = tokens[periodname];
 
+				Integer acc = Integer.parseInt(tokens[playeraccelindex1])
+						+ Integer.parseInt(tokens[playeraccelindex2])
+						+ Integer.parseInt(tokens[playeraccelindex3]);
+
+				Integer dec = Integer.parseInt(tokens[playerdecelindex1])
+						+ Integer.parseInt(tokens[playerdecelindex2])
+						+ Integer.parseInt(tokens[playerdecelindex3]);
+
+
+
+				String accel = acc.toString();
+				String decel = dec.toString();
+
+
+
 				// discarding floating point numbers from data
 				int decpoint = tokens[playerloadindex].indexOf('.');
 				String load = tokens[playerloadindex].substring(0, decpoint);
@@ -96,6 +119,8 @@ public class CSVLoader3 {
 						datapoints[1] = load + ",";
 						datapoints[2] = starttime + ",";
 						datapoints[3] = endtime + ",";
+						datapoints[16] = accel + ",";
+						datapoints[17] = decel + ",";
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
 						
@@ -122,12 +147,17 @@ public class CSVLoader3 {
 						datapoints[15] = endtime + ",";
 						
 					}
+
+
+
+
+
 					
 
 				} else {
 					// new player encountered(not already in map)
 					// instantiate a new list of strings for this player
-					String[] datapoints = new String[20];
+					String[] datapoints = new String[22];
 					// populate the arraylist with zeros
 					for(int i = 0; i<datapoints.length; i++){
 						datapoints[i] = "0,";
@@ -140,6 +170,8 @@ public class CSVLoader3 {
 						datapoints[1] = load + ",";
 						datapoints[2] = starttime + ",";
 						datapoints[3] = endtime + ",";
+						datapoints[16] = accel + ",";
+						datapoints[17] = decel + ",";
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
 						
@@ -166,6 +198,7 @@ public class CSVLoader3 {
 						datapoints[15] = endtime + ",";
 						
 					}
+
 
 
 					// add this new player to the map

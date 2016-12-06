@@ -391,11 +391,13 @@ position: absolute;
 
 var acutechronic_button_border_colour = "red";
 var sessionloads_button_border_colour = "#3399CC";
+var accdec_button_border_colour = "orange";
 
 var sessionloads_chart_colour = "#3399CC";
 
 var acutechronic_button_text = "ACUTE CHRONIC";
 var sessionloads_button_text = "SESSION LOADS";
+var accdec_button_text = "ACC/DEC";
 
 
 
@@ -449,6 +451,20 @@ var chronicloadarea = d3.svg.area()
 	.x(function(d) { return xScale(d.SESS_START); })
 	.y0(chart_h)
 	.y1(function(d) { return y2(d.CHRONIC); });
+
+
+var accelline = d3.svg.line()
+	//.interpolate("basis")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y(function(d) { return y2(d.ACCEL_TOTAL); });
+
+
+var decelline = d3.svg.line()
+	//.interpolate("basis")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y(function(d) { return y2(d.DECEL_TOTAL); });
 	
 	
  
@@ -624,6 +640,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		d.POST_LOAD = (+d.POST_LOAD);
 		d.POST_START = new Date((+d.POST_START)*1000);
 		d.POST_END = new Date((+d.POST_END)*1000);
+
+		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);
+		d.DECEL_TOTAL = (+d.DECEL_TOTAL);
 		
 		d.ACUTE = (+d.ACUTE);
 		d.CHRONIC = (+d.CHRONIC);
@@ -814,6 +833,19 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		.attr("class", "line").attr("id", "ACLoad").attr("stroke-width", 1)
 		.style("stroke", "red").style("fill", "none")
 		.attr("d", acuteline(data));
+
+
+		// the accel load line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "accel").attr("stroke-width", 1)
+		.style("stroke", "orange").style("fill", "none")
+		.attr("d", accelline(data));
+
+		// the decel load line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "decel").attr("stroke-width", 1)
+		.style("stroke", "gold").style("fill", "none")
+		.attr("d", decelline(data));
 		
 		
 		// adding the flags along the acute line
@@ -923,6 +955,13 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		
 		// the acute load line
 		innersvg.selectAll("#ACLoad").attr("d", acuteline(data));
+
+
+		// the accel load line
+		innersvg.selectAll("#accel").attr("d", accelline(data));
+
+		// the decel load line
+		innersvg.selectAll("#decel").attr("d", decelline(data));
 		
 		// the acute load line sensors for the tooltips
 		innersvg.selectAll("#ACLoadDot")
@@ -1201,6 +1240,56 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, i, toggled){
 		        	.style("stroke", isActive ? sessionloads_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
 			
 		} // end drawSESSButton
+
+
+
+
+		//special function to draw and control button for accel decel
+function drawACCDECButton(lineid1, lineid2, i, toggled){
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+
+
+			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text);
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "ACCDEC_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? accdec_button_border_colour : "grey")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+
+		        // update the buttons border
+		        d3.select("#ACCDEC_Button")
+		        	.style("stroke", isActive ? accdec_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
+
+		} // end drawACCDECButton
 		
 		
 		
@@ -1215,7 +1304,7 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, i, toggled){
 			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", 2, true);
 			
 			//acc/dec load button 	
-			drawButton("ACC/DEC", "ACCDEC_Button", "blue", "ACCDECLoad", "ACCDECLoadDot", 3, false);
+			drawACCDECButton("accel", "decel", 3, true);
 				
 			// rpe score button
 			drawButton("RPE SCORES", "RPE_Button", "black", "RPEScore", null, 4, false);

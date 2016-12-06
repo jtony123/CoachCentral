@@ -51,8 +51,8 @@ import java.util.concurrent.CompletionStage;
 public class Application extends Controller {
 	
 
-	//String filepath = "data/attachments/GraphCSVFiles/";
-	String filepath = "/tmp/";
+	String filepath = "data/attachments/GraphCSVFiles/";
+	//String filepath = "/tmp/";
 	
 
     @Inject
@@ -189,7 +189,7 @@ public class Application extends Controller {
     }
     
     
-	// TODO: implement some way of getting new calendar data into the calendar
+
 	// CSV file.
 	public CompletionStage<Result> uploadCalender() {
 
@@ -270,14 +270,13 @@ public class Application extends Controller {
             File file = filename.getFile();
             
 
-    		CSVLoader3 csvloader = new CSVLoader3();
+    		CSVLoader3 csvloader = new CSVLoader3();    
     		csvloader.loadCSVFile(file.getAbsolutePath());
 
     		Map<String, ArrayList<String>> playerfiles = csvloader.getPlayerfilesbyname();
     		Iterator it = playerfiles.entrySet().iterator();
     		while (it.hasNext()) {
     			Map.Entry pair = (Map.Entry) it.next();
-    			CSVOutput output = new CSVOutput();
     			
     			Player player = Player.findByPlayername((String) pair.getKey());
     			//player.filename = null;

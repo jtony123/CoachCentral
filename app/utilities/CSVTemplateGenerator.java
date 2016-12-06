@@ -18,6 +18,7 @@ public class CSVTemplateGenerator {
 			+ "PRACT_LOAD,PRACT_START,PRACT_END,"
 			+ "POST_LOAD,POST_START,POST_END,"
 			+ "OTHER_LOAD,OTHER_START,OTHER_END,"
+			+ "ACCEL_TOTAL,DECEL_TOTAL,"
 			+ "ACUTE,CHRONIC,SQUAD_AVG,SQUAD_DEV";
 	
 	String defaultFirstLine = "blank,0,1474981900,1474998200,"
@@ -25,7 +26,7 @@ public class CSVTemplateGenerator {
 			+ "0,1474981900,1474998200,"
 			+ "0,1474981900,1474998200,"
 			+ "0,1474981900,1474998200,"
-			+ "0,0,0,0";
+			+ "0,0,0,0,0,0";
 
 	
 	/**
