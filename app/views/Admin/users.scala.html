@@ -79,5 +79,19 @@ List[models.User])
 		<button class="btn btn-lg btn-primary btn-block">Upload</button>
 	</form>
 </div>
+<br><br><br><br>
+<div>
+	<form method="POST" action="@routes.Application.uploadMultipleCSV()" enctype="multipart/form-data">
+ 			
+		<div>
+			<label for="userName">choose the data files to upload</label> 
+			<input type="file" name="files" multiple id="files" size="30"/>
+		</div>
+	
+	
+		<br>
+		<button class="btn btn-lg btn-primary btn-block">Upload files</button>
+	</form>
+</div>
 
 }

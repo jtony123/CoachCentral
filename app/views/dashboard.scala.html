@@ -293,7 +293,7 @@ position: absolute;
 						@if(player.playerPhoto != null){
 							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
 						} else {
-							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt=${player.playername} style="margin: 0 auto; max-width:150px;height:150px;"/>
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
 						}
 						
 						</div>
@@ -307,26 +307,51 @@ position: absolute;
 			<div class="back face">
 				<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
-					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
 						
-						<div style="margin: 0 auto; max-width:150px;height:150px;">
-						alerts go here<br>
-						alert 1<br>
-						alert 2<br>
-						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg">
-          				<span class="glyphicon glyphicon-plus"></span> Add data
-        				</a>
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:50px;height:50px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:50px;height:50px;"/>
+						}
+						
+						<table style="text-align:left; font-family:arial; font-size:15px;">
+							<tr>
+								<td>Position</td><td>@player.position</td>
+							</tr>
+							<tr>
+								<td>DoB</td><td>@player.dob</td>
+							</tr>
+							<tr>
+								<td>Height</td><td>@player.height</td>
+							</tr>
+							<tr>
+								<td>Weight</td><td>@player.weight</td>
+							</tr>
+						</table>
+						
 						
 						</div>
-						
 						<div class="text-nowrap" style="text-align: center;">
 							@player.playername
-							
 						</div>
+						
+						
+						
+<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
+<!-- 						alerts go here<br> -->
+<!-- 						alert 1<br> -->
+<!-- 						alert 2<br> -->
+<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
+<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
+        				
+        				
 						
 					</a>
 				</h4>
-			</div>
+			</div><!-- end back face -->
 			</div>
 	  </div>
 	  
@@ -386,18 +411,23 @@ position: absolute;
 </div>
 </div><!-- end  outer container-->
 
+
+
 <script>
 
+// start of script  #F11BDF
 
 var acutechronic_button_border_colour = "red";
 var sessionloads_button_border_colour = "#3399CC";
 var accdec_button_border_colour = "orange";
+var cod_button_border_colour = "#F11BDF";
 
 var sessionloads_chart_colour = "#3399CC";
 
 var acutechronic_button_text = "ACUTE CHRONIC";
 var sessionloads_button_text = "SESSION LOADS";
 var accdec_button_text = "ACC/DEC";
+var cod_button_text = "CoD (L/R)";
 
 
 
@@ -423,11 +453,15 @@ var	navbarh = windowHeight/16,
 
 var parseDate = d3.time.format("%d/%m/%Y%H%M").parse;
 
+
+
 // set the ranges
 var xScale = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
 var y1 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
 var y2 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var color = d3.scale.category20();
+
 
 
 // define the axes
@@ -451,7 +485,90 @@ var chronicloadarea = d3.svg.area()
 	.x(function(d) { return xScale(d.SESS_START); })
 	.y0(chart_h)
 	.y1(function(d) { return y2(d.CHRONIC); });
+	
+	
+var gh = 600;
 
+var cod_l_lo_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh); })
+.y1(function(d) { return y2(gh - d.COD_L_LO); });
+
+var cod_l_med_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh - d.COD_L_LO); })
+.y1(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED)); });
+
+var cod_l_hi_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED)); })
+.y1(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED + d.COD_L_HI)); });
+
+
+var cod_r_lo_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh); })
+.y1(function(d) { return y2(gh + d.COD_R_LO); });
+
+var cod_r_med_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh + d.COD_R_LO); })
+.y1(function(d) { return y2(gh + (d.COD_R_LO  + d.COD_R_MED)); });
+
+var cod_r_hi_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh + (d.COD_R_LO + d.COD_R_MED)); })
+.y1(function(d) { return y2(gh + (d.COD_R_LO + d.COD_R_MED + d.COD_R_HI)); });
+	
+// var cod_l_lo_area = d3.svg.area()
+// 	//.interpolate("basis")
+// 	.x(function(d) { return xScale(d.SESS_START); })
+// 	.y0(function(d) { return y2(0); })
+// 	.y1(function(d) { return y2(d.COD_L_LO); });
+	
+// var cod_l_med_area = d3.svg.area()
+// 	//.interpolate("basis")
+// 	.x(function(d) { return xScale(d.SESS_START); })
+// 	.y0(function(d) { return y2(d.COD_L_LO); })
+// 	.y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED); });
+	
+// var cod_l_hi_area = d3.svg.area()
+// 	//.interpolate("basis")
+// 	.x(function(d) { return xScale(d.SESS_START); })
+// 	.y0(function(d) { return y2(d.COD_L_LO + d.COD_L_MED); })
+// 	.y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI); });
+	
+// var cod_r_hi_area = d3.svg.area()
+// 	//.interpolate("basis")
+// 	.x(function(d) { return xScale(d.SESS_START); })
+// 	.y0(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI); })
+// 	.y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI); });
+
+// var cod_r_med_area = d3.svg.area()
+// 	//.interpolate("basis")
+// 	.x(function(d) { return xScale(d.SESS_START); })
+// 	.y0(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI); })
+// 	.y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI  + d.COD_R_MED); });
+	
+// var cod_r_lo_area = d3.svg.area()
+// //.interpolate("basis")
+// .x(function(d) { return xScale(d.SESS_START); })
+// .y0(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI + d.COD_R_MED); })
+// .y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI + d.COD_R_MED + d.COD_R_LO); });
+	
+
+
+var sessloadline = d3.svg.line()
+//.interpolate("basis")
+//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+.x(function(d) { return xScale(d.SESS_START); })
+.y(function(d) { return y2(d.SESS_LOAD); });
 
 var accelline = d3.svg.line()
 	//.interpolate("basis")
@@ -607,6 +724,8 @@ var moreNotes = function(d){
 // Get the players gps data
 // read in the data
 var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function(error, data) {
+	
+	
 
 	var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
 	
@@ -644,6 +763,13 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);
 		d.DECEL_TOTAL = (+d.DECEL_TOTAL);
 		
+		d.COD_L_LO = (+d.COD_L_LO);
+		d.COD_L_MED = (+d.COD_L_MED);
+		d.COD_L_HI = (+d.COD_L_HI);
+		d.COD_R_LO = (+d.COD_R_LO);
+		d.COD_R_MED = (+d.COD_R_MED);
+		d.COD_R_HI = (+d.COD_R_HI);
+		
 		d.ACUTE = (+d.ACUTE);
 		d.CHRONIC = (+d.CHRONIC);
 	});
@@ -662,6 +788,8 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 // everything must be inside these brackets
 
+	
+
 	// by default on start up - showing last 21 days of data and next 7 days of data
 	var dayspast = data[0].SESS_START;
 	//xScale.domain([data[0].SESS_START, data[data.length -1].SESS_END ]);
@@ -675,6 +803,8 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	y.domain([0, 12]);
 	y1.domain([1200, 0]);
 	y2.domain([0,1200]);
+	
+	
 	
 	var zoom = d3.behavior.zoom()
 	.x(xScale)
@@ -709,6 +839,55 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	draw_chart();
 	
 	function draw_chart() {
+		
+		
+
+		
+		
+ 		// the cod left low  shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#F1CEEE")
+		.style("fill", "#F1CEEE").style("fill-opacity",0.3)
+		.attr("d", cod_l_lo_area(data));
+ 		
+ 		// the cod left medium  shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#F085E7")
+		.style("fill", "#F085E7").style("fill-opacity",0.3)
+		.attr("d", cod_l_med_area(data));
+ 		
+ 		// the cod left high shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#F11BDF")
+		.style("fill", "#F11BDF").style("fill-opacity",0.3)
+		.attr("d", cod_l_hi_area(data));
+ 		
+ 		// the cod right high shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#F11BDF")
+		.style("fill", "#F11BDF").style("fill-opacity",0.3)
+		.attr("d", cod_r_hi_area(data));
+ 		
+ 		// the cod right medium shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#F085E7")
+		.style("fill", "#F085E7").style("fill-opacity",0.3)
+		.attr("d", cod_r_med_area(data));
+ 		
+		// the cod right low shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#F1CEEE")
+		.style("fill", "#F1CEEE").style("fill-opacity",0.3)
+		.attr("d", cod_r_lo_area(data));
+ 		
+ 		
+ 		
+		
+ 		
+		
+ 		
+		
+		
 	
 		innersvg.selectAll(".now").data(data).enter().append("path")
 		.attr("class", "now").attr("id", "now")
@@ -827,6 +1006,15 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     		datatip .html(datatiptable(d))
 			.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
 		});
+	
+		
+		
+		// the session line  sessloadline
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "sessloadline").attr("stroke-width", 1)
+		.style("stroke", sessionloads_chart_colour).style("fill", "none")
+		.attr("d", sessloadline(data));
+		
 		
 		// the acute load line
 		innersvg.append("path")
@@ -899,6 +1087,18 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 		datatip.transition().duration(200).style("opacity", 0);
 		
+		
+		// the cods
+		innersvg.selectAll("#cod_l_lo").attr("d", cod_l_lo_area(data));
+		innersvg.selectAll("#cod_l_med").attr("d", cod_l_med_area(data));
+		innersvg.selectAll("#cod_l_hi").attr("d", cod_l_hi_area(data));
+		innersvg.selectAll("#cod_r_hi").attr("d", cod_r_hi_area(data));
+		innersvg.selectAll("#cod_r_med").attr("d", cod_r_med_area(data));
+		innersvg.selectAll("#cod_r_lo").attr("d", cod_r_lo_area(data));
+		
+		
+		
+		
 		innersvg.selectAll("#now")
 		.attr("transform", function(d) { 
 			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
@@ -952,6 +1152,11 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		.attr("y", function(d){		return chart_h - margin.bottom -y1(d.POST_LOAD) - y1(d.PRACT_LOAD) - y1(d.PRE_LOAD);})
 		.attr("width", function(d){	return (xScale(d.POST_END) - xScale(d.POST_START));})
 		.attr("height", function(d){return y1(d.POST_LOAD);	});
+		
+		
+		// the session line
+		innersvg.selectAll("#sessloadline").attr("d", sessloadline(data));
+		
 		
 		// the acute load line
 		innersvg.selectAll("#ACLoad").attr("d", acuteline(data));
@@ -1185,7 +1390,7 @@ function drawACButton(lineid1, lineid2, flagid, i, toggled){
 		
 		
 //special function to draw and control button for session loads
-function drawSESSButton(rectid1, rectid2, rectid3, rectid4, i, toggled){
+function drawSESSButton(rectid1, rectid2, rectid3, rectid4, lineid1, i, toggled){
 
 			// turns the line associated with this button on or off according to toggled parameter
 			d3.selectAll("#"+rectid1).style("opacity", function(d) { 
@@ -1199,6 +1404,11 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, i, toggled){
 	        	
 	        d3.selectAll("#"+rectid4).style("opacity", function(d) { 
 	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        		
+	        d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        		
+	        		
 	        	
 			var abutton;
 			if(width < 1000){
@@ -1234,6 +1444,9 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, i, toggled){
 		        
 		        d3.selectAll("#"+rectid4).style("opacity", function(d) {
 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0; })
+		        	
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
 		        
 		        // update the buttons border
 		        d3.select("#Session_Load_Button")
@@ -1291,6 +1504,85 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 
 		} // end drawACCDECButton
 		
+//special function to draw and control button for accel decel
+function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
+	
+
+// 	var cod_button_border_colour = "#F11BDF";
+
+// 	var sessionloads_chart_colour = "#3399CC";
+
+// 	var acutechronic_button_text = "ACUTE CHRONIC";
+// 	var sessionloads_button_text = "SESSION LOADS";
+// 	var accdec_button_text = "ACC/DEC";
+// 	var cod_button_text = "CoD (L/R)";
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid4).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid6).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+
+
+			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text);
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "COD_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? cod_button_border_colour : "grey")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+
+		       	d3.selectAll("#"+lineid4).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+		       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid6).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        		        	
+		        // update the buttons border
+		        d3.select("#COD_Button")
+		        	.style("stroke", isActive ? cod_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
+
+		} // end drawCODButton
+		
 		
 		
 			var drawButtons = function(){
@@ -1301,19 +1593,20 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 			drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, true);
 			
 			// player session loads
-			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", 2, true);
+			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "sessloadline", 2, true);
 			
 			//acc/dec load button 	
 			drawACCDECButton("accel", "decel", 3, true);
-				
-			// rpe score button
-			drawButton("RPE SCORES", "RPE_Button", "black", "RPEScore", null, 4, false);
+			
+			//COD load button 	
+			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 4, true);
+			
 				
 			// sleep button
-			drawButton("SLEEP", "Sleep_Button", "steelblue", "Sleep", null, 5, false);
+			drawButton("JUMPS", "Sleep_Button", "steelblue", "Sleep", null, 5, false);
 			
 			// muscle soreness
-			drawButton("MUS SOR", "MuscleSoreness_Button", "green", "muscleSoreness", null, 6, false);
+			drawButton("SQUAD AVG", "MuscleSoreness_Button", "green", "muscleSoreness", null, 6, false);
 			
 			// heart rate
 			drawButton("HR", "HR_Button", "orange", "heartrate", null, 7, false);

@@ -22,6 +22,10 @@ create table category (
 create table player (
   id                            bigint auto_increment not null,
   playername                    varchar(255),
+  height                        varchar(255),
+  weight                        varchar(255),
+  dob                           varchar(255),
+  position                      varchar(255),
   playernumber                  integer,
   dateadded                     datetime(6),
   player_photofilename          varchar(255),

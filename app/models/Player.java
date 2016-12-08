@@ -21,6 +21,14 @@ public class Player extends Model {
 
 	// @Required
 	public String playername;
+	
+	public String height;
+	
+	public String weight;
+	
+	public String dob;
+	
+	public String position;
 
 	// @Required
 	public Integer playernumber;

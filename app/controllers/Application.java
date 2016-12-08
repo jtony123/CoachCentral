@@ -10,6 +10,7 @@ import utilities.CSVLoader;
 import utilities.CSVLoader2;
 import utilities.CSVLoader3;
 import utilities.CSVOutput;
+import utilities.CSVSortByTime;
 import utilities.CSVTemplateGenerator;
 //import play.db.jpa.*;
 import views.html.*;
@@ -37,6 +38,7 @@ import java.util.Map;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Transaction;
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
@@ -255,18 +257,19 @@ public class Application extends Controller {
     
     public CompletionStage<Result> uploadCSV() {
     	
-    	
+    	System.out.println("uploadCSV called");
     	User user = User.findByEmail(session().get("connected"));
     	List<User> allusers = User.find.all();
     	
+    	
+    	
         MultipartFormData<File> body = request().body().asMultipartFormData();
         FilePart<File> filename = body.getFile("filename");
-        String playroot = Play.application().path().getPath();
-        System.out.println("uploadCSV called, root = "+playroot);
+        
         
         if (filename != null) {
-            String fileName = filename.getFilename();
-            String contentType = filename.getContentType();
+            //String fileName = filename.getFilename();
+            //String contentType = filename.getContentType();
             File file = filename.getFile();
             
 
@@ -306,13 +309,9 @@ public class Application extends Controller {
         			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
         			player.filename = newFileName;
         			
-        			
         			player.save();
     			}
-    			
-
     		}
-
 
         	flash("success", "File uploaded successfully");
         	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
@@ -332,6 +331,121 @@ public class Application extends Controller {
    	
    	 return ok(new java.io.File(filepath +player.filename));
     }
+    
+    
+    
+    public CompletionStage<Result> uploadMultipleCSV() {
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	List<User> allusers = User.find.all();
+    	
+    	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
+    	
+    	for(FilePart<Object> fp : files){
+    		
+    		//FilePart<File> filename = body.getFile("filename");
+            System.out.println("fp iteration");
+            
+            if (fp != null) {
+            	 System.out.println("fp not null");
+            
+                String fileName = fp.getFilename();
+                String contentType = fp.getContentType();
+                System.out.println("got these "+ fileName +" - "+contentType);
+                
+                File file = (File) fp.getFile();
+                
+
+        		CSVLoader3 csvloader = new CSVLoader3();    
+        		csvloader.loadCSVFile(file.getAbsolutePath());
+
+        		Map<String, ArrayList<String>> playerfiles = csvloader.getPlayerfilesbyname();
+        		Iterator it = playerfiles.entrySet().iterator();
+        		while (it.hasNext()) {
+        			Map.Entry pair = (Map.Entry) it.next();
+        			
+        			Player player = Player.findByPlayername((String) pair.getKey());
+        			//player.filename = null;
+        			// dumping the file into 'no players' if no play by this name found
+        			if(player == null){
+        				player =  Player.findByNumber(0);
+        				//player.filename = null;
+        			} else {
+        				//player.filename = null;
+
+            			if(player.filename == null){
+            				// generate default file with headers
+            				CSVTemplateGenerator cSVTemplateGenerator = new CSVTemplateGenerator();
+                			player.filename = cSVTemplateGenerator.createFile(filepath, player.playername +"_"+player.playernumber+"_");
+            			}
+            			
+            			
+            			CSVAppender cSVAppender = new CSVAppender();
+            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
+            			
+//            			// here recalculate the acute, chronic loads
+//            			AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
+//            			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
+//            			
+//            			// write out the new file
+//            			CSVOutput cSVOutput = new CSVOutput();
+//            			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
+//            			player.filename = newFileName;
+            			
+            			player.save();
+        			}
+        		}
+    		
+        		
+
+        		
+               
+            } else {
+            	System.out.println("fp is null");
+            }
+            
+    		// TODO: 	iterate thru' each of the players files and sort in order of time ascending
+    		//			then do the acute chronic calculations
+    		//			then save!
+            
+            List<Player> players = Player.find.all();
+            for (Player player : players){
+            	if(player.filename != null){
+            		CSVSortByTime cSVSortByTime = new CSVSortByTime();
+                	
+                    cSVSortByTime.sortCSVFile(filepath + player.filename);
+                    
+                    player.save();
+            	}
+            }
+            
+            for (Player player : players){
+                // TODO: 	do the acute chronic loads here
+    			// here recalculate the acute, chronic loads
+            	if(player.filename != null){
+            		
+            		AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
+        			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
+        			
+        			// write out the new file
+        			CSVOutput cSVOutput = new CSVOutput();
+        			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
+        			player.filename = newFileName;
+            	}
+            }
+    	}
+    	
+    	
+    	
+    	
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    }
+    
+    
+    
+    
+    
+    
     
     
 }

@@ -66,6 +66,15 @@ public class CSVLoader3 {
 			int playerdecelindex1 = headerstrings.indexOf("IMA Decel Low");
 			int playerdecelindex2 = headerstrings.indexOf("IMA Decel Medium");
 			int playerdecelindex3 = headerstrings.indexOf("IMA Decel High");
+			
+			
+			int playercodleftlow = headerstrings.indexOf("IMA CoD Left Low");
+			int playercodleftmed = headerstrings.indexOf("IMA CoD Left Medium"); 
+			int playercodlefthigh = headerstrings.indexOf("IMA CoD Left High"); 
+			int playercodrightlow = headerstrings.indexOf("IMA CoD Right Low"); 
+			int playercodrightmed = headerstrings.indexOf("IMA CoD Right Medium"); 
+			int playercodrighthigh = headerstrings.indexOf("IMA CoD Right High"); 
+			
 
 			// System.out.println("id index found"+idindex);
 			System.out.println("playername index found" + nameindex);
@@ -101,6 +110,13 @@ public class CSVLoader3 {
 
 				String accel = acc.toString();
 				String decel = dec.toString();
+				
+				String codleftlow = tokens[playercodleftlow];
+				String codleftmed = tokens[playercodleftmed]; 
+				String codlefthigh = tokens[playercodlefthigh]; 
+				String codrightlow = tokens[playercodrightlow]; 
+				String codrightmed = tokens[playercodrightmed];
+				String codrighthigh = tokens[playercodrighthigh];
 
 
 
@@ -121,6 +137,14 @@ public class CSVLoader3 {
 						datapoints[3] = endtime + ",";
 						datapoints[16] = accel + ",";
 						datapoints[17] = decel + ",";
+						
+						datapoints[18] = codleftlow + ",";
+						datapoints[19] = codleftmed + ",";
+						datapoints[20] = codlefthigh + ",";
+						datapoints[21] = codrightlow + ",";
+						datapoints[22] = codrightmed + ",";
+						datapoints[23] = codrighthigh + ",";
+						
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
 						
@@ -157,7 +181,7 @@ public class CSVLoader3 {
 				} else {
 					// new player encountered(not already in map)
 					// instantiate a new list of strings for this player
-					String[] datapoints = new String[22];
+					String[] datapoints = new String[28];
 					// populate the arraylist with zeros
 					for(int i = 0; i<datapoints.length; i++){
 						datapoints[i] = "0,";
@@ -172,6 +196,13 @@ public class CSVLoader3 {
 						datapoints[3] = endtime + ",";
 						datapoints[16] = accel + ",";
 						datapoints[17] = decel + ",";
+						
+						datapoints[18] = codleftlow + ",";
+						datapoints[19] = codleftmed + ",";
+						datapoints[20] = codlefthigh + ",";
+						datapoints[21] = codrightlow + ",";
+						datapoints[22] = codrightmed + ",";
+						datapoints[23] = codrighthigh + ",";
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
 						
