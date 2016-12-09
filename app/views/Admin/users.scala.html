@@ -51,21 +51,8 @@ List[models.User])
 			<p class="success">@flash.get("success")</p>
 		} 
 		
-		
-<div>
-	<form method="POST" action="@routes.Application.uploadCSV()" enctype="multipart/form-data">
- 			
-		<div>
-			<label for="userName">choose the data file to upload</label> 
-			<input type="file" name="filename" id="filename"/>
-		</div>
-	
-	
-		<br>
-		<button class="btn btn-lg btn-primary btn-block">Upload</button>
-	</form>
-</div>
-<br><br><br><br>
+
+<br><br>
 <div>
 	<form method="POST" action="@routes.Application.uploadCalender()" enctype="multipart/form-data">
  			

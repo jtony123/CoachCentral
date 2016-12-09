@@ -19,7 +19,6 @@ GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 GET		/getCSV/:playernumber		controllers.Application.getCSV(playernumber: Integer)
 GET		/getCalendarCSV				controllers.Application.getCalendarCSV()
 
-POST	/uploadCSV					controllers.Application.uploadCSV()
 POST	/uploadMultipleCSV			controllers.Application.uploadMultipleCSV()
 POST	/uploadCalender				controllers.Application.uploadCalender()
 

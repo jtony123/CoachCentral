@@ -275,7 +275,7 @@ public class Global extends GlobalSettings {
         	prev2.players.add(player17);
         	player17.save();
         
-    	Player player18 = new Player("Doran Finney Smith", 18, null, prev1);
+    	Player player18 = new Player("Dorian Finney-Smith", 18, null, prev1);
              player18.dob = "October 03, 1991";
         	player18.height = "6'8";
         	player18.weight = "220lbs";

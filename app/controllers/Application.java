@@ -1,60 +1,46 @@
 package controllers;
 
-import play.*;
-import play.mvc.*;
-import play.mvc.Http.MultipartFormData;
-import play.mvc.Http.MultipartFormData.FilePart;
-import utilities.AcuteChronicUpdater;
-import utilities.CSVAppender;
-import utilities.CSVLoader;
-import utilities.CSVLoader2;
-import utilities.CSVLoader3;
-import utilities.CSVOutput;
-import utilities.CSVSortByTime;
-import utilities.CSVTemplateGenerator;
-//import play.db.jpa.*;
-import views.html.*;
-import views.html.Admin.*;
-import models.Category;
-import models.Player;
-import models.User;
-import play.data.FormFactory;
-import play.i18n.Messages;
-import play.libs.F;
-import play.libs.concurrent.HttpExecutionContext;
-
-import javax.inject.Inject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Transaction;
-import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
+import javax.inject.Inject;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
-import play.data.*;
-import static play.data.Form.*;
-
-import static play.libs.Json.*;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import models.Category;
+import models.Player;
+import models.User;
+import play.data.FormFactory;
+import play.libs.concurrent.HttpExecutionContext;
+import play.mvc.Controller;
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
+import play.mvc.Result;
+import utilities.AcuteChronicUpdater;
+import utilities.CSVAppender;
+import utilities.CSVLoader3;
+import utilities.CSVOutput;
+import utilities.CSVSortByTime;
+import utilities.CSVTemplateGenerator;
+//import play.db.jpa.*;
+import views.html.dashboard;
+import views.html.index;
+import views.html.Admin.users;
 
 public class Application extends Controller {
 	
 
-	String filepath = "data/attachments/GraphCSVFiles/";
-	//String filepath = "/tmp/";
+	//String filepath = "data/attachments/GraphCSVFiles/";
+	String filepath = "/tmp/";
 	
 
     @Inject
@@ -96,7 +82,7 @@ public class Application extends Controller {
     	
     	
     	System.out.println("dashboard called");
-    	System.out.println("category passed in : " + category);
+    	//System.out.println("category passed in : " + category);
     	
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
@@ -104,25 +90,25 @@ public class Application extends Controller {
     	List<Player> players;
     	
     	if(categoryFound != null){
-    		System.out.println("cat not null");
+    		//System.out.println("cat not null");
     		players = user.getPlayersCategorisedWith(categoryFound);
     		
     		// check for empty category for this user
     		if(players == null || players.isEmpty()){
     		//empty category, return 'no players'
-    			System.out.println("players is null, sending no players");
+    			//System.out.println("players is null, sending no players");
     			player = Player.findByPlayername("no players");
     			players.add(player);
     		} else {
     		// the category is not empty
-    			System.out.println("players not null");
+    			//System.out.println("players not null");
     	    	if (playernumber == 0) {
     	    		// to handle initial call
-    	    		System.out.println("handle initial call, sending player 0");
+    	    		//System.out.println("handle initial call, sending player 0");
     	    		player = players.get(0);
     	    	} else {
     	    		player = Player.findByNumber(playernumber);
-    	    		System.out.println("finding player by number");
+    	    		//System.out.println("finding player by number");
     	    		
     	    		// check first if the player is null(out of range)
     	    		if(player == null) {
@@ -130,7 +116,7 @@ public class Application extends Controller {
     	    		} else {
     	    			// check if the player that the user had highlighted is in this category
         	    		if (!player.categories.contains(categoryFound)){
-        	    			System.out.println("player not in this category, sending player 0");
+        	    			//System.out.println("player not in this category, sending player 0");
         	    			player = players.get(0);
         	    		}
     	    		}
@@ -140,16 +126,16 @@ public class Application extends Controller {
     		}
     		
     	} else {
-    		System.out.println("cat is null");
+    		//System.out.println("cat is null");
     		players = user.getPlayersCategorisedWith(Category.findByName("All"));
     		player = players.get(0);
     		category = "All";
     	}
     	
     	List<Category> categories = Category.find.all();
-    	System.out.println("player count = " + players.size());
+    	//System.out.println("player count = " + players.size());
     	int playerIndex = players.indexOf(player);
-    	System.out.println("......");
+    	//System.out.println("......");
     			
     	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
     	
@@ -168,7 +154,7 @@ public class Application extends Controller {
     	}
     	
     	List<Category> categories = Category.find.all();
-    	System.out.println("player count = " + players.size());
+    	//System.out.println("player count = " + players.size());
     	int playerIndex = players.indexOf(player);
     	
     	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
@@ -178,7 +164,7 @@ public class Application extends Controller {
     // TODO: work out whether this needs to be restricted, as its only called directly by the page, not the user
     //@Restrict({@Group({"admin", "coach"})})
     public CompletionStage<Result> playerPhoto(Long playerId) {
-    	System.out.println("playerPhoto called");
+    	//System.out.println("playerPhoto called");
 		final Player player = Player.find.byId(playerId);
     	return CompletableFuture.completedFuture(ok(player.playerPhoto).as("playerPhoto"));
     }
@@ -186,7 +172,7 @@ public class Application extends Controller {
     
    public Result getCalendarCSV(){
     	
-	    System.out.println("getCalendarCSV called");
+	    //System.out.println("getCalendarCSV called");
 	   	return ok(new java.io.File(filepath + "Schedule1.csv"));
     }
     
@@ -195,7 +181,7 @@ public class Application extends Controller {
 	// CSV file.
 	public CompletionStage<Result> uploadCalender() {
 
-		System.out.println("uploadCalender called");
+		//System.out.println("uploadCalender called");
 
 		User user = User.findByEmail(session().get("connected"));
 		List<User> allusers = User.find.all();
@@ -255,74 +241,7 @@ public class Application extends Controller {
 	}
     
     
-    public CompletionStage<Result> uploadCSV() {
-    	
-    	System.out.println("uploadCSV called");
-    	User user = User.findByEmail(session().get("connected"));
-    	List<User> allusers = User.find.all();
-    	
-    	
-    	
-        MultipartFormData<File> body = request().body().asMultipartFormData();
-        FilePart<File> filename = body.getFile("filename");
-        
-        
-        if (filename != null) {
-            //String fileName = filename.getFilename();
-            //String contentType = filename.getContentType();
-            File file = filename.getFile();
-            
-
-    		CSVLoader3 csvloader = new CSVLoader3();    
-    		csvloader.loadCSVFile(file.getAbsolutePath());
-
-    		Map<String, ArrayList<String>> playerfiles = csvloader.getPlayerfilesbyname();
-    		Iterator it = playerfiles.entrySet().iterator();
-    		while (it.hasNext()) {
-    			Map.Entry pair = (Map.Entry) it.next();
-    			
-    			Player player = Player.findByPlayername((String) pair.getKey());
-    			//player.filename = null;
-    			// dumping the file into 'no players' if no play by this name found
-    			if(player == null){
-    				player =  Player.findByNumber(0);
-    				//player.filename = null;
-    			} else {
-    				//player.filename = null;
-
-        			if(player.filename == null){
-        				// generate default file with headers
-        				CSVTemplateGenerator cSVTemplateGenerator = new CSVTemplateGenerator();
-            			player.filename = cSVTemplateGenerator.createFile(filepath, player.playername +"_"+player.playernumber+"_");
-        			}
-        			
-        			
-        			CSVAppender cSVAppender = new CSVAppender();
-        			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
-        			
-        			// here recalculate the acute, chronic loads
-        			AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
-        			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
-        			
-        			// write out the new file
-        			CSVOutput cSVOutput = new CSVOutput();
-        			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
-        			player.filename = newFileName;
-        			
-        			player.save();
-    			}
-    		}
-
-        	flash("success", "File uploaded successfully");
-        	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
-            //return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
-        }
-    }
    
-    
 
     public Result getCSV(Integer playernumber){
     	
@@ -404,8 +323,7 @@ public class Application extends Controller {
             }
             
             for (Player player : players){
-                // TODO: 	do the acute chronic loads here
-    			// here recalculate the acute, chronic loads
+            	
             	if(player.filename != null){
             		
             		AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
