@@ -421,13 +421,21 @@ var acutechronic_button_border_colour = "red";
 var sessionloads_button_border_colour = "#3399CC";
 var accdec_button_border_colour = "orange";
 var cod_button_border_colour = "#F11BDF";
+var jump_button_border_colour = "#587CAF";
+var hre_button_border_colour = "#1FE234";
+var squadavg_button_border_colour = "#CECE0B";
 
 var sessionloads_chart_colour = "#3399CC";
+var heartrateexert_chart_colour = "#1FE234";
+var squadavg_chart_colour = "#CECE0B";
 
 var acutechronic_button_text = "ACUTE CHRONIC";
 var sessionloads_button_text = "SESSION LOADS";
 var accdec_button_text = "ACC/DEC";
 var cod_button_text = "CoD (L/R)";
+var jump_button_text = "JUMPS";
+var hre_button_text = "HR EXERT";
+var squadavg_button_text = "SQUAD AVG";
 
 
 
@@ -562,7 +570,35 @@ var cod_r_hi_area = d3.svg.area()
 // .y0(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI + d.COD_R_MED); })
 // .y1(function(d) { return y2(d.COD_L_LO + d.COD_L_MED + d.COD_L_HI + d.COD_R_HI + d.COD_R_MED + d.COD_R_LO); });
 	
+var jump_lo_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(0); })
+.y1(function(d) { return y2(d.JUMP_LO); });
 
+var jump_med_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(d.JUMP_LO); })
+.y1(function(d) { return y2(d.JUMP_LO + d.JUMP_MED); });
+
+var jump_hi_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(d.JUMP_LO + d.JUMP_MED); })
+.y1(function(d) { return y2(d.JUMP_LO + d.JUMP_MED + d.JUMP_HI); });
+
+var heartrateline = d3.svg.line()
+//.interpolate("basis")
+//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+.x(function(d) { return xScale(d.SESS_START); })
+.y(function(d) { return y2(d.HR_EXERT); });
+
+var squadavgline = d3.svg.line()
+//.interpolate("basis")
+//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+.x(function(d) { return xScale(d.SESS_START); })
+.y(function(d) { return y2(d.SQUAD_AVG); });
 
 var sessloadline = d3.svg.line()
 //.interpolate("basis")
@@ -770,6 +806,14 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		d.COD_R_MED = (+d.COD_R_MED);
 		d.COD_R_HI = (+d.COD_R_HI);
 		
+		d.JUMP_LO = (+d.JUMP_LO);
+		d.JUMP_MED = (+d.JUMP_MED);
+		d.JUMP_HI = (+d.JUMP_HI);
+		
+		d.HR_EXERT = ((+d.HR_EXERT)/100);
+		
+		d.SQUAD_AVG = (+d.SQUAD_AVG);
+		
 		d.ACUTE = (+d.ACUTE);
 		d.CHRONIC = (+d.CHRONIC);
 	});
@@ -879,14 +923,40 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
  		.attr("stroke-width", 1).attr("stroke", "#F1CEEE")
 		.style("fill", "#F1CEEE").style("fill-opacity",0.3)
 		.attr("d", cod_r_lo_area(data));
+		
+		// the jump low shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#919EB1")
+		.style("fill", "#919EB1").style("fill-opacity",0.6)
+		.attr("d", jump_lo_area(data));
+		
+		// the jump med shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#728BAF")
+		.style("fill", "#728BAF").style("fill-opacity",0.6)
+		.attr("d", jump_med_area(data));
+		
+		// the jump hi shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#587CAF")
+		.style("fill", "#587CAF").style("fill-opacity",0.6)
+		.attr("d", jump_hi_area(data));
  		
  		
- 		
+		// the heartrate line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "heartrateline").attr("stroke-width", 2)
+		.style("stroke", heartrateexert_chart_colour).style("fill", "none")
+		.attr("d", heartrateline(data));
+		
+		// the squadavg line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "squadavgline").attr("stroke-width", 3)
+		.style("stroke", squadavg_chart_colour).style("fill", "none")
+		.attr("d", squadavgline(data));
+		
 		
  		
-		
- 		
-		
 		
 	
 		innersvg.selectAll(".now").data(data).enter().append("path")
@@ -917,7 +987,7 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 			// the game rects
 		innersvg.selectAll('gamerectangles').data(data2).enter().append("rect")
-		.attr("id", "game").attr("opacity", 1.0)
+		.attr("id", "game").attr("opacity", 0.9)
 		.style("stroke", "green")
 		.style("fill", function(d) {
 			return d.GAME_START > today ? "none" : "green";
@@ -1096,6 +1166,16 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		innersvg.selectAll("#cod_r_med").attr("d", cod_r_med_area(data));
 		innersvg.selectAll("#cod_r_lo").attr("d", cod_r_lo_area(data));
 		
+		// the jumps
+		innersvg.selectAll("#jump_lo").attr("d", jump_lo_area(data));
+		innersvg.selectAll("#jump_med").attr("d", jump_med_area(data));
+		innersvg.selectAll("#jump_hi").attr("d", jump_hi_area(data));
+		
+		// the heartrate line
+		innersvg.selectAll("#heartrateline").attr("d", heartrateline(data));
+		
+		// the squadavg line
+		innersvg.selectAll("#squadavgline").attr("d", squadavgline(data));
 		
 		
 		
@@ -1183,157 +1263,143 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	
 	   
     // add the y axis
-	innersvg.append("g").attr("class", "y axis").call(yAxis)
-		// push the y-axis to the right by 5px and upwards off the gridline by 6px
-		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
+// 	innersvg.append("g").attr("class", "y axis").call(yAxis)
+// 		// push the y-axis to the right by 5px and upwards off the gridline by 6px
+// 		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
     
     // horizontal gridlines
 	innersvg.append("g").attr("class", "grid").call(make_gridline().tickSize(-width, 0, 0) .tickFormat(""))
 	    
 	    
-	    		// function that draws middle(above chart) box buttons
-function drawAuxButton(buttontext, buttonid, bordercolor, lineid, i, toggled){
-			
-			var numButtonsToggle2 = 11;
-			var buttonOffset = width/(numButtons + 1);
-
-			var abutton;
-			if(width < 1000){
-				//console.log("i is "+i);
-				var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = uppersvg.append("g")
-				.attr("transform", "translate("+ dx + "," + dy + ")");
-			} else {
-				abutton = uppersvg.append("g")
-				.attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
-			}
-			
-			
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", bordercolor).text(buttontext);
-	        
-			// get the width of the text and use it to tailor the width of the rect around it
- 			var textWidth = abutton.select("text").node().getBBox().width;
-			
-			abutton.append("rect")
-			.attr("rx", 0)
-		    .attr("ry", 10)
-		    .attr("width", textWidth + 20)
-	 	    .attr("height", 20)
-		    .attr("class", "legend")
-		    .attr("id", buttonid) 
-		    .attr("cursor", "pointer")
-		    .style("fill", "rgba(255,255,0,0.1)")
-		    .style("stroke-width", toggled ? 0 : 0)
-		    .style("stroke", toggled ? bordercolor : "grey")
-		    .style("opacity", function(d) {
-		    	this.active = toggled;
-		     	})
-		    
-		    
-		    .on("click", function(){
-		    	
-		    	var isActive;
-		        // Hide or show the line
-		        d3.select("#"+lineid).style("opacity", function(d) {
-		        	// Toggle the active state
-		        	this.active = !this.active;	isActive = this.active; return	this.active ? 1 : 0; })
-		        
-		        // update the buttons border
-		        d3.select("#"+buttonid)
-		        .style("stroke", isActive ? bordercolor : "grey").style("stroke-width", isActive ? 2 : 0)});
-			
-		} // end drawAuxButton
+	    
 		
-		drawAuxButton("GPS DATA", "Catapult_Button", "black", "", 0, true);
-		drawAuxButton("REDOX", "Optojump_Button", "black", "", 1, true);
-		drawAuxButton("CALENDAR", "Biomarkers_Button", "black", "", 2, true);
+		
+		var numButtonsToggle2 = 11;
+		
+		drawGPSDATAButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_hi", "cod_r_hi", 0, true);
+		drawGAMEButton("game", 1, true);
+		
+//special function to draw and control button for GAME
+function drawGPSDATAButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
+			
+			//var buttonOffset = width/(numButtons + 1);
+			
+// 			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+
+//         	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+// 	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+// 	        d3.selectAll("#"+lineid4).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+// 	       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+// 	        d3.selectAll("#"+lineid6).style("opacity", function(d) {
+// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})	
+					
+					var abutton;
+					if(width < 1000){
+						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+						var dy = i>4 ? 50 : 0;
+						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+					}
+					
+					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GPS DATA");
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GPSDATA_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				        // Hide or show the line
+				        
+// 				d3.selectAll("#"+lineid1).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+
+// 		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+// 		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+
+// 		       	d3.selectAll("#"+lineid4).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+// 		       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+// 		       	d3.selectAll("#"+lineid6).style("opacity", function(d) {
+// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+				        
+				        // update the buttons border
+				        d3.select("#GPSDATA_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawGPSDATAButton
+	
+//special function to draw and control button for GAME
+function drawGAMEButton(lineid1, i, toggled){
+			
+			
+			//var buttonOffset = width/(numButtons + 1);
+			
+					d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})		
+					
+					var abutton;
+					if(width < 1000){
+						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+						var dy = i>4 ? 50 : 0;
+						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+					}
+					
+					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GAME");
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GAME_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				        // Hide or show the line
+				        
+				        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+				        
+				        // update the buttons border
+				        d3.select("#GAME_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawGAMEButton
 		
 		
 		
 var numButtons = 7;
 		
-		function drawButton(buttontext, buttonid, bordercolor, lineid, dotid, i, toggled){
-			
-			// turns the line associated with this button on or off according to toggled parameter
-			d3.select("#"+lineid)
-        	.style("opacity", function(d) { 
-        		this.active = toggled;
-        		return toggled ? 1 : 0;
-        	})
-        	
-        	d3.select("#"+dotid)
-        	.style("opacity", function(d) { 
-        		this.active = toggled;
-        		return toggled ? 1 : 0;
-        	})
-
-			var abutton;
-			if(width < 1000){
-				console.log("i is "+i);
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ dx + "," + dy + ")");
-			} else {
-				abutton = lowersvg.append("g")
-				.attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
-			}
-			
-			
-			abutton.append("text")
-			.attr("x", 10)             
-		    .attr("y", 15)
-		    .attr("fill", bordercolor)
-	        .text(buttontext);
-	        
-			// get the width of the text and use it to tailor the width of the rect around it
- 			var textWidth = abutton.select("text").node().getBBox().width;
-			
-			abutton.append("rect")
-		    .attr("rx", 0)
-		    .attr("ry", 10)
-		    .attr("width", textWidth + 20)
-	 	    .attr("height", 20)
-		    .attr("class", "legend")
-		    .attr("id", buttonid) 
-		    .attr("cursor", "pointer")
-		    .style("fill", "rgba(255,255,0,0.1)")
-		    .style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? bordercolor : "grey")
-		    .style("opacity", function(d) {
-		    	this.active = toggled;
-		     	//console.log(this.active);
-		     	})
-		    
-		    
-		    .on("click", function(){
-		    	
-		    	var isActive;
-		        // Hide or show the line
-		        d3.select("#"+lineid)
-		        	.style("opacity", function(d) {
-		        	// Toggle the active state
-		        	//console.log(this.active);
-		        	this.active = !this.active;
-		        	isActive = this.active;
-			        return	this.active ? 1 : 0;
-		        });
-		        
-		        // enable/disable the tooltips for this buttons dots
-		        d3.selectAll("#"+dotid)
-		        	.on("mouseover", function(d) {
-		        		return isActive ? 
-		        				d3.event.stopPropagation() : null; // TODO: rework this such that it re-enables the tooltips
-		        	});
-		        	
-		        // update the buttons border
-		        d3.select("#"+buttonid)
-		        .style("stroke", isActive ? bordercolor : "grey")
-		        .style("stroke-width", isActive ? 2 : 0)
-		    	});
-			
-		} // end drawButton
+		
 		
 //special function to draw and control button for acute chronic load
 function drawACButton(lineid1, lineid2, flagid, i, toggled){
@@ -1362,7 +1428,7 @@ function drawACButton(lineid1, lineid2, flagid, i, toggled){
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
 			
-			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "ACLoad_Button") 
 		    .attr("cursor", "pointer")
@@ -1424,7 +1490,7 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, lineid1, i, toggled)
 	        
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
-			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "Session_Load_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
@@ -1482,7 +1548,7 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
-			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "ACCDEC_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
@@ -1507,15 +1573,6 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 //special function to draw and control button for accel decel
 function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
 	
-
-// 	var cod_button_border_colour = "#F11BDF";
-
-// 	var sessionloads_chart_colour = "#3399CC";
-
-// 	var acutechronic_button_text = "ACUTE CHRONIC";
-// 	var sessionloads_button_text = "SESSION LOADS";
-// 	var accdec_button_text = "ACC/DEC";
-// 	var cod_button_text = "CoD (L/R)";
 
 			// turns the line associated with this button on or off according to toggled parameter
 			d3.selectAll("#"+lineid1).style("opacity", function(d) {
@@ -1551,7 +1608,7 @@ function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, 
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
-			abutton.append("rect").attr("rx", 0).attr("ry", 10)
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "COD_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
@@ -1585,6 +1642,146 @@ function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, 
 		
 		
 		
+//special function to draw and control button for accel decel
+function drawJUMPButton(lineid1, lineid2, lineid3, i, toggled){
+	
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+	        		
+	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+
+
+			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text);
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "JUMP_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? jump_button_border_colour : "grey")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})		        	
+
+		        		        	
+		        // update the buttons border
+		        d3.select("#JUMP_Button")
+		        	.style("stroke", isActive ? jump_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
+
+		} // end drawCODButton
+		
+//special function to draw and control button for hre
+function drawHREButton(lineid1, i, toggled){
+	
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+
+
+			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text);
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "HRE_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? hre_button_border_colour : "grey")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        	
+
+		        		        	
+		        // update the buttons border
+		        d3.select("#HRE_Button")
+		        	.style("stroke", isActive ? hre_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
+
+		} // end drawHREButton
+		
+		
+//special function to draw and control button for hre
+function drawSQUADAVGButton(lineid1, i, toggled){
+	
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+			}
+
+
+			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", squadavg_button_border_colour).text(squadavg_button_text);
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "SQUADAVG_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? squadavg_button_border_colour : "grey")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        	
+
+		        		        	
+		        // update the buttons border
+		        d3.select("#SQUADAVG_Button")
+		        	.style("stroke", isActive ? squadavg_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)});
+
+		} // end drawSQUADAVGButton
+		
+		
+		
 			var drawButtons = function(){
 			
 			// first remove all elements from this svg container
@@ -1598,18 +1795,21 @@ function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, 
 			//acc/dec load button 	
 			drawACCDECButton("accel", "decel", 3, true);
 			
-			//COD load button 	
-			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 4, true);
+			//COD  button 	
+			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 4, false);
 			
-				
-			// sleep button
-			drawButton("JUMPS", "Sleep_Button", "steelblue", "Sleep", null, 5, false);
 			
-			// muscle soreness
-			drawButton("SQUAD AVG", "MuscleSoreness_Button", "green", "muscleSoreness", null, 6, false);
+			//JUMP  button 	
+			drawJUMPButton("jump_lo", "jump_med", "jump_hi", 5, false);
 			
-			// heart rate
-			drawButton("HR", "HR_Button", "orange", "heartrate", null, 7, false);
+			//HRE  button 	
+			drawHREButton("heartrateline", 6, false);
+			
+			//SQUAD AVG button 	
+			drawSQUADAVGButton("squadavgline", 7, true);
+			
+			
+			
 		}
 		
 		drawButtons();

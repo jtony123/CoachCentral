@@ -16,6 +16,9 @@ public class CSVLoader3 {
 	// it is used to get the index of the column that the data is read from
 	String header;
 	
+	List<Double> playerloads = new ArrayList<Double>();
+	Double sessionAverage = 0.0;
+	
 	// put each players session details into a map
 	Map<String, String[]> playersessions = new HashMap<String, String[]>();
 	
@@ -75,13 +78,12 @@ public class CSVLoader3 {
 			int playercodrightmed = headerstrings.indexOf("IMA CoD Right Medium"); 
 			int playercodrighthigh = headerstrings.indexOf("IMA CoD Right High"); 
 			
-
-			// System.out.println("id index found"+idindex);
-			System.out.println("playername index found" + nameindex);
-			System.out.println("period name found" + periodname);
-			System.out.println("startindex found" + startindex);
-			System.out.println("endindex  found" + endindex);
-			System.out.println("load index found" + playerloadindex);
+			int playerjumplo = headerstrings.indexOf("IMA Jump Count Low Band"); 
+			int playerjumpmed = headerstrings.indexOf("IMA Jump Count Med Band"); 
+			int playerjumphi = headerstrings.indexOf("IMA Jump Count High Band"); 
+			
+			int playerheartrate = headerstrings.indexOf("Heart Rate Exertion");
+			
 
 			// Read the file line by line
 
@@ -117,6 +119,15 @@ public class CSVLoader3 {
 				String codrightlow = tokens[playercodrightlow]; 
 				String codrightmed = tokens[playercodrightmed];
 				String codrighthigh = tokens[playercodrighthigh];
+				
+				String jumplo = tokens[playerjumplo];
+				String jumpmed = tokens[playerjumpmed];
+				String jumphi = tokens[playerjumphi];
+				
+				String heartrate = tokens[playerheartrate];
+				if(heartrate.contains(".")){
+					heartrate = tokens[playerheartrate].substring(0, tokens[playerheartrate].indexOf('.'));
+				}
 
 
 
@@ -132,6 +143,8 @@ public class CSVLoader3 {
 					// note adding default zeros for acute load and chronic load
 					if(period.equalsIgnoreCase("Session")){
 						
+						playerloads.add(Double.parseDouble(tokens[playerloadindex]));
+						
 						datapoints[1] = load + ",";
 						datapoints[2] = starttime + ",";
 						datapoints[3] = endtime + ",";
@@ -144,6 +157,12 @@ public class CSVLoader3 {
 						datapoints[21] = codrightlow + ",";
 						datapoints[22] = codrightmed + ",";
 						datapoints[23] = codrighthigh + ",";
+						
+						datapoints[24] = jumplo + ",";
+						datapoints[25] = jumpmed + ",";
+						datapoints[26] = jumphi + ",";
+						
+						datapoints[27] = heartrate + ",";
 						
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
@@ -174,14 +193,10 @@ public class CSVLoader3 {
 
 
 
-
-
-					
-
 				} else {
 					// new player encountered(not already in map)
 					// instantiate a new list of strings for this player
-					String[] datapoints = new String[28];
+					String[] datapoints = new String[32];
 					// populate the arraylist with zeros
 					for(int i = 0; i<datapoints.length; i++){
 						datapoints[i] = "0,";
@@ -190,6 +205,8 @@ public class CSVLoader3 {
 					datapoints[0] = playername + ",";
 					
 					if(period.equalsIgnoreCase("Session")){
+						
+						playerloads.add(Double.parseDouble(tokens[playerloadindex]));
 						
 						datapoints[1] = load + ",";
 						datapoints[2] = starttime + ",";
@@ -203,6 +220,12 @@ public class CSVLoader3 {
 						datapoints[21] = codrightlow + ",";
 						datapoints[22] = codrightmed + ",";
 						datapoints[23] = codrighthigh + ",";
+						
+						datapoints[24] = jumplo + ",";
+						datapoints[25] = jumpmed + ",";
+						datapoints[26] = jumphi + ",";
+						
+						datapoints[27] = heartrate + ",";
 					
 					} else if(period.equalsIgnoreCase("Pre Practice")){
 						
@@ -238,7 +261,16 @@ public class CSVLoader3 {
 				}
 
 			} // end while loop reading files
-
+			
+			//System.out.print("session loads :");
+			Double total = 0.0;
+			for(Double d : playerloads) {
+				//System.out.print(", "+d);
+				total+=d;
+			}
+			//System.out.println();
+			sessionAverage = total/playerloads.size();
+			//System.out.println("AVG is " + sessionAverage);
 
 			fileReader.close();
 		} catch (IOException e) {
@@ -249,6 +281,9 @@ public class CSVLoader3 {
 		for (Map.Entry<String, String[]> entry : playersessions.entrySet()) {
 		    String key = entry.getKey();
 		    String aline = "";
+		    
+		    entry.getValue()[30] = sessionAverage.toString() + ",";
+		    
 		    for(String s : entry.getValue()){
 		    	aline += s;
 		    }

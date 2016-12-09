@@ -344,18 +344,12 @@ public class Application extends Controller {
     	for(FilePart<Object> fp : files){
     		
     		//FilePart<File> filename = body.getFile("filename");
-            System.out.println("fp iteration");
+            //System.out.println("fp iteration");
             
             if (fp != null) {
-            	 System.out.println("fp not null");
-            
-                String fileName = fp.getFilename();
-                String contentType = fp.getContentType();
-                System.out.println("got these "+ fileName +" - "+contentType);
                 
                 File file = (File) fp.getFile();
                 
-
         		CSVLoader3 csvloader = new CSVLoader3();    
         		csvloader.loadCSVFile(file.getAbsolutePath());
 
@@ -382,15 +376,7 @@ public class Application extends Controller {
             			
             			CSVAppender cSVAppender = new CSVAppender();
             			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
-            			
-//            			// here recalculate the acute, chronic loads
-//            			AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
-//            			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
-//            			
-//            			// write out the new file
-//            			CSVOutput cSVOutput = new CSVOutput();
-//            			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
-//            			player.filename = newFileName;
+            		
             			
             			player.save();
         			}
@@ -404,9 +390,7 @@ public class Application extends Controller {
             	System.out.println("fp is null");
             }
             
-    		// TODO: 	iterate thru' each of the players files and sort in order of time ascending
-    		//			then do the acute chronic calculations
-    		//			then save!
+            
             
             List<Player> players = Player.find.all();
             for (Player player : players){
@@ -432,6 +416,7 @@ public class Application extends Controller {
         			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
         			player.filename = newFileName;
             	}
+            	player.save();
             }
     	}
     	

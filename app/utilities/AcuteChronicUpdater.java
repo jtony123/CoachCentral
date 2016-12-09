@@ -46,7 +46,7 @@ import java.util.List;
 				header = fileReader.readLine();
 				// leave header alone
 				playerfiledata.add(header);
-				System.out.println(header);
+				//System.out.println(header);
 				
 				
 				String[] headertokens = header.split(",");
@@ -59,11 +59,6 @@ import java.util.List;
 				int acuteindex = headerstrings.indexOf("ACUTE");
 				int chronicindex = headerstrings.indexOf("CHRONIC");
 				
-				
-//				System.out.println("playername index found" + playernameindex);
-//				System.out.println("playerloadindex name found" + playerloadindex);
-				System.out.println("acuteindex found" + acuteindex);
-				System.out.println("chronicindex  found" + chronicindex);
 				
 				//Read the file line by line
 
