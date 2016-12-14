@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
+
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
@@ -31,6 +34,7 @@ import utilities.CSVLoader3;
 import utilities.CSVOutput;
 import utilities.CSVSortByTime;
 import utilities.CSVTemplateGenerator;
+import utilities.GameDataLoader;
 //import play.db.jpa.*;
 import views.html.dashboard;
 import views.html.index;
@@ -263,10 +267,11 @@ public class Application extends Controller {
     	for(FilePart<Object> fp : files){
     		
     		//FilePart<File> filename = body.getFile("filename");
-            //System.out.println("fp iteration");
+            System.out.println("fp iteration");
             
             if (fp != null) {
                 
+            	System.out.println("fp not null");
                 File file = (File) fp.getFile();
                 
         		CSVLoader3 csvloader = new CSVLoader3();    
@@ -327,7 +332,7 @@ public class Application extends Controller {
             	if(player.filename != null){
             		
             		AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
-        			acuteChronicUpdater.loadCSVFile(filepath + player.filename);
+        			acuteChronicUpdater.loadCSVFile(filepath + player.filename, null);
         			
         			// write out the new file
         			CSVOutput cSVOutput = new CSVOutput();
@@ -337,6 +342,145 @@ public class Application extends Controller {
             	player.save();
             }
     	}
+    	
+    	
+    	
+    	
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    }
+    
+    
+    
+    public CompletionStage<Result> uploadGamedata() {
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	List<User> allusers = User.find.all();
+    	
+    	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
+    	
+    	
+//		MultipartFormData<File> body = request().body().asMultipartFormData();
+//		FilePart<File> filename = body.getFile("filename");
+		
+		
+    	
+    	for(FilePart<Object> fp : files){
+    		
+    	
+            if (fp != null) {
+                
+                File file = (File) fp.getFile();
+                
+                GameDataLoader gameDataLoader = new GameDataLoader();    
+                gameDataLoader.loadCSVFile(file.getAbsolutePath());
+
+                
+        		Map<String, ArrayList<String>> playerfiles = gameDataLoader.getPlayerfilesbyname();
+        		Iterator it = playerfiles.entrySet().iterator();
+        		while (it.hasNext()) {
+        			Map.Entry pair = (Map.Entry) it.next();
+        			
+        			Player player = Player.findByPlayername((String) pair.getKey());
+        			//player.filename = null;
+        			// dumping the file into 'no players' if no player by this name found
+        			if(player == null){
+        				player =  Player.findByNumber(0);
+        				//player.filename = null;
+        			} else {
+        				//player.filename = null;
+
+            			if(player.filename == null){
+            				// generate default file with headers
+            				CSVTemplateGenerator cSVTemplateGenerator = new CSVTemplateGenerator();
+                			player.filename = cSVTemplateGenerator.createFile(filepath, player.playername +"_"+player.playernumber+"_");
+            			}
+            			
+            			
+            			CSVAppender cSVAppender = new CSVAppender();
+            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
+            		
+            			
+            			player.save();
+        			}
+        		}
+    		
+        		
+
+        		
+               
+            } else {
+            	System.out.println("fp is null");
+            }
+            
+            Map<Long, List<Integer>> loads = new HashMap<Long, List<Integer>>();
+            
+            List<Player> players = Player.find.all();
+            for (Player player : players){
+            	if(player.filename != null){
+            		CSVSortByTime cSVSortByTime = new CSVSortByTime();
+                	
+                    cSVSortByTime.sortCSVFile(filepath + player.filename);
+                    
+            		Map<Long, Integer> playerloads = cSVSortByTime.getLoads();
+            		Iterator it = playerloads.entrySet().iterator();
+            		while (it.hasNext()) {
+            			Map.Entry pair = (Map.Entry) it.next();
+            		// if loads already contains this key, add loads to the list
+            		Long key = (Long) pair.getKey();
+            		if(loads.containsKey(key)){
+            			loads.get(key).add((Integer) pair.getValue());
+            		} else {
+            			// else put the new key along with a new list and add the load to the list
+            			ArrayList<Integer> loadlist = new ArrayList<Integer>();
+            			loadlist.add((Integer) pair.getValue());
+            			loads.put((Long) pair.getKey(), loadlist);
+            		}
+            		
+            		}
+            			
+                    player.save();
+            	}
+            }
+            
+            // calculate the averages for the game loads
+            Map<Long, Integer> gameavgloads = new HashMap<Long, Integer>();
+            
+    		Iterator iter = loads.entrySet().iterator();
+    		while (iter.hasNext()) {
+    			Map.Entry pair = (Map.Entry) iter.next();
+    			
+    			List<Integer> vals = (List<Integer>) pair.getValue();
+    			System.out.print(pair.getKey() +" : ");
+    			Integer total = 0;
+    			for (Integer i : vals){
+    				System.out.print(i+", ");
+    				total += i;
+    			}
+    			Integer avg = total/vals.size();
+    			System.out.println();
+    			
+    			gameavgloads.put((Long) pair.getKey(), avg);
+    		}
+            
+            
+            
+            for (Player player : players){
+            	
+            	if(player.filename != null){
+            		
+            		AcuteChronicUpdater acuteChronicUpdater = new AcuteChronicUpdater();
+        			acuteChronicUpdater.loadCSVFile(filepath + player.filename, gameavgloads);
+        			
+        			// write out the new file
+        			CSVOutput cSVOutput = new CSVOutput();
+        			String newFileName = cSVOutput.writeOutFile(filepath, player.filename, acuteChronicUpdater.getPlayerfileData());
+        			player.filename = newFileName;
+            	}
+            	player.save();
+            }
+    	}
+    	
+    	
     	
     	
     	

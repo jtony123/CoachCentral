@@ -22,6 +22,7 @@ public class CSVTemplateGenerator {
 			+ "COD_L_LO,COD_L_MED,COD_L_HI,COD_R_LO,COD_R_MED,COD_R_HI,"
 			+ "JUMP_LO,JUMP_MED,JUMP_HI,"
 			+ "HR_EXERT,"
+			+ "GAME_LOAD,GAME_MINS,POINTS,REBOUNDS,ASSISTS,STEALS,BLOCKS,FOULS,"
 			+ "ACUTE,CHRONIC,SQUAD_AVG,SQUAD_DEV";
 	
 	String defaultFirstLine = "blank,0,1474981900,1474998200,"
@@ -29,7 +30,7 @@ public class CSVTemplateGenerator {
 			+ "0,1474981900,1474998200,"
 			+ "0,1474981900,1474998200,"
 			+ "0,1474981900,1474998200,"
-			+ "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
+			+ "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
 
 	
 	/**

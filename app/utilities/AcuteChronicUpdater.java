@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
 
 
 	/**
@@ -35,7 +38,7 @@ import java.util.List;
 			return header;
 		}
 
-		public void loadCSVFile(String fileName){
+		public void loadCSVFile(String fileName, Map<Long, Integer> gameavgloads){
 			BufferedReader fileReader = null;
 			String line ="";
 			
@@ -55,9 +58,12 @@ import java.util.List;
 				
 				// get the index of the ID column
 				int playernameindex = headerstrings.indexOf("playername");
+				int sesstime = headerstrings.indexOf("SESS_START");
 				int playerloadindex = headerstrings.indexOf("SESS_LOAD");
 				int acuteindex = headerstrings.indexOf("ACUTE");
 				int chronicindex = headerstrings.indexOf("CHRONIC");
+				int gameloadindex = headerstrings.indexOf("GAME_LOAD");
+				int sqdavg = headerstrings.indexOf("SQUAD_AVG");
 				
 				
 				//Read the file line by line
@@ -77,9 +83,20 @@ import java.util.List;
 					
 					// if a new player encountered
 					
-						// add the acute load to the queue
+						// check which data value is to be used
+					//System.out.println(tokens[playernameindex]);
+					
+					if(!tokens[playerloadindex].equalsIgnoreCase("0")) {
+						//System.out.println("equals 0");
 						playeracuteloads.add(tokens[playerloadindex]);
 						playerchronicloads.add(tokens[playerloadindex]);
+					} else {
+						//System.out.println("not equals 0");
+						playeracuteloads.add(tokens[gameloadindex]);
+						playerchronicloads.add(tokens[gameloadindex]);
+					}
+						// add the acute load to the queue
+						
 						// calculate the acute load
 						
 						for(Object o : playeracuteloads.toArray()){
@@ -105,6 +122,15 @@ import java.util.List;
 						
 						tokens[acuteindex] = acutetotal.toString();
 						tokens[chronicindex] = chronictotal.toString();
+						
+						if(gameavgloads != null){
+							Long key = Long.parseLong(tokens[sesstime]);
+							if(gameavgloads.containsKey(key)){
+								tokens[sqdavg] = gameavgloads.get(key).toString();
+							}
+						}
+						
+						
 						
 						line ="";
 						for(String s : tokens){

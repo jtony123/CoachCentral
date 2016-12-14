@@ -21,6 +21,7 @@ GET		/getCalendarCSV				controllers.Application.getCalendarCSV()
 
 POST	/uploadMultipleCSV			controllers.Application.uploadMultipleCSV()
 POST	/uploadCalender				controllers.Application.uploadCalender()
+POST	/uploadGamedata()			controllers.Application.uploadGamedata()
 
 
 # admin routes

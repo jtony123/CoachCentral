@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,8 +26,11 @@ public class CSVSortByTime {
 	String header;
 	
 	Map<Long, String> data = new TreeMap<Long, String>();
+	Map<Long, Integer> loads = new HashMap<Long, Integer>();
 	
-	
+	public Map<Long, Integer> getLoads(){
+		return loads;
+	}
 
 	public String getHeader() {
 		return header;
@@ -51,6 +55,7 @@ public class CSVSortByTime {
 			
 			// get the index of the ID column
 			int sess_start_index = headerstrings.indexOf("SESS_START");
+			int gameload = headerstrings.indexOf("GAME_LOAD");
 			
 			//Read the file line by line
 
@@ -60,8 +65,16 @@ public class CSVSortByTime {
 				String[] tokens = line.split(",");
 				// get the sess start from the relevant column
 				
+				
+				
 				Long key = Long.parseLong(tokens[sess_start_index]);
 				data.put(key, line);
+				
+				if(!tokens[gameload].equalsIgnoreCase("0")){
+					Integer load = Integer.parseInt(tokens[gameload]);
+					loads.put(key, load);
+				}
+				
 					
 
 			} // end while loop
@@ -94,7 +107,7 @@ public class CSVSortByTime {
 			out = new PrintWriter(file, "UTF-8");
 			
 			for (Map.Entry<Long, String> entry : data.entrySet()) {
-				  System.out.println(entry.getKey() + ": " + entry.getValue());
+				 // System.out.println(entry.getKey() + ": " + entry.getValue());
 				  out.println(entry.getValue());
 				}
 

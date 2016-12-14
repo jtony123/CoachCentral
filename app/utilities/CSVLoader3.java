@@ -196,7 +196,7 @@ public class CSVLoader3 {
 				} else {
 					// new player encountered(not already in map)
 					// instantiate a new list of strings for this player
-					String[] datapoints = new String[32];
+					String[] datapoints = new String[40];
 					// populate the arraylist with zeros
 					for(int i = 0; i<datapoints.length; i++){
 						datapoints[i] = "0,";
@@ -282,7 +282,7 @@ public class CSVLoader3 {
 		    String key = entry.getKey();
 		    String aline = "";
 		    
-		    entry.getValue()[30] = sessionAverage.toString() + ",";
+		    entry.getValue()[38] = sessionAverage.toString() + ",";
 		    
 		    for(String s : entry.getValue()){
 		    	aline += s;

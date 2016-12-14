@@ -72,12 +72,27 @@ List[models.User])
  			
 		<div>
 			<label for="userName">choose the data files to upload</label> 
-			<input type="file" name="files" multiple id="files" size="30"/>
+			<input type="file" name="files" multiple id="gpsfiles" size="30"/>
 		</div>
 	
 	
 		<br>
 		<button class="btn btn-lg btn-primary btn-block">Upload files</button>
+	</form>
+</div>
+
+<br><br><br><br>
+<div>
+	<form method="POST" action="@routes.Application.uploadGamedata()" enctype="multipart/form-data">
+ 			
+		<div>
+			<label for="userName">choose the data files to upload</label> 
+			<input type="file" name="gamefiles" multiple id="gamefiles" size="30"/>
+		</div>
+	
+	
+		<br>
+		<button class="btn btn-lg btn-primary btn-block">Upload game data</button>
 	</form>
 </div>
 

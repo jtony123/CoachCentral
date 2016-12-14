@@ -79,11 +79,11 @@ public class Global extends GlobalSettings {
                     "permissions");
             
             User user3 = new User();
-            user3.email = "player@orreco.com";
-            user3.userName = "Charlie";
-            user3.setPassword("playerpass");
+            user3.email = "jeremyholsopple@gmail.com";
+            user3.userName = "Jeremy";
+            user3.setPassword("MAV$0rrec0");
             user3.roles = new ArrayList<SecurityRole>();
-            user3.roles.add(SecurityRole.findByName("player"));
+            user3.roles.add(SecurityRole.findByName("coach"));
             user3.permissions = new ArrayList<UserPermission>();
             user3.permissions.add(UserPermission.findByValue("view"));
 
@@ -283,6 +283,15 @@ public class Global extends GlobalSettings {
         	prev1.players.add(player18);
         	prev2.players.add(player18);
         	player18.save();
+        	
+        Player player19 = new Player("Deron Williams", 19, null, prev1);
+	        player19.dob = "June 26, 1984";
+	        player19.height = "6'3";
+	        player19.weight = "195lbs";
+	        player19.position = "Guard";
+	       	prev1.players.add(player19);
+	       	prev2.players.add(player19);
+	       	player19.save();
     	
         	
         	
