@@ -24,7 +24,8 @@
         <th>Player categories</th>
         <th>Player questions</th>
         <th>Photo uploaded</th>
-        <th>Edit</th>
+        <th>Edit details</th>
+        <th>Add/Edit data</th>
         
       </tr>
     </thead>
@@ -60,7 +61,8 @@
         None
         }
         </td>
-        <td><a href='@routes.PlayerAdmin.editPlayer(p.playernumber)' class="btn btn-info" role="button">Edit</a></td>
+        <td><a href='@routes.PlayerAdmin.editPlayer(p.playernumber)' class="btn btn-info" role="button">Edit Details</a></td>
+      <td><a href='@routes.PlayerAdmin.editPlayerData(p.playernumber)' class="btn btn-warning" role="button">Add/Edit Data</a></td>
       </tr>
     
     }

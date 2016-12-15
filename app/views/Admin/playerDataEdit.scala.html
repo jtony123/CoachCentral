@@ -1,0 +1,53 @@
+@import tags._
+@(user : models.User, active: String, player: models.Player,  categories: List[models.Category], headers: List[String], datalines:List[List[String]])
+
+@main(title = "Player Admin") {
+
+@navigationbar(user: models.User, active: String)
+@adminNav(active: String)
+
+
+
+<div class="container-fluid">
+	<div>
+	<br><br><br>
+	
+	<table class="table table-striped" style="font-size:12px">
+	<thead>
+	<tr>
+	@for(h <- headers) {
+		<th>@h</th>
+	}
+	</tr>
+	</thead>
+	@for(d <- datalines) {
+	<tr>
+		@for((p, index) <- d.zipWithIndex) {
+			@if(index == 13){
+				<td>
+					<form class="form-inline" action="@routes.PlayerAdmin.updatePlayerData(player.playernumber)" method="POST"  enctype="multipart/form-data" >
+					
+					<input id="otherload" class="input-sm" style="";type="text" name="otherload" value="@p" size="5" />
+					
+					
+					<button class="btn btn-xs btn-default">update</button>
+				
+					</form>
+	
+				</td>
+			} else {
+				<td>@p</td>
+			}
+		}
+	
+	</tr>
+	}
+	
+	</table>
+	
+	</div>
+</div>
+
+
+
+}

@@ -103,9 +103,6 @@ public class Global extends GlobalSettings {
         	Category category = new Category("All");
         	category.save();
         	
-        	Category cat2 = new Category("First Team");
-        	cat2.save();
-        	
         	Category starting5 = new Category("Starting 5");
         	starting5.save();
         	
@@ -145,9 +142,8 @@ public class Global extends GlobalSettings {
         	player4.height = "6'7";
         	player4.weight = "240lbs";
         	player4.position = "Forward";
-        	player4.categories.add(Category.findByName("First Team"));
+        	player4.categories.add(Category.findByName("Forwards"));
         	prev1.players.add(player4);
-        	prev2.players.add(player4);
         	player4.save();
         	
         	Player player5 = new Player("Justin Anderson", 5, null, prev1);
@@ -155,7 +151,7 @@ public class Global extends GlobalSettings {
         	player5.height = "6'6";
         	player5.weight = "228lbs";
         	player5.position = "Forward";
-        	player5.categories.add(Category.findByName("First Team"));
+        	player5.categories.add(Category.findByName("Forwards"));
         	prev1.players.add(player5);
         	prev2.players.add(player5);
         	player5.save();
@@ -165,6 +161,7 @@ public class Global extends GlobalSettings {
         	player6.height = "6'0";
         	player6.weight = "185lbs";
         	player6.position = "Guard";
+        	player5.categories.add(Category.findByName("Guards"));
         	prev1.players.add(player6);
         	prev2.players.add(player6);
         	player6.save();
@@ -174,7 +171,7 @@ public class Global extends GlobalSettings {
         	player7.height = "6'8";
         	player7.weight = "225lbs";
         	player7.position = "Foward";
-        	player7.categories.add(Category.findByName("First Team"));
+        	player7.categories.add(Category.findByName("Forwards"));
         	prev1.players.add(player7);
         	prev2.players.add(player7);
         	player7.save();
@@ -183,8 +180,8 @@ public class Global extends GlobalSettings {
              player8.dob = "November 28, 1984";
         	player8.height = "7'0";
         	player8.weight = "260lbs";
-        	player8.position = "Centre";
-        	player8.categories.add(Category.findByName("First Team"));
+        	player8.position = "Center";
+        	player8.categories.add(Category.findByName("Centers"));
         	prev1.players.add(player8);
         	prev2.players.add(player8);
         	player8.save();
@@ -194,6 +191,7 @@ public class Global extends GlobalSettings {
         	player9.height = "6'7";
         	player9.weight = "215lbs";
         	player9.position = "Guard";
+        	player9.categories.add(Category.findByName("Centers"));
         	prev1.players.add(player9);
         	prev2.players.add(player9);
         	player9.save();
@@ -203,7 +201,7 @@ public class Global extends GlobalSettings {
         	player10.height = "6'2";
         	player10.weight = "185lbs";
         	player10.position = "Guard";
-        	player10.categories.add(Category.findByName("First Team"));
+        	player10.categories.add(Category.findByName("Guards"));
         	prev1.players.add(player10);
         	prev2.players.add(player10);
         	player10.save();
@@ -213,7 +211,7 @@ public class Global extends GlobalSettings {
         	player11.height = "6'2";
         	player11.weight = "185lbs";
         	player11.position = "Guard";
-        	player11.categories.add(Category.findByName("First Team"));
+        	player11.categories.add(Category.findByName("Guards"));
         	prev1.players.add(player11);
         	prev2.players.add(player11);
         	player11.save();
@@ -222,8 +220,8 @@ public class Global extends GlobalSettings {
              player12.dob = "August 27, 1992";
         	player12.height = "7'0";
         	player12.weight = "260lbs";
-        	player12.position = "Centre";
-        	player12.categories.add(Category.findByName("Reserves"));
+        	player12.position = "Center";
+        	player12.categories.add(Category.findByName("Centers"));
         	prev1.players.add(player12);
         	prev2.players.add(player12);
         	player12.save();
@@ -233,6 +231,7 @@ public class Global extends GlobalSettings {
         	player13.height = "6'3";
         	player13.weight = "185lbs";
         	player13.position = "Guard";
+        	player13.categories.add(Category.findByName("Guards"));
         	prev1.players.add(player13);
         	prev2.players.add(player13);
         	player13.save();
@@ -242,7 +241,7 @@ public class Global extends GlobalSettings {
         	player14.height = "6'5";
         	player14.weight = "220lbs";
         	player14.position = "Guard";
-        	player14.categories.add(Category.findByName("Reserves"));
+        	player14.categories.add(Category.findByName("Guards"));
         	prev1.players.add(player14);
         	prev2.players.add(player14);
         	player14.save();
@@ -251,7 +250,8 @@ public class Global extends GlobalSettings {
              player15.dob = "June 15, 1986";
         	player15.height = "7'2";
         	player15.weight = "245lbs";
-        	player15.position = "Centre";
+        	player15.position = "Center";
+        	player14.categories.add(Category.findByName("Centers"));
         	prev1.players.add(player15);
         	prev2.players.add(player15);
         	player15.save();
@@ -261,7 +261,7 @@ public class Global extends GlobalSettings {
         	player16.height = "7'0";
         	player16.weight = "245lbs";
         	player16.position = "Centre";
-        	player16.categories.add(Category.findByName("Injured"));
+        	player16.categories.add(Category.findByName("Centers"));
         	prev1.players.add(player16);
         	prev2.players.add(player16);
         	player16.save();
@@ -271,6 +271,7 @@ public class Global extends GlobalSettings {
         	player17.height = "6'11";
         	player17.weight = "240lbs";
         	player17.position = "Forward";
+        	player17.categories.add(Category.findByName("Forwards"));
         	prev1.players.add(player17);
         	prev2.players.add(player17);
         	player17.save();
@@ -280,6 +281,7 @@ public class Global extends GlobalSettings {
         	player18.height = "6'8";
         	player18.weight = "220lbs";
         	player18.position = "Forward";
+        	player18.categories.add(Category.findByName("Forwards"));
         	prev1.players.add(player18);
         	prev2.players.add(player18);
         	player18.save();
@@ -289,6 +291,7 @@ public class Global extends GlobalSettings {
 	        player19.height = "6'3";
 	        player19.weight = "195lbs";
 	        player19.position = "Guard";
+	        player19.categories.add(Category.findByName("Guards"));
 	       	prev1.players.add(player19);
 	       	prev2.players.add(player19);
 	       	player19.save();

@@ -54,7 +54,7 @@ path {
 /* the styling of the grid lines on the graph */
 .grid .tick {
     stroke: lightgrey;
-    stroke-opacity: 0.7;
+    stroke-opacity: 0.6;
     shape-rendering: crispEdges;
 }
 .grid path {
@@ -541,7 +541,7 @@ var xAxis = d3.svg.axis().scale(xScale)
 	.orient("bottom").ticks(8).tickFormat(d3.time.format("%b-%d %H:%M"));
 	
 var yAxis = d3.svg.axis().scale(y)
-	.orient("right").ticks(5);
+	.orient("right").ticks(3);
 	
 	
 var acuteline = d3.svg.line()
@@ -677,7 +677,7 @@ var lowersvg = d3.select('#chart_lower').classed('chart_lower', true)
 	
 
 // function to draw the horizontal gridlines
-function make_gridline() {	 return d3.svg.axis().scale(y).orient("left").ticks(5);}
+function make_gridline() {	 return d3.svg.axis().scale(y).orient("left").ticks(6);}
 
 
 // called whenever mouse hovers over a data point
@@ -910,17 +910,17 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     
     xScale.domain([threeweeksago,  oneweekahead]);
 
-// 	y.domain([0, 15]);
-// 	y1.domain([1500, 0]);
-// 	y2.domain([0,1500]);
+	y.domain([0, 15]);
+	y1.domain([1500, 0]);
+	y2.domain([0,1500]);
 
 //d3.max(data, function (d) { return d.date; }).getTime();
 	
-	var maxload = d3.max(data, function(d) { return d.GAME_LOAD;});
-	var ymax = Math.ceil(maxload/100);
-	y.domain([0, ymax]);
-	y1.domain([maxload, 0]);
-	y2.domain([0, maxload]);
+// 	var maxload = d3.max(data, function(d) { return d.GAME_LOAD;});
+// 	var ymax = Math.ceil(maxload/100);
+// 	y.domain([0, ymax]);
+// 	y1.domain([maxload, 0]);
+// 	y2.domain([0, maxload]);
 	
 	
 	

@@ -47,6 +47,8 @@ GET		/addPlayerToCategory		controllers.PlayerAdmin.addPlayerToCategory(playernum
 GET		/removePlayerFromCategory	controllers.PlayerAdmin.removePlayerFromCategory(playernumber: Integer, cat: String)
 POST	/updatePlayer				controllers.PlayerAdmin.updatePlayer(playernumber: Integer)
 POST	/deletePlayer				controllers.PlayerAdmin.deletePlayer(playernumber: Integer)
+GET		/editPlayerData				controllers.PlayerAdmin.editPlayerData(playernumber: Integer)
+POST	/updatePlayerData			controllers.PlayerAdmin.updatePlayerData(playernumber: Integer)
 
 GET		/questionsList				controllers.QuestionAdmin.questionsList()
 GET		/questionAdd				controllers.QuestionAdmin.questionAdd()
