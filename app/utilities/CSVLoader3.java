@@ -196,7 +196,7 @@ public class CSVLoader3 {
 				} else {
 					// new player encountered(not already in map)
 					// instantiate a new list of strings for this player
-					String[] datapoints = new String[40];
+					String[] datapoints = new String[44];
 					// populate the arraylist with zeros
 					for(int i = 0; i<datapoints.length; i++){
 						datapoints[i] = "0,";

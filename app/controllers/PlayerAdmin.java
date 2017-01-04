@@ -45,6 +45,8 @@ import views.html.Admin.*;
 @Restrict({@Group({"admin"})})
 public class PlayerAdmin extends Controller {
 	
+		String filepath = "data/attachments/GraphCSVFiles/";
+		//String filepath = "/tmp/";
 	
 	   @Inject
 	    FormFactory formFactory;
@@ -96,7 +98,7 @@ public class PlayerAdmin extends Controller {
 	    public CompletionStage<Result> editPlayerData(Integer playernumber) {
 	    	System.out.println("get editPlayerData called");
 	    	
-	    	String filepath = "data/attachments/GraphCSVFiles/";
+	    	//String filepath = "data/attachments/GraphCSVFiles/";
 	    	Player player = Player.findByNumber(playernumber);
 	    	String fileName = filepath + player.filename;
 	    	List<String> headerstrings = new ArrayList<String>();
@@ -167,7 +169,7 @@ public class PlayerAdmin extends Controller {
 	    	
 	    	// TODO:	grab whatever was changed in the form and update the file
 	    	
-	    	String filepath = "data/attachments/GraphCSVFiles/";
+	    	//String filepath = "data/attachments/GraphCSVFiles/";
 	    	//String filepath = "/tmp/";
 	    	
 	    	

@@ -47,7 +47,7 @@ path {
 .axis line {
 	fill: none;
 	stroke: grey;
-	stroke-width: 0;
+	/*stroke-width: 0;*/
 	shape-rendering: crispEdges;
 }
 
@@ -469,12 +469,26 @@ var heartrateexert_chart_colour = "#1FE234";
 var squadavg_chart_colour = "#CECE0B";
 
 var acutechronic_button_text = "ACUTE CHRONIC";
+var acutechronic_button_text_small = "A:C";
+
 var sessionloads_button_text = "PRACTICE LOADS";
+var sessionloads_button_text_small = "PL";
+
 var gameloads_button_text = "GAME LOADS";
+var gameloads_button_text_small = "GL";
+
 var accdec_button_text = "ACC/DEC";
+var accdec_button_text_small = "A/D";
+
 var cod_button_text = "CoD (L/R)";
+var cod_button_text_small = "CoD";
+
 var jump_button_text = "JUMPS";
+var jump_button_text_small = "JM";
+
 var hre_button_text = "HR EXERT";
+var hre_button_text_small = "HR";
+
 var squadavg_button_text = "SQUAD AVG";
 
 var acutechronichelptext = "Acute:Chronic ratio is a ratio of the rolling average of workload experienced by the "
@@ -555,7 +569,7 @@ var acuteline = d3.svg.line()
 var chronicloadarea = d3.svg.area()
 	.interpolate("basis")
 	.x(function(d) { return xScale(d.SESS_START); })
-	.y0(chart_h)
+	.y0(chart_h-margin.bottom)
 	.y1(function(d) { return y2(d.CHRONIC); });
 	
 	
@@ -665,7 +679,7 @@ var svg = d3.select('#chart_centre').classed('chart_centre', true)
 // the innersvg prevents data being plotted outside the graph area - same as clipping rect
 var innersvg = svg.select('g').attr("transform", "translate(" + (margin.left) + ", " + 0 + ")")
 	.append("svg").attr("id", "innersvg")
-	.attr("width", width - (margin.left + margin.right)).attr("height", chart_h - margin.bottom);
+	.attr("width", width - (margin.left + margin.right)).attr("height", chart_h);
 	
 var lowersvg = d3.select('#chart_lower').classed('chart_lower', true)
 	.append("svg").attr("id", "lowersvg")
@@ -927,73 +941,23 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	var zoom = d3.behavior.zoom()
 	.x(xScale)
 	.on('zoom', function() {
-		
 	    re_draw_chart();
 	});
 	
-	
-	// ************come back here and fix the fix the zoom buttons
-	
-// 	function zoomed() {
-// 	    svg.attr("transform",
-// 	        "translate(" + zoom.translate() + ")" +
-// 	        "scale(" + zoom.scale() + ")"
-// 	    );
-// 	}
-	
-// 	function interpolateZoom (translate, scale) {
-// 	    var self = this;
-// 	    return d3.transition().duration(350).tween("zoom", function () {
-// 	        var iTranslate = d3.interpolate(zoom.translate(), translate),
-// 	            iScale = d3.interpolate(zoom.scale(), scale);
-// 	        return function (t) {
-// 	            zoom
-// 	                .scale(iScale(t))
-// 	                .translate(iTranslate(t));
-// 	            zoomed();
-// 	        };
-// 	    });
-// 	}
-
-// 	function zoomClick() {
-// 	    var clicked = d3.event.target,
-// 	        direction = 1,
-// 	        factor = 0.2,
-// 	        target_zoom = 1,
-// 	        center = [width / 2, 600],
-// 	        extent = zoom.scaleExtent(),
-// 	        translate = zoom.translate(),
-// 	        translate0 = [],
-// 	        l = [],
-// 	        view = {x: translate[0], y: translate[1], k: zoom.scale()};
-
-// 	    d3.event.preventDefault();
-// 	    direction = (this.id === 'zoom_in') ? 1 : -1;
-// 	    target_zoom = zoom.scale() * (1 + factor * direction);
-
-// 	    if (target_zoom < extent[0] || target_zoom > extent[1]) { return false; }
-
-// 	    translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
-// 	    view.k = target_zoom;
-// 	    l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
-
-// 	    view.x += center[0] - l[0];
-// 	    view.y += center[1] - l[1];
-
-// 	    interpolateZoom([view.x, view.y], view.k);
-// 	}
 	
 	
 		// add a rectangle over the chart for zooming    
 	innersvg.append('rect').attr("id", "zoomrect").attr("y", 0).attr('width', width).attr('height', chart_h)
 		.attr("opacity", 0) .call(zoom);
 	
-	// add the x axis
-	svg.append("g").attr("class", "x axis").attr("id", "xaxis")
-		.attr("transform", "translate(0," + (chart_h - margin.bottom) + ")").call(xAxis);
+	
 	
 	
 	draw_chart();
+	
+	// add the x axis
+	innersvg.append("g").attr("class", "x axis").attr("id", "xaxis")
+		.attr("transform", "translate(0," + (chart_h - margin.bottom) + ")").call(xAxis);
 	
 	function draw_chart() {
 		
@@ -1100,60 +1064,6 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	.attr("height", function(d){return 1;});
 	
 	
-		
-		//the game triangles
-		innersvg.selectAll(".gametriangles").data(data2).enter().append("path")
-		.attr("id", "gametriangles")
-		.attr("stroke-width", 1)
-		.style("stroke", "black")
-		.style("fill", function(d) {
-			return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
-		})
-		.style("opacity", 0.8)
-
-		.attr("d", d3.svg.symbol().type("triangle-up").size(200))
-		// offset up by 5 if exceeding threshold, down by 5 otherwise
-		.attr("transform", function(d) { 
-			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 10) + ")" })
-		.on("mouseover", function(d) {
-			tooltip.transition()
-				.duration(200)
-				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-			tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
-						+ "Location : " + (d.LOCATION) +"<br><br>" )
-				.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-		.on("mouseout", function(d) {       
-			tooltip.transition()        
-                .duration(500)      
-                .style("opacity", 0);
-		});
-		
-		
-		
-		// the game rects
-// 		innersvg.selectAll('gamerectangles').data(data2).enter().append("rect")
-// 		.filter(function(d) { return d.GAME_START > today})
-// 		.attr("id", "game").attr("opacity", 0.9)
-// 		.style("stroke", "green")
-// 		.style("fill", function(d) {
-// 			return d.GAME_START > today ? "green" : "green";
-// 		})
-// 		.attr("x", function(d) {	return xScale(d.GAME_START);})
-// 		.attr("y", function(d){		return 50;})
-// 		.attr("width", function(d){	return (xScale(d.GAME_END) - xScale(d.GAME_START));})
-// 		.attr("height", function(d){return 400;})
-// 		.on("mouseover", function(d) {
-// 			tooltip.transition()
-// 				.duration(200)
-// 				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-// 			tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
-// 						+ "Location : " + (d.LOCATION) +"<br><br>" )
-// 				.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-// 		.on("mouseout", function(d) {       
-// 			tooltip.transition()        
-//                 .duration(500)      
-//                 .style("opacity", 0);
-// 		});
 		
 		// the chronic load shaded area
 		innersvg.append("path").attr("class", "area").attr("id", "ChronicLoad")
@@ -1325,6 +1235,80 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		
 		
 		
+		//all game diamonds from the schedule file
+		innersvg.selectAll(".gametriangles").data(data2).enter().append("path")
+		// only showing games in the future from the calendar data
+// 		.filter(function(d){
+//  			return d.GAME_START > today ? d.GAME_START : null;
+//  		})
+		.attr("id", "gametriangles")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", function(d) {
+			return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
+		})
+		.style("opacity", 0.6)
+
+		.attr("d", d3.svg.symbol().type("diamond").size(function(d) { return d.GAME_START > today ? 200 : 50}))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 15) + ")" })
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+			tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
+						+ "Location : " + (d.LOCATION) +"<br><br>" )
+				.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		});
+		
+		
+		//the past game result triangles
+		innersvg.selectAll(".gameresult").data(data).enter().append("path")
+		// only showing games in the future from the calendar data
+		.filter(function(d){
+ 			return d.GAME_LOAD > 0 ? d.SESS_START : null;
+ 		})
+		.attr("id", "gameresult")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", function(d) {
+			return d.WIN_LOSS == "W" ? "green" : "red";
+		})
+		.style("opacity", 1)
+
+		.attr("d", d3.svg.symbol().type(function(d) {
+			return d.WIN_LOSS == "W" ? "triangle-up" : "triangle-down";
+		}).size(function(d){
+			return 100;
+			//return d.SCORE_DIFF * 5;
+		}))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			
+			return d.WIN_LOSS == "W" ? "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 30) + ")" : "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 10) + ")";})
+			
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+			tooltip .html("Home Team : " + (d.HOME_TEAM) +"<br><br>" 
+						+ "Away Team : " + (d.AWAY_TEAM) +"<br><br>" 
+						+ "Score Diff: " + (d.SCORE_DIFF) +"<br><br>" 
+						)
+				.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		});
+		
+		
+		
 	} // end drawchart()
 	
 	
@@ -1373,17 +1357,16 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		.attr("height", function(d){return 1;});
 		
 		
-		//the game triangles
+		//the game diamonds
 		innersvg.selectAll("#gametriangles")
 		.attr("transform", function(d) { 
-			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 10) + ")" });
+			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 15) + ")" });
 		
-		// the game rects
-// 		innersvg.selectAll('#game')
-// 		.attr("x", function(d) {	return xScale(d.GAME_START);})
-// 		.attr("y", function(d){		return 50;})
-// 		.attr("width", function(d){	return (xScale(d.GAME_END) - xScale(d.GAME_START));})
-// 		.attr("height", function(d){return 400;});
+		//the past game result triangles
+		innersvg.selectAll("#gameresult")
+		.attr("transform", function(d) { 
+			return d.WIN_LOSS == "W" ? "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 30) + ")" : "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 10) + ")";});
+		
 		
 		
 
@@ -1456,9 +1439,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		innersvg.selectAll("#UPFlags")
 		.attr("transform", function(d) { return "translate(" + xScale(d.SESS_START) + "," + (y2(d.ACUTE) + (d.ACUTE > (d.CHRONIC * 1.5) ? 5 : -5)) + ")" });
 		
-		svg.selectAll("#xaxis").call(xAxis);
+		innersvg.selectAll("#xaxis").call(xAxis);
 		
-	}
+	} // end re_draw_chart
 	
 	   
     // add the y axis
@@ -1467,26 +1450,47 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 // 		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
     
     // horizontal gridlines
-	innersvg.append("g").attr("class", "grid").call(make_gridline().tickSize(-width, 0, 0) .tickFormat(""))
+	innersvg.append("g")
+	.attr("class", "grid")
+	.attr("id", "gridlines")
+	.call(make_gridline()
+			.tickSize(-width, 0, 0) 
+			.tickFormat(""))
 	    
 	    
 	    
 		
 		
-		var numButtonsToggle2 = 11;
+	var numButtonsToggle2 = 9;
+	var drawUpperButtons = function(){
+		
+		// first remove all elements from this svg container
+		uppersvg.selectAll("g").remove();
 		
 		drawPERFORMANCEButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_hi", "cod_r_hi", 0, true);
-		drawSCHEDULEButton("game", 2, true);
+		drawGAMERESULTButton("gameresult", 1, true);
+		drawSCHEDULEButton("gametriangles", 2, true);
 		
-		drawSEASONVIEWButton(9);
-		drawMONTHVIEWButton(10);
-		drawWEEKVIEWButton(11);
+		drawSEASONVIEWButton(7);
+		drawMONTHVIEWButton(8);
+		drawWEEKVIEWButton(9);
+		
+		
+		
+		
+		
+	}
+	
+	drawUpperButtons();
+    
+    
+		
+
 		
 		
 //special function to draw and control button for GAME
 function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
 			
-			//var buttonOffset = width/(numButtons + 1);
 			
 // 			d3.selectAll("#"+lineid1).style("opacity", function(d) {
 // 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
@@ -1508,14 +1512,17 @@ function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, line
 					
 					var abutton;
 					if(width < 1000){
-						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-						var dy = i>4 ? 50 : 0;
-						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("PERF");
 					} else {
 						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("PERFORMANCE");
 					}
 					
-					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("PERFORMANCE");
+					
 			        
 					// get the width of the text and use it to tailor the width of the rect around it
 		 			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1526,6 +1533,7 @@ function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, line
 				    .attr("cursor", "pointer")
 				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
 				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
 				    	var isActive;
@@ -1557,6 +1565,55 @@ function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, line
 	} // end drawPERFORMANCEButton
 	
 //special function to draw and control button for GAME
+function drawGAMERESULTButton(lineid1, i, toggled){
+			
+			
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GR");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GAME RESULT");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GAMERES_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				        // Hide or show the line
+				        
+				d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+				        
+				        // update the buttons border
+				        d3.select("#GAMERES_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawGAMERESULTButton
+	
+//special function to draw and control button for GAME
 function drawSCHEDULEButton(lineid1, i, toggled){
 			
 			
@@ -1565,14 +1622,17 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 					
 					var abutton;
 					if(width < 1000){
-						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-						var dy = i>4 ? 50 : 0;
-						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SCH");
 					} else {
 						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SCHEDULE");
 					}
 					
-					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SCHEDULE");
+					
 			        
 					// get the width of the text and use it to tailor the width of the rect around it
 		 			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1583,6 +1643,7 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 				    .attr("cursor", "pointer")
 				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
 				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
 				    	var isActive;
@@ -1605,14 +1666,17 @@ function drawSEASONVIEWButton(i){
 					
 					var abutton;
 					if(width < 1000){
-						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-						var dy = i>4 ? 50 : 0;
-						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SE");
 					} else {
 						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SEASON");
 					}
 					
-					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SEASON");
+					
 			        
 					// get the width of the text and use it to tailor the width of the rect around it
 		 			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1623,14 +1687,18 @@ function drawSEASONVIEWButton(i){
 				    .attr("cursor", "pointer")
 				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
 				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
 
  						var back = d3.min(data, function (d) { return d.SESS_START; }).getTime();
-						var forward = d3.max(data, function (d) { return d.SESS_END; }).getTime();
+						//var forward = d3.max(data, function (d) { return d.SESS_END; }).getTime();
+						var forward = new Date(Date.now());
 
 						xScale.domain([back,  forward]);
-						 re_draw_chart();
+						
+					zoom.x(xScale);
+						re_draw_chart();
 						});
 					
 	} // end drawSEASONVIEWButton
@@ -1642,14 +1710,17 @@ function drawMONTHVIEWButton(i){
 					
 					var abutton;
 					if(width < 1000){
-						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-						var dy = i>4 ? 50 : 0;
-						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("MN");
 					} else {
 						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("MONTH");
 					}
 					
-					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("MONTH");
+					
 			        
 					// get the width of the text and use it to tailor the width of the rect around it
 		 			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1660,11 +1731,13 @@ function drawMONTHVIEWButton(i){
 				    .attr("cursor", "pointer")
 				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
 				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
 				        var back = new Date(Date.now() + -21*24*3600*1000);
 						var forward = new Date(Date.now() + 7*24*3600*1000);
 						 xScale.domain([back,  forward]);
+						 zoom.x(xScale);
 						 re_draw_chart();
 						});
 					
@@ -1677,14 +1750,17 @@ function drawWEEKVIEWButton(i){
 					
 					var abutton;
 					if(width < 1000){
-						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
-						var dy = i>4 ? 50 : 0;
-						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("WK");
 					} else {
 						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("WEEK");
 					}
 					
-					abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("WEEK");
+					
 			        
 					// get the width of the text and use it to tailor the width of the rect around it
 		 			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1695,11 +1771,13 @@ function drawWEEKVIEWButton(i){
 				    .attr("cursor", "pointer")
 				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
 				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
 				        var sixdaysago = new Date(Date.now() + -6*24*3600*1000);
 						var onedayahead = new Date(Date.now() + 24*3600*1000);
 						 xScale.domain([sixdaysago,  onedayahead]);
+						 zoom.x(xScale);
 						 re_draw_chart();
 						 
 				        });
@@ -1727,15 +1805,18 @@ function drawACButton(lineid1, lineid2, flagid, i, toggled){
 	        	
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+// 				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+// 				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text);
 			}
 			
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text);
+			//abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text_small);
 	        
+			//acutechronic_button_text_small
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
 			
@@ -1743,7 +1824,7 @@ function drawACButton(lineid1, lineid2, flagid, i, toggled){
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "ACLoad_Button") 
 		    .attr("cursor", "pointer")
-		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0).style("shape-rendering", "auto")
 		    .style("stroke", toggled ? acutechronic_button_border_colour : "grey").style("opacity", function(d) { this.active = toggled;})
 		    .on("click", function(){
 		    	
@@ -1806,15 +1887,15 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, rectid5, lineid1, i,
 	        	
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", sessionloads_button_border_colour).text(sessionloads_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", sessionloads_button_border_colour).text(sessionloads_button_text);
 			}
 	        	
 			
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", sessionloads_button_border_colour).text(sessionloads_button_text);
+
 	        
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1822,7 +1903,7 @@ function drawSESSButton(rectid1, rectid2, rectid3, rectid4, rectid5, lineid1, i,
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "Session_Load_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? sessionloads_button_border_colour : "grey")
+		    .style("stroke", toggled ? sessionloads_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	var isActive;
@@ -1876,23 +1957,21 @@ function drawGAMELOADButton(rectid1, i, toggled){
 	        	
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", gameloads_button_border_colour).text(gameloads_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", gameloads_button_border_colour).text(gameloads_button_text);
 			}
 	        	
-			
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", gameloads_button_border_colour).text(gameloads_button_text);
-	        
+
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
 			abutton.append("rect").attr("rx", 10).attr("ry", 10)
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "Game_Load_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? gameloads_button_border_colour : "grey")
+		    .style("stroke", toggled ? gameloads_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	
@@ -1940,15 +2019,15 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text);
 			}
 
 
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text);
+			
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
@@ -1956,7 +2035,7 @@ function drawACCDECButton(lineid1, lineid2, i, toggled){
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "ACCDEC_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? accdec_button_border_colour : "grey")
+		    .style("stroke", toggled ? accdec_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	var isActive;
@@ -2012,15 +2091,15 @@ function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, 
 
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text);
 			}
 
 
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text);
+			
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
@@ -2028,7 +2107,7 @@ function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, 
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "COD_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? cod_button_border_colour : "grey")
+		    .style("stroke", toggled ? cod_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	var isActive;
@@ -2086,15 +2165,12 @@ function drawJUMPButton(lineid1, lineid2, lineid3, i, toggled){
 
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text);
 			}
-
-
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text);
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
@@ -2102,7 +2178,7 @@ function drawJUMPButton(lineid1, lineid2, lineid3, i, toggled){
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "JUMP_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? jump_button_border_colour : "grey")
+		    .style("stroke", toggled ? jump_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	var isActive;
@@ -2145,15 +2221,15 @@ function drawHREButton(lineid1, i, toggled){
 
 			var abutton;
 			if(width < 1000){
-				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
-				var dy = i>4 ? 50 : 0;
-				abutton = lowersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text_small);
 			} else {
 				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text);
 			}
 
 
-			abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text);
+			
 
 			// get the width of the text and use it to tailor the width of the rect around it
  			var textWidth = abutton.select("text").node().getBBox().width;
@@ -2161,7 +2237,7 @@ function drawHREButton(lineid1, i, toggled){
 		    .attr("width", textWidth + 20).attr("height", 20)
 		    .attr("class", "legend").attr("id", "HRE_Button").attr("cursor", "pointer")
 		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
-		    .style("stroke", toggled ? hre_button_border_colour : "grey")
+		    .style("stroke", toggled ? hre_button_border_colour : "grey").style("shape-rendering", "auto")
 		    .style("opacity", function(d) {	this.active = toggled;})
 		    .on("click", function(){
 		    	var isActive;
@@ -2193,7 +2269,7 @@ function drawHREButton(lineid1, i, toggled){
 		
 		
 		
-			var drawButtons = function(){
+			var drawLowerButtons = function(){
 			
 			// first remove all elements from this svg container
 			lowersvg.selectAll("g").remove();
@@ -2227,7 +2303,7 @@ function drawHREButton(lineid1, i, toggled){
 			
 		}
 		
-		drawButtons();
+			drawLowerButtons();
 
 	
 	// handling window resizing
@@ -2236,16 +2312,25 @@ function drawHREButton(lineid1, i, toggled){
 	function resize() {
 	    // update width
 	    width = parseInt(d3.select('#chart_centre').style('width'), 10);
+	    
+	    d3.select('#chart_upper').attr("width", width);
+	    d3.select('#uppersvg').attr("width", width);
+	    d3.select('#outersvg').attr("width", width);
+	    d3.select('#innersvg').attr("width", width - (margin.left + margin.right));
+	    d3.select('#background_shading').attr("width", width - (margin.left + margin.right));
+	    d3.select('#zoomrect').attr("width", width);
+	    d3.select('#gridlines').call(make_gridline().tickSize(-width, 0, 0));
+	    d3.select('#lowersvg').attr("width", width + margin.left + margin.right);
+	    
 	    xScale.range([0, width]);
-	    buttonOffset = width/(numButtons + 1);
-	    drawButtons();
+	    drawLowerButtons();
+	    drawUpperButtons();
 	    re_draw_chart();
 	}
 	
 	// function to keep moving the present time marker along
 	setInterval(function(){ 
 		
-		//console.log("resetting now marker");
 		data.today = new Date();
 		
 		innersvg.selectAll("#now")

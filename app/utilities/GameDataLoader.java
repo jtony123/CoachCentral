@@ -59,6 +59,13 @@ public class GameDataLoader {
 			// get the index of each of the required columns of data
 			int nameindex = headerstrings.indexOf("PLAYER");
 			int gamedate = headerstrings.indexOf("GAME_DATE");
+			
+			int away = headerstrings.indexOf("AWAY_TEAM_ABBREV");
+			int home = headerstrings.indexOf("HOME_TEAM_ABBREV");
+			int winloss = headerstrings.indexOf("WIN_LOSS");
+			int scorediff = headerstrings.indexOf("SCORE_DIFF");
+			
+			
 			int periodname = headerstrings.indexOf("PERIOD");
 			int minutes = headerstrings.indexOf("MINUTES");
 			int playerload = headerstrings.indexOf("PHYSIO_LOAD");
@@ -82,9 +89,14 @@ public class GameDataLoader {
 				// get the players name from the relevant column
 				String playername = tokens[nameindex];
 				String gamestring = tokens[gamedate];
+				
+				String awaystring = tokens[away];
+				String homestring = tokens[home];
+				String winlossstring = tokens[winloss];
+				String scorediffstring = tokens[scorediff];
+				
+				
 				String minsplayed = tokens[minutes];
-				
-				
 				String playerpoints = tokens[points];
 				String playerrebounds = tokens[rebounds];
 				String playerassists = tokens[assists];
@@ -137,11 +149,12 @@ public class GameDataLoader {
 						playerloads.add(Double.parseDouble(tokens[playerload]));
 						
 						String entry = playername + ",0," + starttimesecs + ","+ endtimesecs;
-						for(int i = 0; i<25;++i){
+						for(int i = 0; i<24;++i){
 							entry +=",0";
 						}
 						
-							entry += load + "," + minsplayed + ","  + playerpoints + "," 
+							entry += "," + awaystring + "," + homestring + "," + winlossstring + "," + scorediffstring + ","
+							+ load + "," + minsplayed + ","  + playerpoints + "," 
 							+ playerrebounds + "," + playerassists + "," + playersteals + "," 
 							+ playerblocks + "," + playerfouls + ","
 							+ "0,0,0,0";
@@ -165,14 +178,15 @@ public class GameDataLoader {
 						
 						
 						String entry = playername + ",0," + starttimesecs + ","+ endtimesecs;
-						for(int i = 0; i<25;++i){
+						for(int i = 0; i<24;++i){
 							entry +=",0";
 						}
 						
-							entry += load + "," + minsplayed + ","  + playerpoints + "," 
-							+ playerrebounds + "," + playerassists + "," + playersteals + "," 
-							+ playerblocks + "," + playerfouls + ","
-							+ "0,0,0,0";
+						entry += "," + awaystring + "," + homestring + "," + winlossstring + "," + scorediffstring + ","
+								+ load + "," + minsplayed + ","  + playerpoints + "," 
+								+ playerrebounds + "," + playerassists + "," + playersteals + "," 
+								+ playerblocks + "," + playerfouls + ","
+								+ "0,0,0,0";
 						
 						ArrayList<String> temp = new ArrayList<String>();
 						temp.add(entry);
