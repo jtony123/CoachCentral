@@ -22,6 +22,9 @@ public class Player extends Model {
 	// @Required
 	public String playername;
 	
+	@OneToMany(mappedBy="player", cascade=CascadeType.ALL)
+	public List<NameAlias> aliases;
+	
 	public String height;
 	
 	public String weight;
@@ -44,6 +47,8 @@ public class Player extends Model {
 	 public File file;
 	
 	 public String filename;
+	 
+	 public String redoxFilename;
 
 	// @Required
 	@ManyToMany(cascade = CascadeType.PERSIST)
@@ -76,7 +81,7 @@ public class Player extends Model {
 		} else {
 			this.categoriseItWith("All");
 		}
-		
+		this.aliases = new ArrayList<NameAlias>();
 
 		// this.questions = new TreeSet<Question>();
 
@@ -109,6 +114,12 @@ public class Player extends Model {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
+	
+	public void addAlias(String alias){
+		NameAlias nameAlias = new NameAlias();
+		nameAlias.alias = alias;
+		this.aliases.add(nameAlias);
+	}
 
 //	public Player updatePhoto(Blob photo) {
 //
@@ -127,6 +138,17 @@ public class Player extends Model {
 	
 	public static Player findByPlayername(String playername){
 		Player player = Player.find.where().eq("playername", playername).findUnique();
+		return player;
+	}
+	
+	public static Player findByNameOrAlias(String name){
+		Player player = Player.find.where().eq("playername", name).findUnique();
+		if(player == null){
+			System.out.println("looking for alias to match " + name);
+			NameAlias namealias = NameAlias.find.where().eq("alias", name).findUnique();
+			player = Player.find.byId(namealias.player.id);
+			System.out.println("found a match " + player.playername);
+		}
 		return player;
 	}
 

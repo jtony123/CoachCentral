@@ -19,6 +19,13 @@ create table category (
   constraint pk_category primary key (id)
 );
 
+create table name_alias (
+  id                            bigint auto_increment not null,
+  alias                         varchar(255),
+  player_id                     bigint,
+  constraint pk_name_alias primary key (id)
+);
+
 create table player (
   id                            bigint auto_increment not null,
   playername                    varchar(255),
@@ -32,6 +39,7 @@ create table player (
   player_photo                  longblob,
   file                          varbinary(255),
   filename                      varchar(255),
+  redox_filename                varchar(255),
   constraint pk_player primary key (id)
 );
 
@@ -119,6 +127,9 @@ create index ix_answer_question_id on answer (question_id);
 alter table answer add constraint fk_answer_questionnaire_id foreign key (questionnaire_id) references questionnaire (id) on delete restrict on update restrict;
 create index ix_answer_questionnaire_id on answer (questionnaire_id);
 
+alter table name_alias add constraint fk_name_alias_player_id foreign key (player_id) references player (id) on delete restrict on update restrict;
+create index ix_name_alias_player_id on name_alias (player_id);
+
 alter table player_user add constraint fk_player_user_player foreign key (player_id) references player (id) on delete restrict on update restrict;
 create index ix_player_user_player on player_user (player_id);
 
@@ -167,6 +178,9 @@ drop index ix_answer_question_id on answer;
 alter table answer drop foreign key fk_answer_questionnaire_id;
 drop index ix_answer_questionnaire_id on answer;
 
+alter table name_alias drop foreign key fk_name_alias_player_id;
+drop index ix_name_alias_player_id on name_alias;
+
 alter table player_user drop foreign key fk_player_user_player;
 drop index ix_player_user_player on player_user;
 
@@ -209,6 +223,8 @@ drop index ix_user_user_permission_user_permission on user_user_permission;
 drop table if exists answer;
 
 drop table if exists category;
+
+drop table if exists name_alias;
 
 drop table if exists player;
 

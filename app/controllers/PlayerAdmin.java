@@ -45,8 +45,14 @@ import views.html.Admin.*;
 @Restrict({@Group({"admin"})})
 public class PlayerAdmin extends Controller {
 	
-		String filepath = "data/attachments/GraphCSVFiles/";
+		//String filepath = "data/attachments/GraphCSVFiles/";
 		//String filepath = "/tmp/";
+		
+		
+		@Inject 
+		private  Configuration configuration;
+		String filepath;
+		
 	
 	   @Inject
 	    FormFactory formFactory;
@@ -54,9 +60,11 @@ public class PlayerAdmin extends Controller {
 	    private final HttpExecutionContext ec;
 
 	    @Inject
-	    public PlayerAdmin(final HttpExecutionContext ec)
+	    public PlayerAdmin(final HttpExecutionContext ec,  Configuration configuration)
 	    {
 	        this.ec = ec;
+	        this.configuration = configuration;
+	        filepath = configuration.getString("filepath");
 	    }
 	    
 
@@ -264,6 +272,8 @@ public class PlayerAdmin extends Controller {
 	    	
 	    }
 	    
+	
+	    
 	    
 	    
 	    public CompletionStage<Result> updatePlayer(Integer playernumber) {
@@ -277,6 +287,11 @@ public class PlayerAdmin extends Controller {
 	    	player.height = form.get("height");
 	    	player.weight = form.get("weight");
 	    	player.dob = form.get("dob");
+	    	
+	    	String alias = form.get("alias");
+	    	if(!alias.equalsIgnoreCase("") | alias != null){
+	    		player.addAlias(alias);
+	    	}
 	    	
 	        MultipartFormData<File> body = request().body().asMultipartFormData();
 	        FilePart<File> filename = body.getFile("playerPhoto");

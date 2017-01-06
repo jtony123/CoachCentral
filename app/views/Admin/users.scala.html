@@ -53,7 +53,9 @@ List[models.User])
 		
 
 <br><br>
-<div>
+<div class="row">
+
+<div class="col-sm-3">
 	<form method="POST" action="@routes.Application.uploadCalender()" enctype="multipart/form-data">
  			
 		<div>
@@ -63,30 +65,29 @@ List[models.User])
 	
 	
 		<br>
-		<button class="btn btn-lg btn-primary btn-block">Upload</button>
+		<button class="btn btn-lg btn-primary btn-block">Upload calendar file</button>
 	</form>
 </div>
-<br><br><br><br>
-<div>
+
+<div class="col-sm-3">
 	<form method="POST" action="@routes.Application.uploadMultipleCSV()" enctype="multipart/form-data">
  			
 		<div>
-			<label for="userName">choose the data files to upload</label> 
+			<label for="userName">choose the practice session data files to upload</label> 
 			<input type="file" name="files" multiple id="gpsfiles" size="30"/>
 		</div>
 	
 	
 		<br>
-		<button class="btn btn-lg btn-primary btn-block">Upload files</button>
+		<button class="btn btn-lg btn-primary btn-block">Upload practice session files</button>
 	</form>
 </div>
 
-<br><br><br><br>
-<div>
+<div class="col-sm-3">
 	<form method="POST" action="@routes.Application.uploadGamedata()" enctype="multipart/form-data">
  			
 		<div>
-			<label for="userName">choose the data files to upload</label> 
+			<label for="userName">choose the game data files to upload</label> 
 			<input type="file" name="gamefiles" multiple id="gamefiles" size="30"/>
 		</div>
 	
@@ -96,4 +97,18 @@ List[models.User])
 	</form>
 </div>
 
+<div class="col-sm-3">
+	<form method="POST" action="@routes.Application.uploadRedoxCSV()" enctype="multipart/form-data">
+ 			
+		<div>
+			<label for="userName">choose the redox data files to upload</label> 
+			<input type="file" name="redoxfiles" multiple id="redoxfiles" size="30"/>
+		</div>
+	
+	
+		<br>
+		<button class="btn btn-lg btn-primary btn-block">Upload redox data</button>
+	</form>
+</div>
+</div> <!-- end row -->
 }

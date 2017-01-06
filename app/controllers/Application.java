@@ -15,13 +15,14 @@ import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
-import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
-
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.Category;
 import models.Player;
 import models.User;
+import play.Configuration;
+import play.data.DynamicForm;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
@@ -32,9 +33,12 @@ import utilities.AcuteChronicUpdater;
 import utilities.CSVAppender;
 import utilities.CSVLoader3;
 import utilities.CSVOutput;
+import utilities.CSVRedoxGenerator;
 import utilities.CSVSortByTime;
 import utilities.CSVTemplateGenerator;
 import utilities.GameDataLoader;
+import utilities.RedoxCSVLoader;
+import utilities.RedoxCSVUpdater;
 //import play.db.jpa.*;
 import views.html.dashboard;
 import views.html.index;
@@ -43,8 +47,13 @@ import views.html.Admin.users;
 public class Application extends Controller {
 	
 
-	String filepath = "data/attachments/GraphCSVFiles/";
+	//String filepath = "data/attachments/GraphCSVFiles/";
 	//String filepath = "/tmp/";
+	
+	@Inject 
+	private  Configuration configuration;
+	String filepath;
+	
 	
 
     @Inject
@@ -53,9 +62,11 @@ public class Application extends Controller {
     private final HttpExecutionContext ec;
 
     @Inject
-    public Application(final HttpExecutionContext ec)
+    public Application(final HttpExecutionContext ec, Configuration configuration)
     {
         this.ec = ec;
+        this.configuration = configuration;
+        filepath = configuration.getString("filepath");
     }
     
  
@@ -86,7 +97,10 @@ public class Application extends Controller {
     	
     	
     	System.out.println("dashboard called");
-    	//System.out.println("category passed in : " + category);
+    	
+    	//Player test = Player.findByNameOrAlias("quincyacy");
+    	
+    	//System.out.println("player alias found is " + test.playername);
     	
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
@@ -255,6 +269,14 @@ public class Application extends Controller {
    	 return ok(new java.io.File(filepath +player.filename));
     }
     
+  public Result getRedoxCSV(Integer playernumber){
+    	
+    	System.out.println("getCSV called");
+   	 Player player = Player.findByNumber(playernumber);
+   	
+   	 return ok(new java.io.File(filepath +player.redoxFilename));
+    }
+    
     
     
     public CompletionStage<Result> uploadMultipleCSV() {
@@ -282,7 +304,7 @@ public class Application extends Controller {
         		while (it.hasNext()) {
         			Map.Entry pair = (Map.Entry) it.next();
         			
-        			Player player = Player.findByPlayername((String) pair.getKey());
+        			Player player = Player.findByNameOrAlias((String) pair.getKey());
         			//player.filename = null;
         			// dumping the file into 'no players' if no play by this name found
         			if(player == null){
@@ -299,7 +321,7 @@ public class Application extends Controller {
             			
             			
             			CSVAppender cSVAppender = new CSVAppender();
-            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
+            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue(), true);
             		
             			
             			player.save();
@@ -351,6 +373,127 @@ public class Application extends Controller {
     
     
     
+   public CompletionStage<Result> uploadRedoxCSV() {
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	List<User> allusers = User.find.all();
+    	
+    	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
+    	
+    	for(FilePart<Object> fp : files){
+    		
+    		//FilePart<File> filename = body.getFile("filename");
+            System.out.println("fp iteration");
+            
+            if (fp != null) {
+                
+            	System.out.println("fp not null");
+                File file = (File) fp.getFile();
+                
+                RedoxCSVLoader redoxcsvloader = new RedoxCSVLoader();    
+                redoxcsvloader.loadCSVFile(file.getAbsolutePath());
+
+        		Map<String, ArrayList<String>> playerfiles = redoxcsvloader.getPlayerfilesbyname();
+        		Iterator it = playerfiles.entrySet().iterator();
+        		while (it.hasNext()) {
+        			Map.Entry pair = (Map.Entry) it.next();
+        			
+        			Player player = Player.findByNameOrAlias((String) pair.getKey());
+        			//player.filename = null;
+        			// dumping the file into 'no players' if no play by this name found
+        			if(player == null){
+        				player =  Player.findByNumber(0);
+        				//player.filename = null;
+        			} else {
+        				//player.filename = null;
+
+            			if(player.redoxFilename == null){
+            				// generate default file with headers
+            				CSVRedoxGenerator cSVRedoxGenerator = new CSVRedoxGenerator();
+                			player.redoxFilename = cSVRedoxGenerator.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
+            			}
+            			
+            			
+            			CSVAppender cSVAppender = new CSVAppender();
+            			cSVAppender.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
+            		
+            			
+            			player.save();
+        			}
+        		}
+    		
+        		
+
+        		
+               
+            } else {
+            	System.out.println("fp is null");
+            }
+            
+            //TODO: check that the file is in order of time
+            
+//            List<Player> players = Player.find.all();
+//            for (Player player : players){
+//            	if(player.filename != null){
+//            		CSVSortByTime cSVSortByTime = new CSVSortByTime();
+//                	
+//                    cSVSortByTime.sortCSVFile(filepath + player.filename);
+//                    
+//                    player.save();
+//            	}
+//            }
+            
+    	}
+    	
+    	
+    	
+    	
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    }
+    
+    public CompletionStage<Result> updateRedoxCSV(int playernumber, String category) {
+    	
+    	System.out.println("updateRedoxCSV called");
+    	//
+
+    	DynamicForm form = Form.form().bindFromRequest();
+    	String timekey = form.get("timekey");
+    	//System.out.println("timekey received "+timekey);
+    	
+    	//System.out.println("player alias found is " + test.playername);
+    	//String category = "All";
+    	User user = User.findByEmail(session().get("connected"));
+    	Category categoryFound = Category.findByName(category);
+    	Player player = Player.findByNumber(playernumber);
+    	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
+
+    	// get this players redox file
+    	
+    	if(player.redoxFilename != null){
+    		RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
+        	
+    		redoxCSVUpdater.updateCSVFile(filepath + player.redoxFilename, timekey);
+          }
+    	
+    	// find the corresponding timekey
+    	
+    	// toggle both the ford and fort included value corrsponding to that time key
+    	
+    	// recalculate the avergaes
+    	
+    	// save the new file
+    		
+    	
+    	
+    	List<Category> categories = Category.find.all();
+    	int playerIndex = players.indexOf(player);
+    			
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	
+    	
+    	
+    }
+    
     public CompletionStage<Result> uploadGamedata() {
     	
     	User user = User.findByEmail(session().get("connected"));
@@ -358,11 +501,6 @@ public class Application extends Controller {
     	
     	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
     	
-    	
-//		MultipartFormData<File> body = request().body().asMultipartFormData();
-//		FilePart<File> filename = body.getFile("filename");
-		
-		
     	
     	for(FilePart<Object> fp : files){
     		
@@ -380,7 +518,7 @@ public class Application extends Controller {
         		while (it.hasNext()) {
         			Map.Entry pair = (Map.Entry) it.next();
         			
-        			Player player = Player.findByPlayername((String) pair.getKey());
+        			Player player = Player.findByNameOrAlias((String) pair.getKey());
         			//player.filename = null;
         			// dumping the file into 'no players' if no player by this name found
         			if(player == null){
@@ -397,7 +535,7 @@ public class Application extends Controller {
             			
             			
             			CSVAppender cSVAppender = new CSVAppender();
-            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue());
+            			cSVAppender.updateFile(filepath + player.filename, (List<String>) pair.getValue(), true);
             		
             			
             			player.save();
@@ -450,14 +588,14 @@ public class Application extends Controller {
     			Map.Entry pair = (Map.Entry) iter.next();
     			
     			List<Integer> vals = (List<Integer>) pair.getValue();
-    			System.out.print(pair.getKey() +" : ");
+    			//System.out.print(pair.getKey() +" : ");
     			Integer total = 0;
     			for (Integer i : vals){
-    				System.out.print(i+", ");
+    				//System.out.print(i+", ");
     				total += i;
     			}
     			Integer avg = total/vals.size();
-    			System.out.println();
+    			//System.out.println();
     			
     			gameavgloads.put((Long) pair.getKey(), avg);
     		}

@@ -161,7 +161,8 @@ public class Global extends GlobalSettings {
         	player6.height = "6'0";
         	player6.weight = "185lbs";
         	player6.position = "Guard";
-        	player5.categories.add(Category.findByName("Guards"));
+        	player6.categories.add(Category.findByName("Guards"));
+        	player6.addAlias("J.J. Barea");
         	prev1.players.add(player6);
         	prev2.players.add(player6);
         	player6.save();
@@ -192,6 +193,7 @@ public class Global extends GlobalSettings {
         	player9.weight = "215lbs";
         	player9.position = "Guard";
         	player9.categories.add(Category.findByName("Centers"));
+        	player9.addAlias("Nicolas Brussino");
         	prev1.players.add(player9);
         	prev2.players.add(player9);
         	player9.save();
@@ -222,6 +224,7 @@ public class Global extends GlobalSettings {
         	player12.weight = "260lbs";
         	player12.position = "Center";
         	player12.categories.add(Category.findByName("Centers"));
+        	player12.addAlias("A.J. Hammons");
         	prev1.players.add(player12);
         	prev2.players.add(player12);
         	player12.save();
@@ -242,6 +245,7 @@ public class Global extends GlobalSettings {
         	player14.weight = "220lbs";
         	player14.position = "Guard";
         	player14.categories.add(Category.findByName("Guards"));
+        	player14.addAlias("Wesley Matthews");
         	prev1.players.add(player14);
         	prev2.players.add(player14);
         	player14.save();
@@ -282,6 +286,7 @@ public class Global extends GlobalSettings {
         	player18.weight = "220lbs";
         	player18.position = "Forward";
         	player18.categories.add(Category.findByName("Forwards"));
+        	player18.addAlias("Dorian Finney Smith");
         	prev1.players.add(player18);
         	prev2.players.add(player18);
         	player18.save();

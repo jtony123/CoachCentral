@@ -546,6 +546,7 @@ var xScale = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
 var y1 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
 var y2 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var y3 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
 var color = d3.scale.category20();
 
 
@@ -656,6 +657,29 @@ var decelline = d3.svg.line()
 	.x(function(d) { return xScale(d.SESS_START); })
 	.y(function(d) { return y2(d.DECEL_TOTAL); });
 	
+var fordline = d3.svg.line()
+	.interpolate("step-after")
+	//.tension(0.85)
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORD); });
+	
+var fordadjline = d3.svg.line()
+	.defined(function(d,i) { return i != 0;})
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORD_ADJ); });
+	
+	
+var fortline = d3.svg.line()
+	.interpolate("step-after")
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORT); });
+	
+var fortadjline = d3.svg.line()
+	.defined(function(d,i) { return i != 0;})
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORT_ADJ); });
+	
+	
 	
  
  // Bookmark1
@@ -696,6 +720,12 @@ function make_gridline() {	 return d3.svg.axis().scale(y).orient("left").ticks(6
 
 // called whenever mouse hovers over a data point
 var tooltip = d3.select("body").append("div")   
+	.attr("class", "tooltip")               
+	.style("opacity", 0)
+	.style("z-index", 999999);
+	
+//used for form links when clicking in redox reading
+var linktip = d3.select("body").append("div")   
 	.attr("class", "tooltip")               
 	.style("opacity", 0)
 	.style("z-index", 999999);
@@ -838,6 +868,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 
 	var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
 		
+		
+		var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
+		
 	var now = new Date();
 	
 	
@@ -909,6 +942,22 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		//console.log("got " + d.GAME_START +" - " + d.GAME_END +" - " + d.OPPONENT +" - " + d.LOCATION);
 		
 	});
+		
+		data3.forEach(function(d) {
+			
+			d.TIME_KEY = +d.TEST_TIME;
+			d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
+			
+			d.FORD = +d.FORD;
+			d.FORT = +d.FORT;
+			d.FORD_ADJ = +d.FORD_ADJ;
+			d.FORT_ADJ = +d.FORT_ADJ;
+			d.FORD_INC = +d.FORD_INC;
+			d.FORT_INC = +d.FORT_INC;
+			//console.log("key is " + d.TIME_KEY +" date is "+d.TEST_TIME);
+			//console.log("got " + d.TEST_TIME +" - " + d.FORD +" - " + d.FORD_ADJ);
+			
+		});
 	
 // everything must be inside these brackets
 
@@ -927,6 +976,7 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	y.domain([0, 15]);
 	y1.domain([1500, 0]);
 	y2.domain([0,1500]);
+	y3.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
 
 //d3.max(data, function (d) { return d.date; }).getTime();
 	
@@ -1199,6 +1249,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		.style("stroke", "gold").style("fill", "none")
 		.attr("d", decelline(data));
 		
+
+		
+		
 		
 		// adding the flags along the acute line
 		innersvg.selectAll(".flag").data(data).enter().append("path")
@@ -1308,6 +1361,97 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		});
 		
 		
+		// the ford line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fordline").attr("stroke-width", 1)
+		.style("stroke", "blue").style("fill", "none")
+		.attr("d", fordline(data3));
+		
+		// the ford adjusted line
+		innersvg.append("path")
+// 		.filter(function(d, i) { 
+// 			console.log("i is " + i);
+// 			return i !== 3;})
+		.attr("class", "line").attr("id", "fordadjline").attr("stroke-width", 2)
+		.style("stroke-dasharray", "10,5")
+		.style("stroke", "blue").style("fill", "none")
+		.attr("d", fordadjline(data3));
+		
+		
+		// add FORD circles
+	    innersvg.selectAll("dot").data(data3).enter()
+	    .append("circle")
+  		.attr("id", "FORD").attr("r", 5)
+    	.style("opacity", 1)
+    	.style("stroke", "blue")
+    	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORD); })
+    	.on("mouseover", function(d) {
+    		acutetooltip.transition().duration(200)
+				.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
+    		acutetooltip .html("FORD : " + (parseFloat(d.FORD)))
+				.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			acutetooltip.transition().duration(500).style("opacity", 0);
+		})
+		.on("click", function(d) {
+			linktip
+			//.transition()
+			//.duration(100)
+			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxCSV(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+				+"<button>Toggle</button></form> ") 
+			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");
+			document.getElementById("fordtoggle").submit();
+		});
+		
+		// the fort line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fortline").attr("stroke-width", 1)
+		.style("stroke", "purple").style("fill", "none")
+		.attr("d", fortline(data3));
+		
+		// the fort adjusted line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fortadjline").attr("stroke-width", 2)
+		.style("stroke-dasharray", "10,5")
+		.style("stroke", "purple").style("fill", "none")
+		.attr("d", fortadjline(data3));
+		
+		
+		// add FORT circles
+	    innersvg.selectAll("dot").data(data3).enter().append("circle")
+  		.attr("id", "FORT").attr("r", 5)
+    	.style("opacity", 1)
+    	.style("stroke", "purple")
+    	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORT); })
+    	.on("mouseover", function(d) {
+    		acutetooltip.transition().duration(200)
+				.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
+    		acutetooltip .html("FORT : " + (parseFloat(d.FORT)))
+				.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			acutetooltip.transition().duration(500).style("opacity", 0);
+		})
+		.on("click", function(d) {
+			linktip
+			//.transition()
+			//.duration(100)
+			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxCSV(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+				+"<button>Toggle</button></form> ") 
+			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");
+			document.getElementById("fordtoggle").submit();
+		});
+		
+		
 		
 	} // end drawchart()
 	
@@ -1334,6 +1478,15 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		
 		// the heartrate line
 		innersvg.selectAll("#heartrateline").attr("d", heartrateline(data));
+		
+		// the ford and fort lines
+		innersvg.selectAll("#fortline").attr("d", fortline(data3));
+		innersvg.selectAll("#fordline").attr("d", fordline(data3));
+		innersvg.selectAll("#fortadjline").attr("d", fortadjline(data3));
+		innersvg.selectAll("#fordadjline").attr("d", fordadjline(data3));
+		
+		
+		
 		
 		
 		
@@ -1435,6 +1588,17 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     	.attr("cx", function(d) { return xScale(d.SESS_START); })
     	.attr("cy", function(d) { return y2(d.ACUTE); });
 		
+		
+		// update FORD values
+	    innersvg.selectAll("#FORD")
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORD); });
+		
+		// update FORT values
+	    innersvg.selectAll("#FORT")
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORT); });
+		
 		// the alert flags along the acute load line
 		innersvg.selectAll("#UPFlags")
 		.attr("transform", function(d) { return "translate(" + xScale(d.SESS_START) + "," + (y2(d.ACUTE) + (d.ACUTE > (d.CHRONIC * 1.5) ? 5 : -5)) + ")" });
@@ -1467,9 +1631,15 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		// first remove all elements from this svg container
 		uppersvg.selectAll("g").remove();
 		
-		drawPERFORMANCEButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_hi", "cod_r_hi", 0, true);
+		//drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, true);
+		//drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, true);
+		// drawGAMELOADButton("gameload", 3, true)
+		drawPERFORMANCEButton("ACLoad", "ChronicLoad", "UPFlags", 
+				"sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline",
+				"gameload", 0, true);
 		drawGAMERESULTButton("gameresult", 1, true);
 		drawSCHEDULEButton("gametriangles", 2, true);
+		drawREDOXButton("FORD", "FORT", "fordline", "fortline", "fordadjline", "fortadjline",3, false);
 		
 		drawSEASONVIEWButton(7);
 		drawMONTHVIEWButton(8);
@@ -1489,26 +1659,43 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		
 		
 //special function to draw and control button for GAME
-function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
+function drawPERFORMANCEButton(id1, id2, id3, id4, id5, id6, id7, id8, id9, id10, i, toggled){
+		
+			// the 3 lines for acute chronic
+			d3.select("#"+id1)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
 			
+			d3.select("#"+id2)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
 			
-// 			d3.selectAll("#"+lineid1).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+			d3.selectAll("#"+id3)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+	
+			// the lines toggled by the practive loads(session)
+			d3.selectAll("#"+id4).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.2 : 0;})
+        		
+        	d3.selectAll("#"+id5).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        	
+	        d3.selectAll("#"+id6).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        	
+	        d3.selectAll("#"+id7).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        		
+    	    d3.selectAll("#"+id8).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.7 : 0;})
+	        		
+	        d3.selectAll("#"+id9).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        		
+	        // the gane loads
+	        d3.selectAll("#"+id10).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.8 : 0;})
+	
 
-//         	d3.selectAll("#"+lineid2).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
-	        		
-// 	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
-	        		
-// 	        d3.selectAll("#"+lineid4).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
-	        		
-// 	       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})
-	        		
-// 	        d3.selectAll("#"+lineid6).style("opacity", function(d) {
-// 	        		this.active = toggled;	return toggled ? 0.3 : 0;})	
+			
 					
 					var abutton;
 					if(width < 1000){
@@ -1540,27 +1727,59 @@ function drawPERFORMANCEButton(lineid1, lineid2, lineid3, lineid4, lineid5, line
 				    	this.active = !this.active;	
 				    	isActive = this.active;
 				        // Hide or show the line
-				        
-// 				d3.selectAll("#"+lineid1).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
-
-// 		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+				
+				// the ac lines
+				d3.select("#"+id1).style("opacity", function(d) { 
+		        	this.active = !this.active; isActive = this.active; return	this.active ? 1 : 0; })
+		        
+		       	d3.select("#"+id2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        
+		        d3.selectAll("#"+id3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active; return	this.active ? 1 : 0;})
+				       
+		        // toggle the state of the AC button
+		        d3.select("#ACLoad_Button").style("stroke", isActive ? acutechronic_button_border_colour : "grey")
+		        							.style("stroke-width", isActive ? 2 : 0);
+				    
+				// the lines toggled by the practive loads(session)
+		        d3.selectAll("#"+id4).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.2 : 0;})
+		        
+		       	d3.selectAll("#"+id5).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0;})
+		        
+		        d3.selectAll("#"+id6).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        
+		        d3.selectAll("#"+id7).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0; })
 		        	
-// 		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
-
-// 		       	d3.selectAll("#"+lineid4).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
-// 		       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        d3.selectAll("#"+id8).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.7 : 0; })
 		        	
-// 		       	d3.selectAll("#"+lineid6).style("opacity", function(d) {
-// 		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
-				        
-				        // update the buttons border
-				        d3.select("#GPSDATA_Button")
-				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+		        d3.selectAll("#"+id9).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        	
+	        	// toggle the state of the practice button
+		        d3.select("#Session_Load_Button").style("stroke", isActive ? sessionloads_button_border_colour : "grey")
+		        									.style("stroke-width", isActive ? 2 : 0);
+				
+				// game loads
+		        d3.selectAll("#"+id10).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.8 : 0;})
+		        
+		        	// toggle the state of the game loads button
+		        d3.select("#Game_Load_Button").style("stroke", isActive ? gameloads_button_border_colour : "grey")
+		        								.style("stroke-width", isActive ? 2 : 0);
+		        	
+		      
+		        	        
+				// update the buttons border
+				d3.select("#GPSDATA_Button").style("stroke", isActive ? "#464640" : "grey")
+											.style("stroke-width", isActive ? 2 : 0)
+				        	
+				});
 					
 	} // end drawPERFORMANCEButton
 	
@@ -1647,6 +1866,8 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 				    .on("click", function(){
 				    	
 				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
 				        // Hide or show the line
 				        
 				        d3.selectAll("#"+lineid1).style("opacity", function(d) {
@@ -1657,6 +1878,81 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
 					
 	} // end drawSCHEDULEButton
+	
+//special function to draw and control button for GAME
+function drawREDOXButton(dotid1, dotid2, lineid1, lineid2, lineid3, lineid4, i, toggled){
+			
+			
+					d3.selectAll("#"+dotid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+dotid2).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+lineid2).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})
+	        		
+	        		d3.selectAll("#"+lineid3).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})
+	        		
+	        		d3.selectAll("#"+lineid4).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("RX");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("REDOX");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "REDOX_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				        // Hide or show the line
+				        
+				        d3.selectAll("#"+dotid1).style("opacity", function(d) {
+		        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+dotid2).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid4).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+				        
+				        // update the buttons border
+				        d3.select("#REDOX_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawREDOXButton
 	
 	
 //special function to zoom to one month view
@@ -2351,7 +2647,7 @@ function drawHREButton(lineid1, i, toggled){
 
 });
 	
-
+	});
 
 	
 

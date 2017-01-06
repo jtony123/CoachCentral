@@ -17,11 +17,14 @@ GET		/record/:category			controllers.Application.record(playernumber: Integer, c
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 
 GET		/getCSV/:playernumber		controllers.Application.getCSV(playernumber: Integer)
+GET		/getRedoxCSV/:playernumber	controllers.Application.getRedoxCSV(playernumber: Integer)
 GET		/getCalendarCSV				controllers.Application.getCalendarCSV()
 
 POST	/uploadMultipleCSV			controllers.Application.uploadMultipleCSV()
 POST	/uploadCalender				controllers.Application.uploadCalender()
 POST	/uploadGamedata()			controllers.Application.uploadGamedata()
+POST	/uploadRedoxCSV()			controllers.Application.uploadRedoxCSV()
+POST	/updateRedoxCSV()			controllers.Application.updateRedoxCSV(playernumber: Integer, category :String)
 
 
 # admin routes

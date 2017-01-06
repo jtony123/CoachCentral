@@ -14,8 +14,12 @@
   	<h2>@player.playername</h2>
   </div>
   <div class="col-sm-6">
-  	<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="None" style="margin: 0 auto; max-width:150px;height:150px"/>
-  
+  	
+  @if(player.playerPhoto != null){
+		<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+	} else {
+		<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
+	}
   </div>
 </div>
 
@@ -123,6 +127,32 @@
 		 <span class="">Not required</span>
 	</div>
 </div><!-- end row -->
+
+<div class="row">
+	<div class="col-sm-3">
+		<label for="alias">Name Aliases</label>
+	</div>
+	
+	<div class="col-sm-6">
+
+	<div>
+		@for(a <- player.aliases){
+			@a.alias;
+		}
+		
+	</div>
+	</div>
+	<div class="col-sm-3">
+		<input id="alias" class="" type="text" name="alias" placeholder="add alias"/>
+	</div>
+	
+	
+
+</div><!-- end row -->
+
+
+
+
 
 <div class="row">
 	<div class="col-sm-3">
