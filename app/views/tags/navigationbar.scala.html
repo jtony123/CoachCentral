@@ -15,8 +15,14 @@
 		@if(active.equals("dashboard")){
 		<li class="active"><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
 		} else {
-		<li class="active"><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
+		<li><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
 		}
+		
+<!-- 		@if(active.equals("redox")){ -->
+<!-- 		<li class="active"><a href='@routes.Application.redox()'>Redox</a></li> -->
+<!-- 		} else { -->
+<!-- 		<li><a href='@routes.Application.redox()'>Redox</a></li> -->
+<!-- 		} -->
 		
 		
 		</ul>

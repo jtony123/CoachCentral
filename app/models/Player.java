@@ -144,39 +144,18 @@ public class Player extends Model {
 	public static Player findByNameOrAlias(String name){
 		Player player = Player.find.where().eq("playername", name).findUnique();
 		if(player == null){
-			System.out.println("looking for alias to match " + name);
 			NameAlias namealias = NameAlias.find.where().eq("alias", name).findUnique();
-			player = Player.find.byId(namealias.player.id);
-			System.out.println("found a match " + player.playername);
+			if(namealias != null) {
+				player = Player.find.byId(namealias.player.id);
+			} else {
+				player = Player.findByPlayername("no players");
+			}
+			
 		}
 		return player;
 	}
 
-	// public Player previous() {
-	//
-	// Player player = Player.find("select distinct p from Player p where
-	// p.coach=?1 AND p.playernumber < ?2 AND p.categories.size > ?3 order by
-	// playernumber desc", this.coach, playernumber, 0).first();
-	// if(player == null) {
-	// player = Player.find("select distinct p from Player p where p.coach=?1
-	// AND p.categories.size > ?2 order by playernumber desc", this.coach,
-	// 0).first();
-	// }
-	// return player;
-	// }
 
-	// public Player next() {
-	// Player player = Player.find("select distinct p from Player p where
-	// p.coach=?1 AND p.playernumber > ?2 AND p.categories.size > ?3 order by
-	// playernumber asc", this.coach, playernumber, 0).first();
-	// if(player == null) {
-	// player = Player.find("select distinct p from Player p where p.coach=?1
-	// AND p.categories.size > ?2 order by playernumber asc", this.coach,
-	// 0).first();
-	// }
-	//
-	// return player;
-	// }
 
 	/**
 	 * Categorising a player

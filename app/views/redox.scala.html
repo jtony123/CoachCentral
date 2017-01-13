@@ -1,0 +1,646 @@
+@import tags._
+@(user : models.User, active: String, players: List[models.Player])
+
+
+
+@main(title = "CoachCentral") {
+    
+      <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
+    @navigationbar(user: models.User, active: String)
+<style> 
+
+body {
+	font:12px Arial;
+}
+
+
+
+#power-gauge g.arc {
+	fill: steelblue;
+}
+
+#power-gauge g.pointer {
+	fill: #e85116;
+	stroke: #b64011;
+}
+
+#power-gauge g.pointer2 {
+	fill: #e85116;
+	stroke: #b64011;
+}
+	
+#power-gauge g.label text {
+	text-anchor: middle;
+	font-size: 14px;
+	font-weight: bold;
+	fill: #666;
+}
+
+</style>
+
+
+<div class="container-fluid">
+	<div>
+	@for(p <- players) {
+	@if(p.playernumber != 0){
+	<div class="row">
+	<h4 class="col-sm-2">@p.playername</h4>
+		<a href="@routes.Application.dashboard(p.playernumber, p.playername)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@p.playername</span></a>
+	<div class="col-sm-10">
+		<div id="power-gauge-@p.playernumber"></div>
+	</div>
+	</div>
+	
+	
+	}
+	<hr>
+	}
+	
+	
+	</div>
+</div>
+
+<script>
+
+
+var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
+
+
+// var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
+// 		pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
+// 		minValue: 0,maxValue: 4,
+// minAngle: -90,maxAngle: 90,
+// transitionMs : 4000, majorTicks: 12,labelFormat: d3.format(',g'),labelInset: 10,
+// arcColorFn: d3.interpolateHsl(d3.rgb('#F45822'), d3.rgb('#ADCDF0'))
+// };
+
+var fordgauge = function(container, configuration) {
+	var that = {};
+	
+	var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
+				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
+				minValue: 0,maxValue: 6,
+		minAngle: -90,maxAngle: 90,
+		transitionMs : 4000, majorTicks: 5,labelFormat: d3.format(',g'),labelInset: 10,
+		arcColorFn: d3.interpolateHsl(d3.rgb('#1F69F1'), d3.rgb('#A7BFEC'))
+	};
+	
+	var range = undefined;
+	var r = undefined;
+	var pointerHeadLength = undefined;
+	var value = 0;
+	
+	var svg = undefined;
+	var arc = undefined;
+	var scale = undefined;
+	var ticks = undefined;
+	var tickData = undefined;
+	var pointer = undefined;
+
+
+	
+	function configure(configuration) {
+		var prop = undefined;
+		for ( prop in configuration ) {
+			config[prop] = configuration[prop];
+		}
+		
+		range = config.maxAngle - config.minAngle;
+		r = config.size / 2;
+		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
+
+		// a linear scale that maps domain values to a percent from 0..1
+		scale = d3.scale.linear()
+			.range([0,1])
+			.domain([config.minValue, config.maxValue]);
+			
+		ticks = scale.ticks(config.majorTicks);
+		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
+		
+		arc = d3.svg.arc()
+			.innerRadius(r - config.ringWidth - config.ringInset)
+			.outerRadius(r - config.ringInset)
+			.startAngle(function(d, i) {
+				var ratio = d * i;
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				
+				//return deg2rad(config.minAngle + (ratio * range));
+			})
+			.endAngle(function(d, i) {
+				var ratio = d * (i+1);
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				//return deg2rad(config.minAngle + (ratio * range));
+			});
+	}
+	that.configure = configure;
+	
+
+	
+	function render(newValue) {
+		svg = d3.select(container)
+			.append('svg:svg')
+				.attr('class', 'gauge')
+				.attr('width', config.clipWidth)
+				.attr('height', config.clipHeight);
+		
+		//var centerTx = centerTranslation();
+		
+		var arcs = svg.append('g')
+				.attr('class', 'arc')
+				.attr('transform', 	function () {
+					return 'translate('+r +','+ r +')';
+				});
+		
+		arcs.selectAll('path')
+				.data(tickData)
+				.enter().append('path')
+				.attr('fill', function(d, i) {
+					return config.arcColorFn(d * i);
+				})
+				.attr('d', arc);
+		
+		var lg = svg.append('g')
+				.attr('class', 'label')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+		lg.selectAll('text')
+				.data(ticks)
+				.enter().append('text')
+				.attr('transform', function(d) {
+					var ratio = scale(d);
+					var newAngle = config.minAngle + (ratio * range);
+					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
+				})
+				.text(config.labelFormat);
+
+		var lineData = [ [config.pointerWidth / 2, 0], 
+						[0, -pointerHeadLength],
+						[-(config.pointerWidth / 2), 0],
+						[0, config.pointerTailLength],
+						[config.pointerWidth / 2, 0] ];
+		
+		var pointerLine = d3.svg.line().interpolate('monotone');
+		
+		var pg1 = svg.append('g').data([lineData])
+				.attr('class', 'pointer')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+				
+		pointer1 = pg1.append('path')
+			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+			.attr('transform', 'rotate(' +config.minAngle +')')
+			.attr('fill', "blue");
+		
+		var pg2 = svg.append('g').data([lineData])
+		.attr('class', 'pointer2')
+		.attr('transform', function () {
+			return 'translate('+r +','+ r +')';
+		});
+		
+		pointer2 = pg2.append('path')
+		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+		.attr('transform', 'rotate(' +config.minAngle +')');
+			
+		//update(newValue === undefined ? 0 : newValue);
+	}
+	that.render = render;
+	
+	function update(newValue, newValue2, newConfiguration) {
+		if ( newConfiguration  !== undefined) {
+			configure(newConfiguration);
+		}
+		var ratio1 = scale(newValue);
+		var newAngle = config.minAngle + (ratio1 * range);
+		var ratio2 = scale(newValue2);
+		var newAngle2 = config.minAngle + (ratio2 * range);
+		pointer1.transition()
+			.duration(config.transitionMs)
+			.ease('elastic')
+			.attr('transform', 'rotate(' +newAngle +')');
+		
+		pointer2.transition()
+		.duration(config.transitionMs)
+		//.ease('elastic')
+		.attr('transform', 'rotate(' +newAngle2 +')');
+	}
+	
+	that.update = update;
+
+	configure(configuration);
+	
+	return that;
+};
+
+var fortgauge = function(container, configuration) {
+	var that = {};
+	
+	var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
+				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
+				minValue: 0,maxValue: 6,
+		minAngle: -90,maxAngle: 90,
+		transitionMs : 4000, majorTicks: 5,labelFormat: d3.format(',g'),labelInset: 10,
+		arcColorFn: d3.interpolateHsl(d3.rgb('#E2B5F1'), d3.rgb('#BC11F3'))
+	};
+	
+	var range = undefined;
+	var r = undefined;
+	var pointerHeadLength = undefined;
+	var value = 0;
+	
+	var svg = undefined;
+	var arc = undefined;
+	var scale = undefined;
+	var ticks = undefined;
+	var tickData = undefined;
+	var pointer = undefined;
+
+
+	
+	function configure(configuration) {
+		var prop = undefined;
+		for ( prop in configuration ) {
+			config[prop] = configuration[prop];
+		}
+		
+		range = config.maxAngle - config.minAngle;
+		r = config.size / 2;
+		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
+
+		// a linear scale that maps domain values to a percent from 0..1
+		scale = d3.scale.linear()
+			.range([0,1])
+			.domain([config.minValue, config.maxValue]);
+			
+		ticks = scale.ticks(config.majorTicks);
+		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
+		
+		arc = d3.svg.arc()
+			.innerRadius(r - config.ringWidth - config.ringInset)
+			.outerRadius(r - config.ringInset)
+			.startAngle(function(d, i) {
+				var ratio = d * i;
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				
+				//return deg2rad(config.minAngle + (ratio * range));
+			})
+			.endAngle(function(d, i) {
+				var ratio = d * (i+1);
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				//return deg2rad(config.minAngle + (ratio * range));
+			});
+	}
+	that.configure = configure;
+	
+
+	
+	function render(newValue) {
+		svg = d3.select(container)
+			.append('svg:svg')
+				.attr('class', 'gauge')
+				.attr('width', config.clipWidth)
+				.attr('height', config.clipHeight);
+		
+		//var centerTx = centerTranslation();
+		
+		var arcs = svg.append('g')
+				.attr('class', 'arc')
+				.attr('transform', 	function () {
+					return 'translate('+r +','+ r +')';
+				});
+		
+		arcs.selectAll('path')
+				.data(tickData)
+				.enter().append('path')
+				.attr('fill', function(d, i) {
+					return config.arcColorFn(d * i);
+				})
+				.attr('d', arc);
+		
+		var lg = svg.append('g')
+				.attr('class', 'label')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+		lg.selectAll('text')
+				.data(ticks)
+				.enter().append('text')
+				.attr('transform', function(d) {
+					var ratio = scale(d);
+					var newAngle = config.minAngle + (ratio * range);
+					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
+				})
+				.text(config.labelFormat);
+
+		var lineData = [ [config.pointerWidth / 2, 0], 
+						[0, -pointerHeadLength],
+						[-(config.pointerWidth / 2), 0],
+						[0, config.pointerTailLength],
+						[config.pointerWidth / 2, 0] ];
+		
+		var pointerLine = d3.svg.line().interpolate('monotone');
+		
+		var pg1 = svg.append('g').data([lineData])
+				.attr('class', 'pointer')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+				
+		pointer1 = pg1.append('path')
+			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+			.attr('transform', 'rotate(' +config.minAngle +')')
+			.attr('fill', "purple");
+		
+		var pg2 = svg.append('g').data([lineData])
+		.attr('class', 'pointer2')
+		.attr('transform', function () {
+			return 'translate('+r +','+ r +')';
+		});
+		
+		pointer2 = pg2.append('path')
+		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+		.attr('transform', 'rotate(' +config.maxAngle +')');
+			
+		//update(newValue === undefined ? 0 : newValue);
+	}
+	that.render = render;
+	
+	function update(newValue, newValue2, newConfiguration) {
+		if ( newConfiguration  !== undefined) {
+			configure(newConfiguration);
+		}
+		var ratio1 = scale(newValue);
+		var newAngle = config.minAngle + (ratio1 * range);
+		var ratio2 = scale(newValue2);
+		var newAngle2 = config.minAngle + (ratio2 * range);
+		pointer1.transition()
+			.duration(config.transitionMs)
+			.ease('elastic')
+			.attr('transform', 'rotate(' +newAngle +')');
+		
+		pointer2.transition()
+		.duration(config.transitionMs)
+		//.ease('elastic')
+		.attr('transform', 'rotate(' +newAngle2 +')');
+	}
+	
+	that.update = update;
+
+	configure(configuration);
+	
+	return that;
+};
+
+var combinedgauge = function(container, configuration) {
+	var that = {};
+	
+	var config = {size : 400, clipWidth	: 400,clipHeight: 300,ringInset: 20,ringWidth: 60,
+				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.8,
+				minValue: 0,maxValue: 4,
+		minAngle: -90,maxAngle: 90,
+		transitionMs : 4000, majorTicks: 12,labelFormat: d3.format(',g'),labelInset: 10,
+		arcColorFn: d3.interpolateHsl(d3.rgb('#A7BFEC'), d3.rgb('#C8A7EC'))
+	};
+	
+	var range = undefined;
+	var r = undefined;
+	var pointerHeadLength = undefined;
+	var pointerHeadLength2 = undefined;
+	var value = 0;
+	
+	var svg = undefined;
+	var arc = undefined;
+	var scale = undefined;
+	var ticks = undefined;
+	var tickData = undefined;
+	var pointer = undefined;
+
+
+	
+	function configure(configuration) {
+		var prop = undefined;
+		for ( prop in configuration ) {
+			config[prop] = configuration[prop];
+		}
+		
+		range = config.maxAngle - config.minAngle;
+		r = config.size / 2;
+		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
+		pointerHeadLength2 = Math.round(r * config.pointerHeadLengthPercent * 0.9);
+
+		// a linear scale that maps domain values to a percent from 0..1
+		scale = d3.scale.linear()
+			.range([0,1])
+			.domain([config.minValue, config.maxValue]);
+			
+		ticks = scale.ticks(config.majorTicks);
+		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
+		
+		arc = d3.svg.arc()
+			.innerRadius(r - config.ringWidth - config.ringInset)
+			.outerRadius(r - config.ringInset)
+			.startAngle(function(d, i) {
+				var ratio = d * i;
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				
+				//return deg2rad(config.minAngle + (ratio * range));
+			})
+			.endAngle(function(d, i) {
+				var ratio = d * (i+1);
+				return (config.minAngle + (ratio * range)) * Math.PI / 180;
+				//return deg2rad(config.minAngle + (ratio * range));
+			});
+	}
+	that.configure = configure;
+	
+
+	
+	function render(newValue) {
+		svg = d3.select(container)
+			.append('svg:svg')
+				.attr('class', 'gauge')
+				.attr('width', config.clipWidth)
+				.attr('height', config.clipHeight);
+		
+		//var centerTx = centerTranslation();
+		
+		var arcs = svg.append('g')
+				.attr('class', 'arc')
+				.attr('transform', 	function () {
+					return 'translate('+r +','+ r +')';
+				});
+		
+		arcs.selectAll('path')
+				.data(tickData)
+				.enter().append('path')
+				.attr('fill', function(d, i) {
+					return config.arcColorFn(d * i);
+				})
+				.attr('d', arc);
+		
+		var lg = svg.append('g')
+				.attr('class', 'label')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+		lg.selectAll('text')
+				.data(ticks)
+				.enter().append('text')
+				.attr('transform', function(d) {
+					var ratio = scale(d);
+					var newAngle = config.minAngle + (ratio * range);
+					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
+				})
+				.text(config.labelFormat);
+
+		var lineData = [ [config.pointerWidth / 2, 0], 
+						[0, -pointerHeadLength],
+						[-(config.pointerWidth / 2), 0],
+						[0, config.pointerTailLength],
+						[config.pointerWidth / 2, 0] ];
+		
+		var lineData2 = [ [config.pointerWidth / 2, 0], 
+			[0, -pointerHeadLength2],
+			[-(config.pointerWidth / 2), 0],
+			[0, config.pointerTailLength],
+			[config.pointerWidth / 2, 0] ];
+		
+		
+		var pointerLine = d3.svg.line().interpolate('monotone');
+		
+		var pg1 = svg.append('g').data([lineData2])
+				.attr('class', 'pointer')
+				.attr('transform', function () {
+					return 'translate('+r +','+ r +')';
+				});
+				
+		pointer1 = pg1.append('path')
+			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+			.attr('transform', 'rotate(' +config.minAngle +')')
+			.attr('fill', "blue");
+		
+		var pg2 = svg.append('g').data([lineData])
+		.attr('class', 'pointer2')
+		.attr('transform', function () {
+			return 'translate('+r +','+ r +')';
+		});
+		
+		pointer2 = pg2.append('path')
+		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+		.attr('transform', 'rotate(' +config.minAngle +')');
+		
+		var pg3 = svg.append('g').data([lineData2])
+		.attr('class', 'pointer3')
+		.attr('transform', function () {
+			return 'translate('+r +','+ r +')';
+		});
+		
+		pointer3 = pg3.append('path')
+		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+		.attr('transform', 'rotate(' +config.maxAngle +')')
+		.attr('fill', "purple");;
+		
+		var pg4 = svg.append('g').data([lineData])
+		.attr('class', 'pointer4')
+		.attr('transform', function () {
+			return 'translate('+r +','+ r +')';
+		});
+		
+		pointer4 = pg2.append('path')
+		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+		.attr('transform', 'rotate(' +config.maxAngle +')');
+			
+		//update(newValue === undefined ? 0 : newValue);
+	}
+	that.render = render;
+	
+	function update(newValue, newValue2, newValue3, newValue4, newConfiguration) {
+		if ( newConfiguration  !== undefined) {
+			configure(newConfiguration);
+		}
+		var ratio1 = scale(newValue);
+		var newAngle = config.minAngle + (ratio1 * range);
+		pointer1.transition()
+			.duration(config.transitionMs)
+			.ease('elastic')
+			.attr('transform', 'rotate(' +newAngle +')');
+		
+		var ratio2 = scale(newValue2);
+		var newAngle2 = config.minAngle + (ratio2 * range);
+		pointer2.transition()
+		.duration(config.transitionMs)
+		//.ease('elastic')
+		.attr('transform', 'rotate(' +newAngle2 +')');
+		
+		var ratio3 = scale(newValue3);
+		var newAngle3 = config.minAngle + (ratio3 * range);
+		pointer3.transition()
+		.duration(config.transitionMs)
+		.ease('elastic')
+		.attr('transform', 'rotate(' +newAngle3 +')');
+		
+		var ratio4 = scale(newValue4);
+		var newAngle4 = config.minAngle + (ratio4 * range);
+		pointer4.transition()
+		.duration(config.transitionMs)
+		//.ease('elastic')
+		.attr('transform', 'rotate(' +newAngle4 +')');
+	}
+	
+	that.update = update;
+
+	configure(configuration);
+	
+	return that;
+};
+
+
+
+
+// 	powerGauge1.render();
+// 	powerGauge1.update(Math.random() * 10);
+
+
+var redox = d3.csv('@routes.Application.getFullRedoxCSV()', function(error3, data) {
+	
+	
+	data.forEach(function(d) {
+		
+		d.playernumber = d.playernumber;
+		d.athlete = d.athlete;
+		d.TIME_KEY = parseDate(d.Blood_Test_Time);
+		d.FORD = +d.FORD;
+		d.FORT = +d.FORT;
+		
+		d.FORD_ADJ = +d.FORD_ADJ;
+		d.FORT_ADJ = +d.FORT_ADJ;
+		//console.log("got - " + d.FORD +" - " + d.FORT);
+		
+		console.log("last date is " + d.playername);
+		var powerGauge1 = fordgauge('#power-gauge-'+d.playernumber);
+		powerGauge1.render();
+		powerGauge1.update(d.FORD, d.FORD_ADJ);
+		
+		var powerGauge2 = fortgauge('#power-gauge-'+d.playernumber);
+		powerGauge2.render();
+		powerGauge2.update(d.FORT, d.FORT_ADJ);
+		
+		var powerGauge3 = combinedgauge('#power-gauge-'+d.playernumber);
+		powerGauge3.render();
+		powerGauge3.update(d.FORD, d.FORD_ADJ, d.FORT, d.FORT_ADJ);
+		
+
+		
+	});
+	
+	
+	
+	
+	
+});
+</script>
+
+
+    
+}

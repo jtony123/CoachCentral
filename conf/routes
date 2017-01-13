@@ -11,6 +11,8 @@ POST	/login						controllers.AccessControl.login()
 GET		/logout						controllers.AccessControl.logout()
 
 GET     /dashboard/:category       	controllers.Application.dashboard(playernumber: Integer, category :String)
+GET     /redox     					controllers.Application.redox()
+GET		/getFullRedoxCSV			controllers.Application.getFullRedoxCSV()
 
 GET		/record/:category			controllers.Application.record(playernumber: Integer, category :String)
 
@@ -24,7 +26,8 @@ POST	/uploadMultipleCSV			controllers.Application.uploadMultipleCSV()
 POST	/uploadCalender				controllers.Application.uploadCalender()
 POST	/uploadGamedata()			controllers.Application.uploadGamedata()
 POST	/uploadRedoxCSV()			controllers.Application.uploadRedoxCSV()
-POST	/updateRedoxCSV()			controllers.Application.updateRedoxCSV(playernumber: Integer, category :String)
+POST	/updateRedoxToggleState()	controllers.Application.updateRedoxToggleState(playernumber: Integer, category :String)
+POST	/updateRedoxNote()			controllers.Application.updateRedoxNote(playernumber: Integer, category :String)
 
 
 # admin routes

@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
+
 public class RedoxCSVUpdater {
 	
 	Double fordAdjustment = 0.238;
@@ -30,7 +32,9 @@ public class RedoxCSVUpdater {
 	String header;
 	String playername = "";
 	
+	Map<Long, String> dataEntries = new TreeMap<Long, String>();
 	Map<Long, String> timestamps = new TreeMap<Long, String>();
+	Map<Long, String> timestampnotes = new TreeMap<Long, String>();
 	Map<Long, Double[]> timestamps1 = new TreeMap<Long, Double[]>();
 	//Map<Long, Integer> loads = new HashMap<Long, Integer>();
 	
@@ -43,12 +47,89 @@ public class RedoxCSVUpdater {
 	}
 	
 	
-	public void updateCSVFile(String fileName, String timekeytochange){
+	public void addNoteCSVFile(String fileName, String timekeytochange, String additionalNote){
 		BufferedReader fileReader = null;
 		String line ="";
 		
 		//int player_name = 0;
 		int timekey = 0;
+		int notes = 0;
+		
+		try {
+			fileReader = new BufferedReader(new FileReader(fileName));
+			
+			// this first line should contain the attribute labels
+			header = fileReader.readLine();
+			// leave header alone
+			// put it in the map with the key = 0 ( will always be the first entry)
+			dataEntries.put((long) 0, header);
+			
+			String[] headertokens = header.split(",");
+			List<String> headerstrings = Arrays.asList(headertokens);
+			
+			// get the index of the ID column
+			 //player_name = headerstrings.indexOf("playername");
+			 timekey = headerstrings.indexOf("TEST_TIME");
+			 notes = headerstrings.indexOf("NOTES");
+			 
+			 
+			 long targetkey = Long.parseLong(timekeytochange);
+			
+			//Read the file line by line
+
+			while ((line = fileReader.readLine()) != null) {
+				
+				// split the line into string tokens
+				String[] tokens = line.split(",");
+				String originalNote = "";
+				String newNote = "";
+			
+				long sourcekey = Long.parseLong(tokens[timekey]);
+				
+				if(sourcekey == targetkey) {
+
+					// get the notes already associated and append the new notes
+					originalNote = tokens[notes];
+					newNote = originalNote + ":" + additionalNote;
+					tokens[notes] = newNote;
+					
+					String replacementLine = "";
+					for(String s : tokens){
+						replacementLine += s + ",";
+					}
+					dataEntries.put(sourcekey, replacementLine);
+					
+				} else {
+					
+					dataEntries.put(sourcekey, line);
+				}
+				
+
+			} // end while loop
+			
+			fileReader.close();
+		} catch (IOException e) {
+			// TODO return an error to the user
+			e.printStackTrace();
+		}
+		
+		// now write out the file again
+		writeOutFile(fileName, dataEntries);
+
+		
+	}
+	
+	
+
+	
+	
+	public void toggleStateCSVFile(String fileName, String timekeytochange){
+		BufferedReader fileReader = null;
+		String line ="";
+		
+		//int player_name = 0;
+		int timekey = 0;
+		int notes = 0;
 		int fordreadings = 0;
 		int fordinc = 0;
 		int fordmean = 0;
@@ -73,6 +154,7 @@ public class RedoxCSVUpdater {
 			// get the index of the ID column
 			 //player_name = headerstrings.indexOf("playername");
 			 timekey = headerstrings.indexOf("TEST_TIME");
+			 notes = headerstrings.indexOf("NOTES");
 			 fordreadings = headerstrings.indexOf("FORD");
 			 fordinc = headerstrings.indexOf("FORD_INC");
 			 fordmean = headerstrings.indexOf("FORD_MEAN");
@@ -81,6 +163,7 @@ public class RedoxCSVUpdater {
 			 fortinc = headerstrings.indexOf("FORT_INC");
 			 fortmean = headerstrings.indexOf("FORT_MEAN");
 			 fortadj = headerstrings.indexOf("FORT_ADJ");
+			 
 			
 			//Read the file line by line
 
@@ -92,12 +175,23 @@ public class RedoxCSVUpdater {
 				
 				Double[] datapoints = new Double[tokens.length];
 				for(int i = timekey; i < tokens.length; ++i){
-					
-					datapoints[i] = Double.parseDouble(tokens[i]);
+					if(tokens[i].equalsIgnoreCase("0") || tokens[i].equalsIgnoreCase("")){
+						datapoints[i] = 0.0;
+					}else {
+						datapoints[i] = Double.parseDouble(tokens[i]);
+					}
 				}
 				
 				Long key = Long.parseLong(tokens[timekey]);
 				timestamps1.put(key, datapoints);
+				
+				String otherData = "";
+				for(int i = 1; i < timekey; ++i){
+					otherData += tokens[i] +",";
+				}
+				
+				
+				timestampnotes.put(key, otherData);
 				
 					
 
@@ -116,7 +210,7 @@ public class RedoxCSVUpdater {
 			Long sourcekey = Long.parseLong(timekeytochange);
 			//System.out.println("looking for " + sourcekey);
 			if(sourcekey.equals(entry.getKey())){
-				//System.out.println("matched");
+
 				// toggle that state of the FORD_INC and FORT_INC values
 				if(entry.getValue()[fordinc].equals(1.0)){
 					entry.getValue()[fordinc] = 0.0;
@@ -126,12 +220,6 @@ public class RedoxCSVUpdater {
 					entry.getValue()[fortinc] = 1.0;
 				}
 			}
-		  System.out.print(entry.getKey() + ": ");
-		  for(Double d : entry.getValue()){
-			  System.out.print(d + ", ");
-		  }
-		  System.out.println();
-		  //out.println(entry.getValue());
 		}
 		
 		
@@ -188,29 +276,23 @@ public class RedoxCSVUpdater {
 				
 			}
 		  
-		  //out.println(entry.getValue());
 		}
-		System.out.println();
-		System.out.println("after updating");
-		// check the new values
-//		for (Map.Entry<Long, Double[]> entry : timestamps1.entrySet()) {
-//			
-//		  System.out.print(entry.getKey() + ": ");
-//		  for(Double d : entry.getValue()){
-//			  System.out.print(d + ", ");
-//		  }
-//		  System.out.println();
-//		  //out.println(entry.getValue());
-//		}
+
 		
 		// convert array back into string and add it to the timestamps map
 		
 		for (Map.Entry<Long, Double[]> entry : timestamps1.entrySet()) {
 			
 			  String dataline = "";
+			  if(timestampnotes.containsKey(entry.getKey())){
+				  dataline += playername + "," + timestampnotes.get(entry.getKey());
+			  } else {
+				  dataline += playername + ",";
+			  }
 			  
 			  for(int i = 0; i < entry.getValue().length; ++i){
 					
+				  // skipping the first 2 null array positions
 				  if(entry.getValue()[i] != null){
 					  if(i == timekey){
 						  dataline += entry.getKey() + ",";
@@ -218,43 +300,20 @@ public class RedoxCSVUpdater {
 						  dataline += entry.getValue()[i] + ",";
 					  }
 					  
-				  } else {
-					  dataline += playername + ",";
 				  }
 			  }
-			  
-//			  for(Double d : entry.getValue()){
-//				 
-//				  if(d!=null){
-//					  if(d.)
-//					  
-//					  dataline += d.toString() + ",";
-//					  
-//					  
-//				  } else {
-//					  dataline += playername + ",";
-//				  }
-				  
-				  //System.out.print(d + ", ");
-//			  }
 			  //System.out.println(dataline);
 			  timestamps.put(entry.getKey(), dataline);
 			  
-			  //out.println(entry.getValue());
 			}
-		
-		for (Entry<Long, String> entry : timestamps.entrySet()) {
-			
-			  System.out.println(entry.getValue());
-			  
-			}
-		
-		
-		
-		
-		
 		
 		// now write out the file again
+		writeOutFile(fileName, timestamps);
+	}
+	
+	
+	
+	void writeOutFile(String fileName, Map<Long, String> data){
 		
 		File file = new File(fileName);
 		// find the next available filename
@@ -274,7 +333,7 @@ public class RedoxCSVUpdater {
 		try {
 			out = new PrintWriter(file, "UTF-8");
 			
-			for (Map.Entry<Long, String> entry : timestamps.entrySet()) {
+			for (Map.Entry<Long, String> entry : data.entrySet()) {
 				 // System.out.println(entry.getKey() + ": " + entry.getValue());
 				  out.println(entry.getValue());
 				}
@@ -287,7 +346,6 @@ public class RedoxCSVUpdater {
 			out.flush();
 			out.close();
 		}
-		
 	}
 
 }

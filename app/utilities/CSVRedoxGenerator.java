@@ -14,7 +14,14 @@ public class CSVRedoxGenerator {
 	static int fileVersion = 1;
 	static String fileExtension = ".csv";
 	// column order is important!
-	String header = "playername,TEST_TIME,FORD,FORD_INC,FORD_MEAN,FORD_ADJ,FORT,FORT_INC,FORT_MEAN,FORT_ADJ";
+	String header = "playername,"
+			+"NOTES,"
+			+"TrainedToday,AteToday,ExerciseGymYesterday,ExerciseTrainingYesterday,ExerciseGameYesterday,"
+			+"ExerciseNoneYesterday,ExerciseOtherYesterday,EnergyLevel,MuscleSoreness,SymptomFeverToday,"
+			+"SymptomFeverPreviously,SymptomSoreThroatToday,SymptomSoreThroatPreviously,SymptomHeadacheToday,"
+			+"SymptomHeadachePreviously,SymptomJointorMuscleAcheToday,SymptomJointorMuscleAchePreviously,"
+			+"SymptomDiarrheaToday,SymptomDiarrheaPreviously,SymptomOther,"
+			+"TEST_TIME,FORD,FORD_INC,FORD_MEAN,FORD_ADJ,FORT,FORT_INC,FORT_MEAN,FORT_ADJ";
 	
 
 	

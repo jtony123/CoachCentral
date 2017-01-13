@@ -24,7 +24,7 @@ public class Global extends GlobalSettings {
         {
         	System.out.println("adding default SecurityRoles");
         	
-            for (String name : Arrays.asList("admin", "coach", "assistant", "player", "fan"))
+            for (String name : Arrays.asList("admin", "redoxadmin", "redoxview", "coach", "assistant", "player", "fan"))
             {
                 SecurityRole role = new SecurityRole();
                 role.roleName = name;
@@ -54,6 +54,7 @@ public class Global extends GlobalSettings {
             user1.roles = new ArrayList<SecurityRole>();
             user1.roles.add(SecurityRole.findByName("admin"));
             user1.roles.add(SecurityRole.findByName("coach"));
+            user1.roles.add(SecurityRole.findByName("redoxadmin"));
             user1.permissions = new ArrayList<UserPermission>();
             user1.permissions.add(UserPermission.findByValue("view"));
 
@@ -300,6 +301,16 @@ public class Global extends GlobalSettings {
 	       	prev1.players.add(player19);
 	       	prev2.players.add(player19);
 	       	player19.save();
+	       	
+	    Player player20 = new Player("Pierre Jackson", 20, null, prev1);
+		    player20.dob = "August 29, 1991";
+		    player20.height = "5'10";
+		    player20.weight = "180lbs";
+		    player20.position = "Guard";
+		    player20.categories.add(Category.findByName("Guards"));
+	       	prev1.players.add(player20);
+	       	prev2.players.add(player20);
+	       	player20.save();
     	
         	
         	

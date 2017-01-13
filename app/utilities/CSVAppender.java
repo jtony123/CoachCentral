@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CSVAppender {
 
-	public String updateFile(String filepath, List<String> datapoints, boolean overwrite){
+	public String updateFile(String filepath, List<String> datapoints, boolean append){
 		
 		File file = new File(filepath);
 		
@@ -26,7 +26,7 @@ public class CSVAppender {
 		
 		PrintWriter out = null;
 		try {
-			out = new PrintWriter(new BufferedWriter(new FileWriter(file, overwrite)));
+			out = new PrintWriter(new BufferedWriter(new FileWriter(file, append)));
 			
 			for(String datapoint : datapoints){		
 

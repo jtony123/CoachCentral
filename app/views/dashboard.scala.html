@@ -1,3 +1,5 @@
+@import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
+@import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
 @import tags._
 @(user : models.User, active: String, player: models.Player, playerIndex: Integer, players: List[models.Player], category:String, categories: List[models.Category])
 
@@ -122,6 +124,22 @@ position: absolute;
   height: auto;                 
   padding: 5px;             
   font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+
+div.rdxtip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 8px sans-serif;     
    border: 1px; 
    border-style: solid;      
    border-radius: 12px;           
@@ -639,6 +657,7 @@ var heartrateline = d3.svg.line()
 
 
 var sessloadline = d3.svg.line()
+.defined(function(d,i) { return i != 0;})
 .interpolate("monotone")
 //.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
 .x(function(d) { return xScale(d.SESS_START); })
@@ -756,6 +775,8 @@ var gametip = d3.select("body").append("div")
 .style("z-index", 999999);
 
 
+
+
 var datatiptable = function(d){
 			
 	var test = d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold);
@@ -850,7 +871,71 @@ var moreNotes = function(d){
 	    	
 		}
 
+var rdxtip = d3.select("body").append("div")   
+.attr("class", "rdxtip")
+.attr("id", "rdxtip")
+.style("font", "8px")
+.style("opacity", 1)
+.style("z-index", 999999);
 
+var rdxnotes = function(d){
+	
+	var notesarray = d.NOTES.split(':');
+	
+	var text = "<p><font face='verdana' size='3' color='black'>Date : " + d.TEST_TIME.toString().substring(0, 15) + "</p>"
+			+ "<p><font face='verdana' size='3' color='purple'>Anti-Oxidant : " + d.FORT + "</p>"
+			+ "<p><font face='verdana' size='3' color='blue'>Pro-Oxidant : " + d.FORD  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Energy Level : " + d.EnergyLevel  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>MuscleSoreness : " + d.MuscleSoreness  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Trained Today : " + d.TrainedToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Ate Today : " + d.AteToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercised Gym Yesterday     : " + d.ExerciseGymYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Training Yesterday : " + d.ExerciseTrainingYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Game Yesterday     : " + d.ExerciseGameYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise None Yesterday     : " + d.ExerciseNoneYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Other Yesterday    : " + d.ExerciseOtherYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Today : " + d.SymptomFeverToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Previously : " + d.SymptomFeverPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Today : " + d.SymptomSoreThroatToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Previously : " + d.SymptomSoreThroatPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Today : " + d.SymptomHeadacheToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Previously : " + d.SymptomHeadachePreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Today : " + d.SymptomJointorMuscleAcheToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Previously : " + d.SymptomJointorMuscleAchePreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Today : " + d.SymptomDiarrheaToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Previously : " + d.SymptomDiarrheaPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Other : " + d.SymptomOther  + "</p>";
+	
+			for(var i=0; i<notesarray.length; i++){
+				text += "<p>" + notesarray[i].trim() + "</p>";
+			}
+			
+			@restrict(roles = allOfGroup("redoxadmin")) {
+				text += "<a title='add notes' href='#' onclick='addRdxNote("+d.TIME_KEY+ "); return false;'>" + "Add note" +"</a>";
+				
+			}
+			
+  		return text;
+}
+
+var clearnotes = function(d){ return "";};
+
+var addRdxNote = function(timekey){
+	
+	datatip.transition()
+	.duration(100)
+	.style("opacity", 0.9)
+	.style("color", "#2F4F4F")
+	.style("border-color", "#667788");
+	
+	// here we test if there are new notes available for this player
+	
+	datatip.html("<form id='addingrdxnotes' action='@routes.Application.updateRedoxNote(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='hidden' name='timekey' value='"+timekey+"'/>"
+			+"<textarea id='newnote' rows='4' cols='50' name='note' placeholder='add note'></textarea>"
+			+"<button>Add</button></form> ");
+
+}
 
 
 
@@ -954,6 +1039,7 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 			d.FORT_ADJ = +d.FORT_ADJ;
 			d.FORD_INC = +d.FORD_INC;
 			d.FORT_INC = +d.FORT_INC;
+			d.NOTES = d.NOTES;
 			//console.log("key is " + d.TIME_KEY +" date is "+d.TEST_TIME);
 			//console.log("got " + d.TEST_TIME +" - " + d.FORD +" - " + d.FORD_ADJ);
 			
@@ -971,7 +1057,23 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     //var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
 	//var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
     
-    xScale.domain([threeweeksago,  oneweekahead]);
+	if(document.cookie.indexOf("xl") >= 0) {
+		
+		var lhs,rhs;
+		var cookiearray = document.cookie.split(';')
+		for(var i=0; i<cookiearray.length; i++){
+	        if(cookiearray[i].split('=')[0].trim() === "xl"){
+	      	  lhs = Date.parse(cookiearray[i].split('=')[1].trim());
+	        }
+            if(cookiearray[i].split('=')[0].trim() === "xr") {
+          	  rhs = Date.parse(cookiearray[i].split('=')[1].trim());
+            }
+         }
+		 xScale.domain([lhs,  rhs]);
+	} else {
+		xScale.domain([threeweeksago,  oneweekahead]);
+	}
+	
 
 	y.domain([0, 15]);
 	y1.domain([1500, 0]);
@@ -991,6 +1093,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	var zoom = d3.behavior.zoom()
 	.x(xScale)
 	.on('zoom', function() {
+		document.cookie="xl="+xScale.domain()[0]+";";
+		document.cookie="xr="+xScale.domain()[1]+";";
+		//console.log("zooming start " + xScale.domain()[0] + " : finish " +xScale.domain()[1] );
 	    re_draw_chart();
 	});
 	
@@ -1361,6 +1466,12 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		});
 		
 		
+		
+		@restrict(roles = allOfGroup("redoxadmin")) {
+		
+			
+		
+		
 		// the ford line
 		innersvg.append("path")
 		.attr("class", "line").attr("id", "fordline").attr("stroke-width", 1)
@@ -1388,25 +1499,32 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
     	.attr("cy", function(d) { return y3(d.FORD); })
     	.on("mouseover", function(d) {
-    		acutetooltip.transition().duration(200)
-				.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
-    		acutetooltip .html("FORD : " + (parseFloat(d.FORD)))
-				.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
-			})
+    		rdxtip.transition()
+			.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+			.style("width", "auto").style("height", "auto")
+			.attr("id", "rdxtip")
+			.each("end", function(d){this.className='rdxtip'});;
+		rdxtip .html(rdxnotes(d))
+			.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+		})
 		.on("mouseout", function(d) {       
-			acutetooltip.transition().duration(500).style("opacity", 0);
+			rdxtip.transition().delay(2000)
+			.style("width", "0px").style("height", "0px")
+			.each("end", function(d){rdxtip.html(""); this.className=''; });
 		})
 		.on("click", function(d) {
 			linktip
 			//.transition()
 			//.duration(100)
 			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxCSV(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
 				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
 				+"<button>Toggle</button></form> ") 
-			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");
+			.style("left", "200px").style("top", "50px");
 			document.getElementById("fordtoggle").submit();
 		});
+		
+		
 		
 		// the fort line
 		innersvg.append("path")
@@ -1431,27 +1549,49 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
     	.attr("cy", function(d) { return y3(d.FORT); })
     	.on("mouseover", function(d) {
-    		acutetooltip.transition().duration(200)
-				.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
-    		acutetooltip .html("FORT : " + (parseFloat(d.FORT)))
-				.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
-			})
-		.on("mouseout", function(d) {       
-			acutetooltip.transition().duration(500).style("opacity", 0);
+    		rdxtip.transition()
+				.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+				.style("width", "auto").style("height", "auto")
+    			.attr("id", "rdxtip")
+    			.each("end", function(d){this.className='rdxtip';});
+    		rdxtip .html(rdxnotes(d))
+				.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -250) + "px")
+				.on("mouseover", function(d) {
+		    		rdxtip.transition()
+					.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+					.style("width", "auto").style("height", "auto")
+	    			.attr("id", "rdxtip")
+	    			.each("end", function(d){this.className='rdxtip'});;
+	    		//rdxtip .html(rdxnotes(d))
+					//.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -250) + "px");
+				})
+				.on("mouseout", function(d) { 
+			
+				rdxtip.transition().delay(1000)
+					.style("width", "0px").style("height", "0px")
+					.each("end", function(d){rdxtip.html(""); this.className=''; });
+		})
+			
+    	})
+		.on("mouseout", function(d) { 
+			
+			rdxtip.transition().delay(2000)
+				.style("width", "0px").style("height", "0px")
+				.each("end", function(d){rdxtip.html(""); this.className=''; });
 		})
 		.on("click", function(d) {
 			linktip
 			//.transition()
 			//.duration(100)
 			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxCSV(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
 				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
 				+"<button>Toggle</button></form> ") 
 			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");
 			document.getElementById("fordtoggle").submit();
 		});
 		
-		
+		} // end redox restriction
 		
 	} // end drawchart()
 	
@@ -1479,11 +1619,7 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		// the heartrate line
 		innersvg.selectAll("#heartrateline").attr("d", heartrateline(data));
 		
-		// the ford and fort lines
-		innersvg.selectAll("#fortline").attr("d", fortline(data3));
-		innersvg.selectAll("#fordline").attr("d", fordline(data3));
-		innersvg.selectAll("#fortadjline").attr("d", fortadjline(data3));
-		innersvg.selectAll("#fordadjline").attr("d", fordadjline(data3));
+
 		
 		
 		
@@ -1588,6 +1724,12 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
     	.attr("cx", function(d) { return xScale(d.SESS_START); })
     	.attr("cy", function(d) { return y2(d.ACUTE); });
 		
+		@restrict(roles = allOfGroup("redoxadmin")) {
+		// the ford and fort lines
+		innersvg.selectAll("#fortline").attr("d", fortline(data3));
+		innersvg.selectAll("#fordline").attr("d", fordline(data3));
+		innersvg.selectAll("#fortadjline").attr("d", fortadjline(data3));
+		innersvg.selectAll("#fordadjline").attr("d", fordadjline(data3));
 		
 		// update FORD values
 	    innersvg.selectAll("#FORD")
@@ -1598,6 +1740,9 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	    innersvg.selectAll("#FORT")
     	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
     	.attr("cy", function(d) { return y3(d.FORT); });
+		
+		}
+		
 		
 		// the alert flags along the acute load line
 		innersvg.selectAll("#UPFlags")
@@ -1624,7 +1769,11 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 	    
 	    
 		
-		
+	var perfbuttontoggled = false;	
+	var gameresultbuttontoggled = false;
+	var schedulebuttontoggled = false;
+	var redoxbuttontoggled = false;
+	
 	var numButtonsToggle2 = 9;
 	var drawUpperButtons = function(){
 		
@@ -1634,19 +1783,37 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 		//drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, true);
 		//drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, true);
 		// drawGAMELOADButton("gameload", 3, true)
+		
+		
+		if(document.cookie.indexOf("perfbut") >= 0) {
+
+			var cookiearray = document.cookie.split(';')
+			for(var i=0; i<cookiearray.length; i++){
+		        if(cookiearray[i].split('=')[0].trim() === "perfbut"){
+		        	perfbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "rdxbut"){
+		        	redoxbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "grbut"){
+		        	gameresultbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "schbut"){
+		        	schedulebuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+	         }
+		} 
+		
 		drawPERFORMANCEButton("ACLoad", "ChronicLoad", "UPFlags", 
 				"sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline",
-				"gameload", 0, true);
-		drawGAMERESULTButton("gameresult", 1, true);
-		drawSCHEDULEButton("gametriangles", 2, true);
-		drawREDOXButton("FORD", "FORT", "fordline", "fortline", "fordadjline", "fortadjline",3, false);
+				"gameload", 0, perfbuttontoggled);
+		drawGAMERESULTButton("gameresult", 1, gameresultbuttontoggled);
+		drawSCHEDULEButton("gametriangles", 2, schedulebuttontoggled);
+		drawREDOXButton("FORD", "FORT", "fordline", "fortline", "fordadjline", "fortadjline",3, redoxbuttontoggled);
 		
 		drawSEASONVIEWButton(7);
 		drawMONTHVIEWButton(8);
 		drawWEEKVIEWButton(9);
-		
-		
-		
 		
 		
 	}
@@ -1658,9 +1825,10 @@ var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function
 
 		
 		
-//special function to draw and control button for GAME
+//special function to draw and control button for PERFORMANCE
 function drawPERFORMANCEButton(id1, id2, id3, id4, id5, id6, id7, id8, id9, id10, i, toggled){
 		
+				
 			// the 3 lines for acute chronic
 			d3.select("#"+id1)
 			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
@@ -1723,9 +1891,11 @@ function drawPERFORMANCEButton(id1, id2, id3, id4, id5, id6, id7, id8, id9, id10
 				    .style("shape-rendering", "auto")
 				    .on("click", function(){
 				    	
+				    	
 				    	var isActive;
 				    	this.active = !this.active;	
 				    	isActive = this.active;
+				    	document.cookie=isActive? "perfbut=true;" : "perfbut=false;";
 				        // Hide or show the line
 				
 				// the ac lines
@@ -1820,6 +1990,7 @@ function drawGAMERESULTButton(lineid1, i, toggled){
 				    	var isActive;
 				    	this.active = !this.active;	
 				    	isActive = this.active;
+				    	document.cookie=isActive? "grbut=true;" : "grbut=false;";
 				        // Hide or show the line
 				        
 				d3.selectAll("#"+lineid1).style("opacity", function(d) {
@@ -1868,6 +2039,7 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 				    	var isActive;
 				    	this.active = !this.active;	
 				    	isActive = this.active;
+				    	document.cookie=isActive? "schbut=true;" : "schbut=false;";
 				        // Hide or show the line
 				        
 				        d3.selectAll("#"+lineid1).style("opacity", function(d) {
@@ -1879,7 +2051,7 @@ function drawSCHEDULEButton(lineid1, i, toggled){
 					
 	} // end drawSCHEDULEButton
 	
-//special function to draw and control button for GAME
+//special function to draw and control button for redox
 function drawREDOXButton(dotid1, dotid2, lineid1, lineid2, lineid3, lineid4, i, toggled){
 			
 			
@@ -1928,6 +2100,9 @@ function drawREDOXButton(dotid1, dotid2, lineid1, lineid2, lineid3, lineid4, i, 
 				    .on("click", function(){
 				    	
 				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				    	document.cookie=isActive? "rdxbut=true;" : "rdxbut=false;";
 				        // Hide or show the line
 				        
 				        d3.selectAll("#"+dotid1).style("opacity", function(d) {
@@ -1992,8 +2167,9 @@ function drawSEASONVIEWButton(i){
 						var forward = new Date(Date.now());
 
 						xScale.domain([back,  forward]);
-						
-					zoom.x(xScale);
+						document.cookie="xl="+xScale.domain()[0]+";";
+						document.cookie="xr="+xScale.domain()[1]+";";
+						zoom.x(xScale);
 						re_draw_chart();
 						});
 					
@@ -2033,6 +2209,8 @@ function drawMONTHVIEWButton(i){
 				        var back = new Date(Date.now() + -21*24*3600*1000);
 						var forward = new Date(Date.now() + 7*24*3600*1000);
 						 xScale.domain([back,  forward]);
+						 document.cookie="xl="+xScale.domain()[0]+";";
+						document.cookie="xr="+xScale.domain()[1]+";";
 						 zoom.x(xScale);
 						 re_draw_chart();
 						});
@@ -2073,6 +2251,8 @@ function drawWEEKVIEWButton(i){
 				        var sixdaysago = new Date(Date.now() + -6*24*3600*1000);
 						var onedayahead = new Date(Date.now() + 24*3600*1000);
 						 xScale.domain([sixdaysago,  onedayahead]);
+							document.cookie="xl="+xScale.domain()[0]+";";
+							document.cookie="xr="+xScale.domain()[1]+";";
 						 zoom.x(xScale);
 						 re_draw_chart();
 						 
@@ -2570,27 +2750,27 @@ function drawHREButton(lineid1, i, toggled){
 			// first remove all elements from this svg container
 			lowersvg.selectAll("g").remove();
 			// combined a/c load button
-			drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, true);
+			drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, perfbuttontoggled);
 			
 			// player session loads
-			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, true);
+			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, perfbuttontoggled);
 			
 			// game data button
-			drawGAMELOADButton("gameload", 3, true)
+			drawGAMELOADButton("gameload", 3, perfbuttontoggled)
 			
 			
 			//acc/dec load button 	
-			drawACCDECButton("accel", "decel", 4, false);
+			drawACCDECButton("accel", "decel", 4, perfbuttontoggled);
 			
 			//COD  button 	
-			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 5, false);
+			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 5, perfbuttontoggled);
 			
 			
 			//JUMP  button 	
-			drawJUMPButton("jump_lo", "jump_med", "jump_hi", 6, false);
+			drawJUMPButton("jump_lo", "jump_med", "jump_hi", 6, perfbuttontoggled);
 			
 			//HRE  button 	
-			drawHREButton("heartrateline", 7, false);
+			drawHREButton("heartrateline", 7, perfbuttontoggled);
 			
 			//SQUAD AVG button 	
 			//drawSQUADAVGButton("squadavgline", 7, true);

@@ -15,6 +15,8 @@ import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
+import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
+
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.Category;
@@ -43,6 +45,7 @@ import utilities.RedoxCSVUpdater;
 import views.html.dashboard;
 import views.html.index;
 import views.html.Admin.users;
+import views.html.redox;
 
 public class Application extends Controller {
 	
@@ -158,6 +161,34 @@ public class Application extends Controller {
     	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
     	
     }
+    
+
+    
+    @Restrict({@Group({"coach"})})
+    public CompletionStage<Result> redox() {
+    	System.out.println("redox called");
+    	User user = User.findByEmail(session().get("connected"));
+    	
+    	int playernumber = 4;
+    	String category = "All";
+    	Category categoryFound = Category.findByName(category);
+    	Player player;
+    	List<Player> players = Player.find.all();
+    	
+    	
+    	
+    	
+    	return CompletableFuture.completedFuture(ok(redox.render(user, "redox", players)));
+    }
+    
+  public Result getFullRedoxCSV(){
+    	
+    	System.out.println("getFullRedoxCSV called");
+   	
+   	 return ok(new java.io.File(filepath +"redox.csv"));
+    }
+    
+    
     
     @Restrict({@Group({"coach"})})
     public CompletionStage<Result> record(int playernumber, String category) {
@@ -375,6 +406,7 @@ public class Application extends Controller {
     
    public CompletionStage<Result> uploadRedoxCSV() {
     	
+	   System.out.println("uploadRedoxCSV called");
     	User user = User.findByEmail(session().get("connected"));
     	List<User> allusers = User.find.all();
     	
@@ -382,31 +414,32 @@ public class Application extends Controller {
     	
     	for(FilePart<Object> fp : files){
     		
-    		//FilePart<File> filename = body.getFile("filename");
-            System.out.println("fp iteration");
-            
             if (fp != null) {
                 
-            	System.out.println("fp not null");
                 File file = (File) fp.getFile();
                 
                 RedoxCSVLoader redoxcsvloader = new RedoxCSVLoader();    
-                redoxcsvloader.loadCSVFile(file.getAbsolutePath());
+                Map<String, ArrayList<String>> playerdatabyname = redoxcsvloader.getRedoxData(file.getAbsolutePath());
 
-        		Map<String, ArrayList<String>> playerfiles = redoxcsvloader.getPlayerfilesbyname();
-        		Iterator it = playerfiles.entrySet().iterator();
+        		//Map<String, ArrayList<String>> playerfiles = redoxcsvloader.getPlayerfilesbyname();
+        		Iterator it = playerdatabyname.entrySet().iterator();
         		while (it.hasNext()) {
         			Map.Entry pair = (Map.Entry) it.next();
         			
         			Player player = Player.findByNameOrAlias((String) pair.getKey());
-        			//player.filename = null;
+        			System.out.println("player found "+player.playername);
+        			for(String s : (List<String>) pair.getValue()){
+        				System.out.println(s);
+        			}
+        			
         			// dumping the file into 'no players' if no play by this name found
-        			if(player == null){
+        			if(player.playername.equalsIgnoreCase("no players")){
+        				System.out.println("dumping");
         				player =  Player.findByNumber(0);
         				//player.filename = null;
         			} else {
         				//player.filename = null;
-
+        				System.out.println("not dumping");
             			if(player.redoxFilename == null){
             				// generate default file with headers
             				CSVRedoxGenerator cSVRedoxGenerator = new CSVRedoxGenerator();
@@ -416,6 +449,10 @@ public class Application extends Controller {
             			
             			CSVAppender cSVAppender = new CSVAppender();
             			cSVAppender.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
+            			
+            			// using the toggleupdater to recalculate the averages
+            			RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
+                		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
             		
             			
             			player.save();
@@ -431,65 +468,62 @@ public class Application extends Controller {
             }
             
             //TODO: check that the file is in order of time
-            
-//            List<Player> players = Player.find.all();
-//            for (Player player : players){
-//            	if(player.filename != null){
-//            		CSVSortByTime cSVSortByTime = new CSVSortByTime();
-//                	
-//                    cSVSortByTime.sortCSVFile(filepath + player.filename);
-//                    
-//                    player.save();
-//            	}
-//            }
+        
             
     	}
-    	
-    	
-    	
     	
     	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
     }
     
-    public CompletionStage<Result> updateRedoxCSV(int playernumber, String category) {
+    public CompletionStage<Result> updateRedoxToggleState(int playernumber, String category) {
     	
     	System.out.println("updateRedoxCSV called");
     	//
 
     	DynamicForm form = Form.form().bindFromRequest();
     	String timekey = form.get("timekey");
-    	//System.out.println("timekey received "+timekey);
-    	
-    	//System.out.println("player alias found is " + test.playername);
-    	//String category = "All";
-    	User user = User.findByEmail(session().get("connected"));
-    	Category categoryFound = Category.findByName(category);
-    	Player player = Player.findByNumber(playernumber);
-    	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
 
-    	// get this players redox file
-    	
+    	Player player = Player.findByNumber(playernumber);
+
+    	// update this players redox file
     	if(player.redoxFilename != null){
     		RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
         	
-    		redoxCSVUpdater.updateCSVFile(filepath + player.redoxFilename, timekey);
+    		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
           }
     	
-    	// find the corresponding timekey
-    	
-    	// toggle both the ford and fort included value corrsponding to that time key
-    	
-    	// recalculate the avergaes
-    	
-    	// save the new file
-    		
-    	
-    	
-    	List<Category> categories = Category.find.all();
-    	int playerIndex = players.indexOf(player);
     			
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	//return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(playernumber, category)));
     	
+    	
+    }
+    
+   public CompletionStage<Result> updateRedoxNote(int playernumber, String category) {
+    	
+    	System.out.println("updateRedoxNote called");
+    	//
+
+    	DynamicForm form = Form.form().bindFromRequest();
+    	String timekey = form.get("timekey");
+    	String note = form.get("note");
+    	System.out.println("note before - " + note);
+    	
+    	note = note.replaceAll("\r\n", ":").replaceAll("\r", ":");
+    	System.out.println("note after - " + note);
+
+    	Player player = Player.findByNumber(playernumber);
+
+    	// update this players redox file
+    	if(player.redoxFilename != null){
+    		RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
+        	
+    		redoxCSVUpdater.addNoteCSVFile(filepath + player.redoxFilename, timekey, note);
+          }
+    	
+    			
+    	//return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(playernumber, category)));
     	
     	
     }
