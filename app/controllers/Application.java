@@ -50,8 +50,6 @@ import views.html.redox;
 public class Application extends Controller {
 	
 
-	//String filepath = "data/attachments/GraphCSVFiles/";
-	//String filepath = "/tmp/";
 	
 	@Inject 
 	private  Configuration configuration;
