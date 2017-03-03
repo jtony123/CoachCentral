@@ -20,9 +20,15 @@ libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"
 libraryDependencies += evolutions
 libraryDependencies += jdbc
 
+javaOptions ++= Seq(
+	"-Dhttp.port=disabled",
+   "-Dhttps.port=9443",
+   "-Dhttps.keyStore=conf/coachcentraldev_orreco_com.jks",
+   "-Dhttps.keyStorePassword=boxfuse")
 
 
-PlayKeys.externalizeResources := false
+
+//PlayKeys.externalizeResources := false
 
 
 fork in run := false
