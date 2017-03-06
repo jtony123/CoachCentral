@@ -1,0 +1,61 @@
+There are a minimum of three branches in the repository:-
+
+The master branch - the branch that represents the currently deployed version of CoachCentral.  Approved versions of beta will be merged into this branch for inclusion into the next deployment of the live version of CoachCentral.
+
+The beta branch - the branch that represents the currently deployed version of CoachCentral for testing by the product development group.  This version will have additional features and updates ahead of those in the master branch and upon approval will be merged into the master branch.  This is the branch that is shared with external developer groups/organisations. 
+
+The development branch - the branch that is used by in-house developers that is deployed for testing by the developers.  From this branch, new feature branches are added and upon completion are merged into the development branch.  There maybe multiple feature branches stemming from the development branch, some will get merged into development, some may be parked for future reference, but there should only be one current feature branch undergoing active development at any point in time.
+
+Commands cheatsheet:
+
+CREATE A NEW BRANCH FROM THE <development> branch
+**** You only do this while currently in the development branch.  Give the branch a meaningful descriptive name.  Golden rule = commit often, push often.
+
+First switch to development.....
+git checkout development
+
+then create new branch......
+[development] git checkout -b <new_branch_name>
+
+push the new branch to the remote(called origin)
+[new_branch_name] git push origin <new_branch_name>
+
+add new files/changes for commit
+[new_branch_name] git add *
+
+commit your changes
+[new_branch_name] git commit -m "put a descriptive message of the changes or additions made here, all inside double quotes"
+
+push your changes to the remote
+[new_branch_name] git push origin <new_branch_name>
+
+when finished development of new feature, merge the branch into the development branch
+
+First switch to development.....
+[new_branch_name] git checkout development
+
+then merge the completed feature branch
+[development] git merge <new_branch_name>
+
+add and commit the new changes to the development branch
+[development] git add *
+[development] git commit -m "blah blah blah"
+
+push the update to the remote
+[development] git push origin development
+
+after deployment and testing carried out and successful, merge the changes in development into the beta branch for product development group testing and review
+
+First switch to beta.....
+[development] git checkout beta
+
+then merge development into beta
+[beta] git merge development
+
+if approval given by product development group, merge changes into master and deploy
+
+First switch to master.....
+[beta] git checkout master
+
+then merge development into beta
+[master] git merge beta
