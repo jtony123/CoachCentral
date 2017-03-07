@@ -1,4 +1,4 @@
-name := """CoachCentralDemo"""
+name := """CoachCentral"""
 
 version := "1.0.11"
 
