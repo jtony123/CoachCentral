@@ -1,0 +1,2845 @@
+@import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
+@import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
+@import tags._
+@(user : models.User, active: String, player: models.Player, playerIndex: Integer, players: List[models.Player], category:String, categories: List[models.Category])
+
+
+
+
+
+@main(title = "CoachCentral") {
+    
+    <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
+    @navigationbar(user: models.User, active: String)
+<style> 
+
+body {
+	font:12px Arial;
+}
+
+
+.chart_centre {
+	
+}
+
+path {
+/* 	stroke: steelblue; */
+
+	/* the width of the plotted line */
+	/* stroke-width: 0.1; */
+
+	fill: lightblue;
+}
+
+
+
+.area {
+/* 	fill : lightblue; */
+/* 	stroke-width: 0; */
+}
+
+.flag {
+/*   fill: red; */
+/*   stroke: red; */
+/*   fill-opacity: 0.5; */
+}
+
+
+.axis path, 
+.axis line {
+	fill: none;
+	stroke: grey;
+	/*stroke-width: 0;*/
+	shape-rendering: crispEdges;
+}
+
+/* the styling of the grid lines on the graph */
+.grid .tick {
+    stroke: lightgrey;
+    stroke-opacity: 0.6;
+    shape-rendering: crispEdges;
+}
+.grid path {
+   	stroke-width: 0;
+}
+
+.legend {
+	font-size: 16px;         
+	font-weight: bold;         
+	text-anchor: start;
+	stroke-width: 2;
+	shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 150px;                  
+  height: 120px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+
+div.buttontip {   
+  position: absolute;           
+  text-align: center;           
+  width: 150px;                  
+  height: auto;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+
+div.acutetooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 150px;                  
+  height: 20px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+
+div.datatip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+
+div.rdxtip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 8px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+div.gametip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #74DB88;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+
+th, td {
+    padding: 2px;
+}
+
+.cell {
+	color: red;
+}
+
+#datatiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#datatiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #FFFFFF;
+}
+
+#gametiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #E1FFE7;
+}
+#gametiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #FFFFFF;
+}
+
+
+div.notestip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+
+#notestiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#notestiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #EEEEEE;
+}
+
+#player_icon {
+  position: relative;
+  perspective: 1000;
+}
+
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
+}
+
+@@-webkit-keyframes player_icon_flip {
+
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
+}
+
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
+
+
+
+</style>
+
+
+<div class="container-fluid" id="groupings_toggle_buttons">
+	<div>
+	@for(c <- categories) {
+		@if(c.name.equals(category)){
+		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
+		} else {
+		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
+   		}
+	}
+	</div>
+</div>
+
+
+
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	  
+	   @if(players.size() > 5){
+	   
+	   <a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+	   }
+	   
+	  
+	  @if(players.size() > 5){
+	  
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
+	  		
+	  }
+	  
+	  @if(players.size() > 3){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
+	  }
+	  
+	  @if(players.size() > 1){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
+	  }
+	
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
+						}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
+						
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:50px;height:50px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:50px;height:50px;"/>
+						}
+						
+						<table style="text-align:left; font-family:arial; font-size:15px;">
+							<tr>
+								<td>Position</td><td>@player.position</td>
+							</tr>
+							<tr>
+								<td>DoB</td><td>@player.dob</td>
+							</tr>
+							<tr>
+								<td>Height</td><td>@player.height</td>
+							</tr>
+							<tr>
+								<td>Weight</td><td>@player.weight</td>
+							</tr>
+						</table>
+						
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+						
+						
+						
+<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
+<!-- 						alerts go here<br> -->
+<!-- 						alert 1<br> -->
+<!-- 						alert 2<br> -->
+<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
+<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
+        				
+        				
+						
+					</a>
+				</h4>
+			</div><!-- end back face -->
+			</div>
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	 @if(players.size() > 2){
+	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 4){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	 		<a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+					
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>		
+			</a>
+	 }
+
+	 	</div>
+	 	
+	  </div>
+	  
+	  
+</div><!-- end div player carousel -->
+
+
+
+
+<!-- the panel below the pagination carousel -->
+	
+<div class="chart" class="container-fluid" id="main_chart"  style="border:1px solid #cecece; border-radius: 20px;
+																	margin:20px;
+																	background-color: white;
+																	box-shadow: 0px 0px 10px grey;">
+	<div class="chart_upper" class="row" id="chart_upper" >
+	
+	</div>
+	<div class="chart_centre" class="row" id="chart_centre">
+	
+	</div>
+	<div class="chart_lower" class="row" id="chart_lower">
+		
+	</div>
+
+</div>
+</div><!-- end  outer container-->
+
+
+
+<script>
+
+// start of script  #F11BDF
+
+var acutechronic_button_border_colour = "red";
+var sessionloads_button_border_colour = "#3399CC";
+var gameloads_button_border_colour = "#74DB88";
+var accdec_button_border_colour = "orange";
+var cod_button_border_colour = "#F11BDF";
+var jump_button_border_colour = "#587CAF";
+var hre_button_border_colour = "#1FE234";
+var squadavg_button_border_colour = "#CECE0B";
+
+var sessionloads_chart_colour = "#3399CC";
+var gameloads_chart_colour = "#74DB88";
+var heartrateexert_chart_colour = "#1FE234";
+var squadavg_chart_colour = "#CECE0B";
+
+var acutechronic_button_text = "ACUTE CHRONIC";
+var acutechronic_button_text_small = "A:C";
+
+var sessionloads_button_text = "PRACTICE LOADS";
+var sessionloads_button_text_small = "PL";
+
+var gameloads_button_text = "GAME LOADS";
+var gameloads_button_text_small = "GL";
+
+var accdec_button_text = "ACC/DEC";
+var accdec_button_text_small = "A/D";
+
+var cod_button_text = "CoD (L/R)";
+var cod_button_text_small = "CoD";
+
+var jump_button_text = "JUMPS";
+var jump_button_text_small = "JM";
+
+var hre_button_text = "HR EXERT";
+var hre_button_text_small = "HR";
+
+var squadavg_button_text = "SQUAD AVG";
+
+var acutechronichelptext = "Acute:Chronic ratio is a ratio of the rolling average of workload experienced by the "
+	+"athlete over the previous 7 and 28 days respectively.<br> It is a reliable marker of increased injury risk "
+	+"and detraining. <br>An alert is raised when the acute load is ≥150% of the chronic load. <br>An alert is raised when the "
+	+"acute load is ≤80% of the chronic load."
+	
+var practiceloadhelptext = "Training load is the total player load for the entire duration of the training session as "
+	+"measured by the GPS device. <br>Within the bar, this is broken down into pre-practice, practice and "
+	+"post-practice as applicable. <br>The team average is also displayed as a black line to compare against.";
+	
+var gameloadhelptext = "Game load is the total game physiological load as calculated by SportsVU for the "
+	+"individual athlete. The team average is also displayed as a black line to compare against.";
+	
+var accelhelptext = "Acceleration/Decelerations is the total number of game accelerations and decelerations "
+	+"combined experienced by the athlete as calculated by the device.";
+	
+var codhelptext = "CoD L/R- Change of Direction is the number of movements occurring in a particular direction. <br>This "
+	+"number is then broken down based on the velocity of the movement into a low, medium and high "
+	+"band. <br>On the graph the centre line represents the middle with the top being movements to the left "
+	+"and bottom movements to the right.";
+
+var jumpshelptext = "Jumps is the total number of jumps experienced by the player as calculated by the GPS "
+	+"device. <br>These jumps are further broken down by intensity into low, medium and high bands.";
+	
+var hreexerthelptext = "Heart rate exertion is a rating of the athletes work output and effort. <br>The exertion "
+	+"score based on the individual athlete’s heart rate capacity.";
+
+var acuteloadupperthreshold = 1.5,
+	acuteloadlowerthreshold = 0.8;
+
+
+var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
+// set the dimensions of the canvas / graph
+var margin = {top: 30, right: 20, bottom: 25, left: 20};
+
+var width = parseInt(d3.select('#main_chart').style('width'), 10);
+	
+
+var	navbarh = windowHeight/16,
+	toggle1_h = windowHeight/16,
+	carousel_h = windowHeight/8,
+	toggle2_h = Math.max(((windowHeight/32)), 50)
+	chart_h = Math.max(((windowHeight/2)), 400),
+	toggle3_h = Math.max(((windowHeight/32)), 50);
+	
+
+var parseDate = d3.time.format("%d/%m/%Y%H%M").parse;
+
+
+
+// set the ranges
+var xScale = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var y1 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var y2 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var y3 = d3.scale.linear().range([(chart_h-margin.bottom), 0]);
+var color = d3.scale.category20();
+
+
+
+// define the axes
+var xAxis = d3.svg.axis().scale(xScale)
+	.orient("bottom").ticks(8).tickFormat(d3.time.format("%b-%d %H:%M"));
+	
+var yAxis = d3.svg.axis().scale(y)
+	.orient("right").ticks(3);
+	
+	
+var acuteline = d3.svg.line()
+//cannot interpolate the acute line, the flags along the line cannot be interpolated
+	//.interpolate("basis")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y(function(d) { return y2(d.ACUTE); });
+	
+	
+var chronicloadarea = d3.svg.area()
+	.interpolate("basis")
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y0(chart_h-margin.bottom)
+	.y1(function(d) { return y2(d.CHRONIC); });
+	
+	
+var gh = 600;
+
+var cod_l_lo_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh); })
+.y1(function(d) { return y2(gh - d.COD_L_LO); });
+
+var cod_l_med_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh - d.COD_L_LO); })
+.y1(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED)); });
+
+var cod_l_hi_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED)); })
+.y1(function(d) { return y2(gh - (d.COD_L_LO + d.COD_L_MED + d.COD_L_HI)); });
+
+
+var cod_r_lo_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh); })
+.y1(function(d) { return y2(gh + d.COD_R_LO); });
+
+var cod_r_med_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh + d.COD_R_LO); })
+.y1(function(d) { return y2(gh + (d.COD_R_LO  + d.COD_R_MED)); });
+
+var cod_r_hi_area = d3.svg.area()
+//.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(gh + (d.COD_R_LO + d.COD_R_MED)); })
+.y1(function(d) { return y2(gh + (d.COD_R_LO + d.COD_R_MED + d.COD_R_HI)); });
+	
+var jump_lo_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(0); })
+.y1(function(d) { return y2(d.JUMP_LO); });
+
+var jump_med_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(d.JUMP_LO); })
+.y1(function(d) { return y2(d.JUMP_LO + d.JUMP_MED); });
+
+var jump_hi_area = d3.svg.area()
+.interpolate("basis")
+.x(function(d) { return xScale(d.SESS_START); })
+.y0(function(d) { return y2(d.JUMP_LO + d.JUMP_MED); })
+.y1(function(d) { return y2(d.JUMP_LO + d.JUMP_MED + d.JUMP_HI); });
+
+var heartrateline = d3.svg.line()
+//.interpolate("basis")
+//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+.x(function(d) { return xScale(d.SESS_START); })
+.y(function(d) { return y2(d.HR_EXERT); });
+
+
+var sessloadline = d3.svg.line()
+.defined(function(d,i) { return i != 0;})
+.interpolate("monotone")
+//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+.x(function(d) { return xScale(d.SESS_START); })
+.y(function(d) { return y2(d.SESS_LOAD + d.GAME_LOAD); });
+
+var accelline = d3.svg.line()
+	//.interpolate("basis")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y(function(d) { return y2(d.ACCEL_TOTAL); });
+
+
+var decelline = d3.svg.line()
+	//.interpolate("basis")
+	//.defined(function(d) {return d.T_PLAYER_LOAD != "0"; })
+	.x(function(d) { return xScale(d.SESS_START); })
+	.y(function(d) { return y2(d.DECEL_TOTAL); });
+	
+var fordline = d3.svg.line()
+	.interpolate("step-after")
+	//.tension(0.85)
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORD); });
+	
+var fordadjline = d3.svg.line()
+	.defined(function(d,i) { return i != 0;})
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORD_ADJ); });
+	
+	
+var fortline = d3.svg.line()
+	.interpolate("step-after")
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORT); });
+	
+var fortadjline = d3.svg.line()
+	.defined(function(d,i) { return i != 0;})
+	.x(function(d) { return xScale(d.TEST_TIME); })
+	.y(function(d) { return y3(d.FORT_ADJ); });
+	
+	
+	
+ 
+ // Bookmark1
+ var uppersvg = d3.select('#chart_upper').classed('chart_upper', true)
+ 	.append("svg").attr("id", "uppersvg").attr("width", width).attr("height", toggle2_h)
+ 	.append("g")
+ 	// transform the y coordinate by 5 to push buttons away from top edge of container
+ 	.attr("transform", "translate(" + margin.left + ", " + 5 + ")");
+ 
+ 
+// Adds the svg canvas
+var svg = d3.select('#chart_centre').classed('chart_centre', true)
+	.append("svg").attr("id", "outersvg").attr("width", width).attr("height", chart_h);
+ 		
+	svg.append("g").attr("transform", "translate(" + margin.left + ", " + 0 + ")")
+		.append("rect").attr("width", width - (margin.left + margin.right))
+	 	.attr("height", chart_h).attr("rx", 20).attr("ry", 20)
+		.attr("id", "background_shading").attr("stroke", "#FAFAFA").attr("stroke-width", 2)
+		.style("fill", "#FBFBFB");
+	
+// the innersvg prevents data being plotted outside the graph area - same as clipping rect
+var innersvg = svg.select('g').attr("transform", "translate(" + (margin.left) + ", " + 0 + ")")
+	.append("svg").attr("id", "innersvg")
+	.attr("width", width - (margin.left + margin.right)).attr("height", chart_h);
+	
+var lowersvg = d3.select('#chart_lower').classed('chart_lower', true)
+	.append("svg").attr("id", "lowersvg")
+		.attr("width", width + margin.left + margin.right).attr("height", toggle3_h)
+		.append("g")
+		// transform the y coordinate by 5 to push buttons away from top edge of container
+			.attr("transform", "translate(" + margin.left + ", " + 5 + ")");
+	
+	
+
+// function to draw the horizontal gridlines
+function make_gridline() {	 return d3.svg.axis().scale(y).orient("left").ticks(6);}
+
+
+// called whenever mouse hovers over a data point
+var tooltip = d3.select("body").append("div")   
+	.attr("class", "tooltip")               
+	.style("opacity", 0)
+	.style("z-index", 999999);
+	
+//used for form links when clicking in redox reading
+var linktip = d3.select("body").append("div")   
+	.attr("class", "tooltip")               
+	.style("opacity", 0)
+	.style("z-index", 999999);
+	
+	
+
+//called whenever mouse hovers over a button
+var buttontip = d3.select("body").append("div")   
+	.attr("class", "buttontip")               
+	.style("opacity", 0)
+	.style("z-index", 999999);
+		
+// called whenever mouse hovers over a data point
+var acutetooltip = d3.select("body").append("div")   
+	.attr("class", "acutetooltip")               
+	.style("opacity", 0)
+	.style("z-index", 999999);
+		
+		
+var datatip = d3.select("body").append("div")   
+.attr("class", "datatip")               
+.style("opacity", 0)
+.style("z-index", 999999);
+
+var gametip = d3.select("body").append("div")   
+.attr("class", "gametip")               
+.style("opacity", 0)
+.style("z-index", 999999);
+
+
+
+
+var datatiptable = function(d){
+			
+	var test = d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold);
+	var sessiontimediffms = d.SESS_END - d.SESS_START;
+	var sessionhours = ("0" + Math.floor((sessiontimediffms % 86400000) / 3600000)).slice(-2);
+	var sessionmins = ("0" + Math.floor(((sessiontimediffms % 86400000) % 3600000) / 60000)).slice(-2);
+	
+	var pretimediffms = d.PRE_END - d.PRE_START;
+	var prehours = ("0" + Math.floor((pretimediffms % 86400000) / 3600000)).slice(-2);
+	var premins = ("0" + Math.floor(((pretimediffms % 86400000) % 3600000) / 60000)).slice(-2);
+	
+	var practtimediffms = d.PRACT_END - d.PRACT_START;
+	var practhours = ("0" + Math.floor((practtimediffms % 86400000) / 3600000)).slice(-2);
+	var practmins = ("0" + Math.floor(((practtimediffms % 86400000) % 3600000) / 60000)).slice(-2);
+	
+	var posttimediffms = d.POST_END - d.POST_START;
+	var posthours = ("0" + Math.floor((posttimediffms % 86400000) / 3600000)).slice(-2);
+	var postmins = ("0" + Math.floor(((posttimediffms % 86400000) % 3600000) / 60000)).slice(-2);
+	
+	var othertimediffms = d.OTHER_END - d.OTHER_START;
+	var otherhours = ("0" + Math.floor((othertimediffms % 86400000) / 3600000)).slice(-2);
+	var othermins = ("0" + Math.floor(((othertimediffms % 86400000) % 3600000) / 60000)).slice(-2);
+	
+	var header = "<table id='"+"datatiptable"+"'><tr><th>Data</th><th>Value</th><th>Duration</th></tr>";
+	var topline = test ? "<tr><td>Acute Load</td><td class='cell'>"+ (parseInt(d.ACUTE))+" : "+ (Math.round((d.ACUTE/d.CHRONIC)*100)) +"%</td><td>.</td></tr>"
+			: "<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE))+" : "+ (Math.round((d.ACUTE/d.CHRONIC)*100)) +"%</td><td>.</td></tr>"
+	var text = header.concat(topline);
+	text = text.concat(
+	"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC)) +"</td><td>.</td></tr>" +
+	"<tr><td>Session Load </td><td>"+ (parseInt(d.SESS_LOAD)) +"</td><td>"+ sessionhours +":"+ sessionmins +"</td></tr>" +
+	"<tr><td>Pre Load</td><td>"+ (parseInt(d.PRE_LOAD)) +"</td><td>"+ prehours +":"+ premins +"</td></tr>" +
+	"<tr><td>Practice Load</td><td>"+ (parseInt(d.PRACT_LOAD)) +"</td><td>"+ practhours +":"+ practmins +"</td></tr>" +
+	"<tr><td>Post Load</td><td>"+ (parseInt(d.POST_LOAD)) +"</td><td>"+ posthours +":"+ postmins +"</td></tr>" +
+	"<tr><td>Other Load</td><td>"+ (parseInt(d.OTHER_LOAD)) +"</td><td>"+ otherhours +":"+ othermins +"</td></tr>" +
+	"<tr><td>Notes</td><td><a title='this shows the full notes' href='#' onclick='moreNotes(); return false;'>"+ "click for notes" +"</a></td></tr>" +
+	"</table>");
+  		return text;
+}
+
+var gametiptable = function(d){
+	
+	var test = d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold);
+	
+	var header = "<table id='"+"gametiptable"+"'><tr><th>Data</th><th>Value</th></tr>";
+	var topline = test ? "<tr><td>Acute Load</td><td class='cell'>"+ (parseInt(d.ACUTE))+" : "+ (Math.round((d.ACUTE/d.CHRONIC)*100)) +"%</td></tr>"
+			: "<tr><td>Acute Load</td><td>"+ (parseInt(d.ACUTE))+" : "+ (Math.round((d.ACUTE/d.CHRONIC)*100)) +"%</td></tr>"
+	var text = header.concat(topline);
+	text = text.concat(
+	"<tr><td>Chronic Load</td><td>"+ (parseInt(d.CHRONIC)) +"</td></tr>" +
+	"<tr><td>Game Load </td><td>"+ (parseInt(d.GAME_LOAD)) +" (~"+(parseInt(d.SQUAD_AVG))+")"+"</td></tr>" +
+	"<tr><td>Minutes</td><td>"+ (parseInt(d.GAME_MINS)) +"</td></tr>" +
+	"<tr><td>Points</td><td>"+ (parseInt(d.POINTS)) +"</td></tr>" +
+	"<tr><td>Rebounds</td><td>"+ (parseInt(d.REBOUNDS)) +"</td></tr>" +
+	"<tr><td>Assists</td><td>"+ (parseInt(d.ASSISTS)) +"</td></tr>" +
+	"<tr><td>Steals</td><td>"+ (parseInt(d.STEALS)) +"</td></tr>" +
+	"<tr><td>Blocks</td><td>"+ (parseInt(d.BLOCKS)) +"</td></tr>" +
+	"<tr><td>Fouls</td><td>"+ (parseInt(d.FOULS)) +"</td></tr>" +
+	"<tr><td>Notes</td><td><a title='this shows the full notes' href='#' onclick='moreNotes(); return false;'>"+ "click for notes" +"</a></td></tr>" +
+	"</table>");
+  		return text;
+}
+
+var moreNotes = function(d){
+			
+	    		datatip.transition()
+				.duration(100)
+				.style("opacity", 0.9)
+				.style("color", "#2F4F4F")
+				.style("border-color", "#667788");
+	    		
+	    		// here we test if there are new notes available for this player
+	    		if(@player.playernumber > 5) {
+	    		datatip .html("<table id='"+"notestiptable"+"'><tr><th>Date</th><th>Notes taken</th></tr>"
+	    				+ "<tr><td>most recent</td><td>the note</td></tr>"
+	    				
+	    				+ "<tr><td>second most recent</td><td>the note</td></tr>"
+	    				+ "<tr><td>etc..</td><td>etc...</td></tr></table>"
+	    				
+	    		
+	    		)
+	    		} else {
+	    			datatip .html("<table id='"+"notestiptable"+"'><tr><th>Date</th><th>Notes taken</th></tr>"
+		    				
+		    				+ "<tr><td>etc..</td><td>etc...</td></tr></table>"
+		    				
+		    		
+		    		)
+	    		}
+				//.style("left", (d3.event.pageX + 50) + "px")
+				//.style("top", (d3.event.pageY -350) + "px")
+				;
+	    	
+		}
+
+var rdxtip = d3.select("body").append("div")   
+.attr("class", "rdxtip")
+.attr("id", "rdxtip")
+.style("font", "8px")
+.style("opacity", 1)
+.style("z-index", 999999);
+
+var rdxnotes = function(d){
+	
+	var notesarray = d.NOTES.split(':');
+	
+	var text = "<p><font face='verdana' size='3' color='black'>Date : " + d.TEST_TIME.toString().substring(0, 15) + "</p>"
+			+ "<p><font face='verdana' size='3' color='purple'>Anti-Oxidant : " + d.FORT + "</p>"
+			+ "<p><font face='verdana' size='3' color='blue'>Pro-Oxidant : " + d.FORD  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Energy Level : " + d.EnergyLevel  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>MuscleSoreness : " + d.MuscleSoreness  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Trained Today : " + d.TrainedToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Ate Today : " + d.AteToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercised Gym Yesterday     : " + d.ExerciseGymYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Training Yesterday : " + d.ExerciseTrainingYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Game Yesterday     : " + d.ExerciseGameYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise None Yesterday     : " + d.ExerciseNoneYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Exercise Other Yesterday    : " + d.ExerciseOtherYesterday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Today : " + d.SymptomFeverToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Previously : " + d.SymptomFeverPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Today : " + d.SymptomSoreThroatToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Previously : " + d.SymptomSoreThroatPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Today : " + d.SymptomHeadacheToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Previously : " + d.SymptomHeadachePreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Today : " + d.SymptomJointorMuscleAcheToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Previously : " + d.SymptomJointorMuscleAchePreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Today : " + d.SymptomDiarrheaToday  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Previously : " + d.SymptomDiarrheaPreviously  + "</p>"
+			+ "<p><font face='verdana' size='2' color='blue'>Symptom Other : " + d.SymptomOther  + "</p>";
+	
+			for(var i=0; i<notesarray.length; i++){
+				text += "<p>" + notesarray[i].trim() + "</p>";
+			}
+			
+			@restrict(roles = allOfGroup("redoxadmin")) {
+				text += "<a title='add notes' href='#' onclick='addRdxNote("+d.TIME_KEY+ "); return false;'>" + "Add note" +"</a>";
+				
+			}
+			
+  		return text;
+}
+
+var clearnotes = function(d){ return "";};
+
+var addRdxNote = function(timekey){
+	
+	datatip.transition()
+	.duration(100)
+	.style("opacity", 0.9)
+	.style("color", "#2F4F4F")
+	.style("border-color", "#667788");
+	
+	// here we test if there are new notes available for this player
+	
+	datatip.html("<form id='addingrdxnotes' action='@routes.Application.updateRedoxNote(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='hidden' name='timekey' value='"+timekey+"'/>"
+			+"<textarea id='newnote' rows='4' cols='50' name='note' placeholder='add note'></textarea>"
+			+"<button>Add</button></form> ");
+
+}
+
+
+
+
+
+
+
+
+
+// Get the players gps data
+// read in the data
+var dataset = d3.csv('@routes.Application.getCSV(player.playernumber)', function(error, data) {
+	
+	
+
+	var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
+		
+		
+		var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
+		
+	var now = new Date();
+	
+	
+	var today = new Date();
+	var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
+	var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
+	
+	
+		data.today = today;
+		data.threeweeksago = threeweeksago;
+		data.oneweekahead = oneweekahead;
+		//console.log("today is " + data.today);
+		//console.log("3 weeks ago is " + data.threeweeksago);
+		//console.log("1 week ahead is " + data.oneweekahead);
+	
+		data.forEach(function(d) {
+
+		d.date = new Date((+d.SESS_START)*1000);
+		d.SESS_LOAD = (+d.SESS_LOAD);
+		d.SESS_START = new Date((+d.SESS_START)*1000);
+		d.SESS_END = new Date((+d.SESS_END)*1000);
+		
+		d.PRE_LOAD = (+d.PRE_LOAD);
+		d.PRE_START = new Date((+d.PRE_START)*1000);
+		d.PRE_END = new Date((+d.PRE_END)*1000);
+		
+		d.PRACT_LOAD = (+d.PRACT_LOAD);
+		d.PRACT_START = new Date((+d.PRACT_START)*1000);
+		d.PRACT_END = new Date((+d.PRACT_END)*1000);
+		
+		d.POST_LOAD = (+d.POST_LOAD);
+		d.POST_START = new Date((+d.POST_START)*1000);
+		d.POST_END = new Date((+d.POST_END)*1000);
+
+		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);
+		d.DECEL_TOTAL = (+d.DECEL_TOTAL);
+		
+		d.COD_L_LO = (+d.COD_L_LO);
+		d.COD_L_MED = (+d.COD_L_MED);
+		d.COD_L_HI = (+d.COD_L_HI);
+		d.COD_R_LO = (+d.COD_R_LO);
+		d.COD_R_MED = (+d.COD_R_MED);
+		d.COD_R_HI = (+d.COD_R_HI);
+		
+		d.JUMP_LO = (+d.JUMP_LO);
+		d.JUMP_MED = (+d.JUMP_MED);
+		d.JUMP_HI = (+d.JUMP_HI);
+		
+		d.HR_EXERT = ((+d.HR_EXERT)/100);
+		
+		d.GAME_LOAD = (+d.GAME_LOAD);
+		d.GAME_MINS = (+d.GAME_MINS);
+		
+		
+		d.SQUAD_AVG = (+d.SQUAD_AVG);
+		
+		d.ACUTE = (+d.ACUTE);
+		d.CHRONIC = (+d.CHRONIC);
+	});
+	
+		data2.forEach(function(d) {
+
+		d.GAME_START = new Date((+d.GAME_START)*1000);
+		d.GAME_END = new Date((+d.GAME_END)*1000);
+		
+		d.OPPONENT = d.OPPONENT;
+		d.LOCATION = d.LOCATION;
+		//console.log("today is " + today);
+		//console.log("got " + d.GAME_START +" - " + d.GAME_END +" - " + d.OPPONENT +" - " + d.LOCATION);
+		
+	});
+		
+		data3.forEach(function(d) {
+			
+			d.TIME_KEY = +d.TEST_TIME;
+			d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
+			
+			d.FORD = +d.FORD;
+			d.FORT = +d.FORT;
+			d.FORD_ADJ = +d.FORD_ADJ;
+			d.FORT_ADJ = +d.FORT_ADJ;
+			d.FORD_INC = +d.FORD_INC;
+			d.FORT_INC = +d.FORT_INC;
+			d.NOTES = d.NOTES;
+			//console.log("key is " + d.TIME_KEY +" date is "+d.TEST_TIME);
+			//console.log("got " + d.TEST_TIME +" - " + d.FORD +" - " + d.FORD_ADJ);
+			
+		});
+	
+// everything must be inside these brackets
+
+	
+
+	// by default on start up - showing last 21 days of data and next 7 days of data
+	var dayspast = data[0].SESS_START;
+	//xScale.domain([data[0].SESS_START, data[data.length -1].SESS_END ]);
+	               
+    //xScale.domain([data2[0].GAME_START,  data2[data2.length -1].GAME_START  ]);
+    //var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
+	//var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
+    
+	if(document.cookie.indexOf("xl") >= 0) {
+		
+		var lhs,rhs;
+		var cookiearray = document.cookie.split(';')
+		for(var i=0; i<cookiearray.length; i++){
+	        if(cookiearray[i].split('=')[0].trim() === "xl"){
+	      	  lhs = Date.parse(cookiearray[i].split('=')[1].trim());
+	        }
+            if(cookiearray[i].split('=')[0].trim() === "xr") {
+          	  rhs = Date.parse(cookiearray[i].split('=')[1].trim());
+            }
+         }
+		 xScale.domain([lhs,  rhs]);
+	} else {
+		xScale.domain([threeweeksago,  oneweekahead]);
+	}
+	
+
+	y.domain([0, 15]);
+	y1.domain([1500, 0]);
+	y2.domain([0,1500]);
+	y3.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
+
+//d3.max(data, function (d) { return d.date; }).getTime();
+	
+// 	var maxload = d3.max(data, function(d) { return d.GAME_LOAD;});
+// 	var ymax = Math.ceil(maxload/100);
+// 	y.domain([0, ymax]);
+// 	y1.domain([maxload, 0]);
+// 	y2.domain([0, maxload]);
+	
+	
+	
+	var zoom = d3.behavior.zoom()
+	.x(xScale)
+	.on('zoom', function() {
+		document.cookie="xl="+xScale.domain()[0]+";";
+		document.cookie="xr="+xScale.domain()[1]+";";
+		//console.log("zooming start " + xScale.domain()[0] + " : finish " +xScale.domain()[1] );
+	    re_draw_chart();
+	});
+	
+	
+	
+		// add a rectangle over the chart for zooming    
+	innersvg.append('rect').attr("id", "zoomrect").attr("y", 0).attr('width', width).attr('height', chart_h)
+		.attr("opacity", 0) .call(zoom);
+	
+	
+	
+	
+	draw_chart();
+	
+	// add the x axis
+	innersvg.append("g").attr("class", "x axis").attr("id", "xaxis")
+		.attr("transform", "translate(0," + (chart_h - margin.bottom) + ")").call(xAxis);
+	
+	function draw_chart() {
+		
+		
+
+		
+		
+ 		// the cod left low  shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#F1CEEE")
+		.style("fill", "#F1CEEE").style("fill-opacity",0.3)
+		.attr("d", cod_l_lo_area(data));
+ 		
+ 		// the cod left medium  shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#F085E7")
+		.style("fill", "#F085E7").style("fill-opacity",0.3)
+		.attr("d", cod_l_med_area(data));
+ 		
+ 		// the cod left high shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_l_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#F11BDF")
+		.style("fill", "#F11BDF").style("fill-opacity",0.3)
+		.attr("d", cod_l_hi_area(data));
+ 		
+ 		// the cod right high shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#F11BDF")
+		.style("fill", "#F11BDF").style("fill-opacity",0.3)
+		.attr("d", cod_r_hi_area(data));
+ 		
+ 		// the cod right medium shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#F085E7")
+		.style("fill", "#F085E7").style("fill-opacity",0.3)
+		.attr("d", cod_r_med_area(data));
+ 		
+		// the cod right low shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "cod_r_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#F1CEEE")
+		.style("fill", "#F1CEEE").style("fill-opacity",0.3)
+		.attr("d", cod_r_lo_area(data));
+		
+		// the jump low shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_lo")
+ 		.attr("stroke-width", 1).attr("stroke", "#919EB1")
+		.style("fill", "#919EB1").style("fill-opacity",0.6)
+		.attr("d", jump_lo_area(data));
+		
+		// the jump med shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_med")
+ 		.attr("stroke-width", 1).attr("stroke", "#728BAF")
+		.style("fill", "#728BAF").style("fill-opacity",0.6)
+		.attr("d", jump_med_area(data));
+		
+		// the jump hi shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "jump_hi")
+ 		.attr("stroke-width", 1).attr("stroke", "#587CAF")
+		.style("fill", "#587CAF").style("fill-opacity",0.6)
+		.attr("d", jump_hi_area(data));
+ 		
+ 		
+		// the heartrate line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "heartrateline").attr("stroke-width", 2)
+		.style("stroke", heartrateexert_chart_colour).style("fill", "none")
+		.attr("d", heartrateline(data));
+		
+		
+	
+		innersvg.selectAll(".now").data(data).enter().append("path")
+		.attr("class", "now").attr("id", "now")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", "black")
+		.style("opacity", 0.2)
+
+		.attr("d", d3.svg.symbol().type("triangle-up").size(50))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
+	
+	
+	innersvg.selectAll('today').data(data).enter().append('rect')
+		.attr("id", "todaymarker").attr("opacity", 1.0)
+		.style("stroke", "black")
+		.style("stroke-dasharray", "10,5")
+		.style("fill", "none")
+		.attr("x", function(d) {	return xScale(data.today);})
+		.attr("y", function(d){		return 50;})
+		.attr("width", function(d){	return 1;})
+		.attr("height", function(d){return 400;});
+		
+	
+		// the squad average rects
+	innersvg.selectAll('squadavgrectangles').data(data).enter().append("rect")
+	.filter(function(d) { return d.SQUAD_AVG > 0})
+	.attr("id", "squad_avg").attr("opacity", 0.7)
+	.style("stroke", "black")
+	.style("fill", "black")
+	.attr("x", function(d) {	return (xScale(d.SESS_START) - 5);})
+	.attr("y", function(d){		return chart_h - margin.bottom - y1(d.SQUAD_AVG);})
+	.attr("width", function(d){	return (((xScale(d.SESS_END) - xScale(d.SESS_START)) + 10));})
+	.attr("height", function(d){return 1;});
+	
+	
+		
+		// the chronic load shaded area
+		innersvg.append("path").attr("class", "area").attr("id", "ChronicLoad")
+ 		.attr("stroke-width", 1).attr("stroke", "lightblue")
+		.style("fill", "#AFDFF3").style("fill-opacity",0.3)
+		.attr("d", chronicloadarea(data));
+
+		
+		// the pre practice rects
+		innersvg.selectAll('prepracticerectangles').data(data).enter().append("rect")
+		.attr("id", "prepracticeload").attr("opacity", 0.4)
+		.style("stroke", sessionloads_chart_colour).style("fill", sessionloads_chart_colour)
+		.attr("x", function(d) {	return xScale(d.PRE_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.PRE_END) - xScale(d.PRE_START));})
+		.attr("height", function(d){return y1(d.PRE_LOAD);});
+		
+		
+		// the practice rects
+		innersvg.selectAll('practicerectangles').data(data).enter().append("rect")
+		.attr("id", "practiceload").attr("opacity", 1.0)
+		.style("stroke", sessionloads_chart_colour).style("fill", sessionloads_chart_colour)
+		.attr("x", function(d) {	return xScale(d.PRACT_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.PRACT_LOAD) - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.PRACT_END) - xScale(d.PRACT_START));})
+		.attr("height", function(d){return y1(d.PRACT_LOAD);});
+		
+		
+		// the post practice rects
+		innersvg.selectAll('postpracticerectangles').data(data).enter().append("rect")
+		.attr("id", "postpracticeload").attr("opacity", 0.4)
+		.style("stroke", sessionloads_chart_colour).style("fill", sessionloads_chart_colour)
+		.attr("x", function(d) {	return xScale(d.POST_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom -y1(d.POST_LOAD) - y1(d.PRACT_LOAD) - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.POST_END) - xScale(d.POST_START));})
+		.attr("height", function(d){return y1(d.POST_LOAD);});
+		
+		
+		// the session rects
+		innersvg.selectAll('sessionrect').data(data).enter().append("rect")
+		.attr("id", "sessionload").attr("opacity", 0.2)
+		.style("stroke", sessionloads_chart_colour).style("fill", sessionloads_chart_colour)
+		.attr("x", function(d) {	return xScale(d.SESS_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.SESS_LOAD);})
+		.attr("width", function(d){	return (xScale(d.SESS_END) - xScale(d.SESS_START));})
+		.attr("height", function(d){return y1(d.SESS_LOAD);})
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
+			tooltip .html("Session Load........ " + (d.SESS_LOAD) +"<br><br>" 
+						+ "Pre Practice Load... " + (d.PRE_LOAD) +"<br><br>"
+						+ "Practice Load....... " + (d.PRACT_LOAD) +"<br><br>"
+						+ "Post Practice Load.. " + (d.POST_LOAD) )
+				.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		})
+		.on("click", function(d) {
+			// remove the tooltip
+			tooltip.style("opacity", 0);
+			gametip.transition().duration(100).style("opacity", 0);
+    		datatip.transition().duration(100)
+			.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899");
+    		datatip .html(datatiptable(d))
+			.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
+		});
+		
+		
+		// the game rects
+		innersvg.selectAll('gameloadrect').data(data).enter().append("rect")
+		.attr("id", "gameload").attr("opacity", 0.8)
+		.style("stroke", gameloads_chart_colour).style("fill", gameloads_chart_colour)
+		.attr("x", function(d) {	return xScale(d.SESS_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.GAME_LOAD);})
+		.attr("width", function(d){	return (xScale(d.SESS_END) - xScale(d.SESS_START));})
+		.attr("height", function(d){return y1(d.GAME_LOAD);})
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
+			tooltip .html("Game Load " + (d.GAME_LOAD) +"<br>" 
+						+ "Minutes.. " + (d.GAME_MINS) +"<br>"
+						+ "Points... " + (d.POINTS) +"<br>"
+						+ "Rebounds. " + (d.REBOUNDS) +"<br>"
+						+ "Assists.. " + (d.ASSISTS) +"<br>"
+						+ "Steals... " + (d.STEALS) +"<br>"
+						+ "Blocks... " + (d.BLOCKS) +"<br>"
+						+ "Fouls.... " + (d.FOULS) )
+				.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		})
+		.on("click", function(d) {
+			// remove the tooltip
+			tooltip.style("opacity", 0);
+			datatip.transition().duration(100).style("opacity", 0);
+    		gametip.transition().duration(100)
+			.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899").style("background-color", "#74DB88");
+    		gametip .html(gametiptable(d))
+			.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
+		});
+	
+		
+		
+		// the session line  sessloadline
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "sessloadline").attr("stroke-width", 1)
+		.style("stroke", sessionloads_chart_colour).style("fill", "none")
+		.attr("d", sessloadline(data));
+		
+		
+		// the acute load line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "ACLoad").attr("stroke-width", 1)
+		.style("stroke", "red").style("fill", "none")
+		.attr("d", acuteline(data));
+
+
+		// the accel load line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "accel").attr("stroke-width", 1)
+		.style("stroke", "orange").style("fill", "none")
+		.attr("d", accelline(data));
+
+		// the decel load line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "decel").attr("stroke-width", 1)
+		.style("stroke", "gold").style("fill", "none")
+		.attr("d", decelline(data));
+		
+
+		
+		
+		
+		// adding the flags along the acute line
+		innersvg.selectAll(".flag").data(data).enter().append("path")
+		.attr("class", "flag").attr("id", "UPFlags").attr("stroke-width", 1)
+		.style("stroke", "red").style("fill", "red").style("opacity", 0.2)
+		// only apply the flags if the data point out of range
+ 		.filter(function(d){
+ 			return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) 
+ 				| d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold) ? d.ACUTE : null;})
+		.attr("d", d3.svg.symbol().type( function(d){
+			// point the triangle up if exceeding the threshold, down otherwise
+			return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 	"triangle-up" : "triangle-down";	}).size(20))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(d.SESS_START) + "," + (y2(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ")" });
+			
+			
+			
+		// add sensor circles (dots) to the Acute Load line
+	    innersvg.selectAll("dot").data(data).enter().append("circle")
+  		.attr("id", "ACLoadDot").attr("r", 20)
+    	.style("opacity", 0)
+    	.attr("cx", function(d) { return xScale(d.SESS_START); })
+    	.attr("cy", function(d) { return y2(d.ACUTE); })
+    	.on("mouseover", function(d) {
+    		acutetooltip.transition().duration(200)
+				.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
+    		acutetooltip .html("Acute : " + (parseInt(d.ACUTE)))
+				.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
+			})
+		.on("mouseout", function(d) {       
+			acutetooltip.transition().duration(500).style("opacity", 0);
+		});
+		
+		
+		
+		//all game diamonds from the schedule file
+		innersvg.selectAll(".gametriangles").data(data2).enter().append("path")
+		// only showing games in the future from the calendar data
+// 		.filter(function(d){
+//  			return d.GAME_START > today ? d.GAME_START : null;
+//  		})
+		.attr("id", "gametriangles")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", function(d) {
+			return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
+		})
+		.style("opacity", 0.6)
+
+		.attr("d", d3.svg.symbol().type("diamond").size(function(d) { return d.GAME_START > today ? 200 : 50}))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 15) + ")" })
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+			tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
+						+ "Location : " + (d.LOCATION) +"<br><br>" )
+				.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		});
+		
+		
+		//the past game result triangles
+		innersvg.selectAll(".gameresult").data(data).enter().append("path")
+		// only showing games in the future from the calendar data
+		.filter(function(d){
+ 			return d.GAME_LOAD > 0 ? d.SESS_START : null;
+ 		})
+		.attr("id", "gameresult")
+		.attr("stroke-width", 1)
+		.style("stroke", "black")
+		.style("fill", function(d) {
+			return d.WIN_LOSS == "W" ? "green" : "red";
+		})
+		.style("opacity", 1)
+
+		.attr("d", d3.svg.symbol().type(function(d) {
+			return d.WIN_LOSS == "W" ? "triangle-up" : "triangle-down";
+		}).size(function(d){
+			return 100;
+			//return d.SCORE_DIFF * 5;
+		}))
+		// offset up by 5 if exceeding threshold, down by 5 otherwise
+		.attr("transform", function(d) { 
+			
+			return d.WIN_LOSS == "W" ? "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 30) + ")" : "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 10) + ")";})
+			
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+			tooltip .html("Home Team : " + (d.HOME_TEAM) +"<br><br>" 
+						+ "Away Team : " + (d.AWAY_TEAM) +"<br><br>" 
+						+ "Score Diff: " + (d.SCORE_DIFF) +"<br><br>" 
+						)
+				.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+		.on("mouseout", function(d) {       
+			tooltip.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+		});
+		
+		
+		
+		@restrict(roles = allOfGroup("redoxadmin")) {
+		
+			
+		
+		
+		// the ford line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fordline").attr("stroke-width", 1)
+		.style("stroke", "blue").style("fill", "none")
+		.attr("d", fordline(data3));
+		
+		// the ford adjusted line
+		innersvg.append("path")
+// 		.filter(function(d, i) { 
+// 			console.log("i is " + i);
+// 			return i !== 3;})
+		.attr("class", "line").attr("id", "fordadjline").attr("stroke-width", 2)
+		.style("stroke-dasharray", "10,5")
+		.style("stroke", "blue").style("fill", "none")
+		.attr("d", fordadjline(data3));
+		
+		
+		// add FORD circles
+	    innersvg.selectAll("dot").data(data3).enter()
+	    .append("circle")
+  		.attr("id", "FORD").attr("r", 5)
+    	.style("opacity", 1)
+    	.style("stroke", "blue")
+    	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORD); })
+    	.on("mouseover", function(d) {
+    		rdxtip.transition()
+			.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+			.style("width", "auto").style("height", "auto")
+			.attr("id", "rdxtip")
+			.each("end", function(d){this.className='rdxtip'});;
+		rdxtip .html(rdxnotes(d))
+			.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+		})
+		.on("mouseout", function(d) {       
+			rdxtip.transition().delay(2000)
+			.style("width", "0px").style("height", "0px")
+			.each("end", function(d){rdxtip.html(""); this.className=''; });
+		})
+		.on("click", function(d) {
+			linktip
+			//.transition()
+			//.duration(100)
+			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+				+"<button>Toggle</button></form> ") 
+			.style("left", "200px").style("top", "50px");
+			document.getElementById("fordtoggle").submit();
+		});
+		
+		
+		
+		// the fort line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fortline").attr("stroke-width", 1)
+		.style("stroke", "purple").style("fill", "none")
+		.attr("d", fortline(data3));
+		
+		// the fort adjusted line
+		innersvg.append("path")
+		.attr("class", "line").attr("id", "fortadjline").attr("stroke-width", 2)
+		.style("stroke-dasharray", "10,5")
+		.style("stroke", "purple").style("fill", "none")
+		.attr("d", fortadjline(data3));
+		
+		
+		// add FORT circles
+	    innersvg.selectAll("dot").data(data3).enter().append("circle")
+  		.attr("id", "FORT").attr("r", 5)
+    	.style("opacity", 1)
+    	.style("stroke", "purple")
+    	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORT); })
+    	.on("mouseover", function(d) {
+    		rdxtip.transition()
+				.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+				.style("width", "auto").style("height", "auto")
+    			.attr("id", "rdxtip")
+    			.each("end", function(d){this.className='rdxtip';});
+    		rdxtip .html(rdxnotes(d))
+				.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -250) + "px")
+				.on("mouseover", function(d) {
+		    		rdxtip.transition()
+					.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+					.style("width", "auto").style("height", "auto")
+	    			.attr("id", "rdxtip")
+	    			.each("end", function(d){this.className='rdxtip'});;
+	    		//rdxtip .html(rdxnotes(d))
+					//.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -250) + "px");
+				})
+				.on("mouseout", function(d) { 
+			
+				rdxtip.transition().delay(1000)
+					.style("width", "0px").style("height", "0px")
+					.each("end", function(d){rdxtip.html(""); this.className=''; });
+		})
+			
+    	})
+		.on("mouseout", function(d) { 
+			
+			rdxtip.transition().delay(2000)
+				.style("width", "0px").style("height", "0px")
+				.each("end", function(d){rdxtip.html(""); this.className=''; });
+		})
+		.on("click", function(d) {
+			linktip
+			//.transition()
+			//.duration(100)
+			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+				+"<button>Toggle</button></form> ") 
+			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");
+			document.getElementById("fordtoggle").submit();
+		});
+		
+		} // end redox restriction
+		
+	} // end drawchart()
+	
+	
+	
+	function re_draw_chart() {
+		
+	
+		datatip.transition().duration(200).style("opacity", 0);
+		gametip.transition().duration(200).style("opacity", 0);
+		
+		// the cods
+		innersvg.selectAll("#cod_l_lo").attr("d", cod_l_lo_area(data));
+		innersvg.selectAll("#cod_l_med").attr("d", cod_l_med_area(data));
+		innersvg.selectAll("#cod_l_hi").attr("d", cod_l_hi_area(data));
+		innersvg.selectAll("#cod_r_hi").attr("d", cod_r_hi_area(data));
+		innersvg.selectAll("#cod_r_med").attr("d", cod_r_med_area(data));
+		innersvg.selectAll("#cod_r_lo").attr("d", cod_r_lo_area(data));
+		
+		// the jumps
+		innersvg.selectAll("#jump_lo").attr("d", jump_lo_area(data));
+		innersvg.selectAll("#jump_med").attr("d", jump_med_area(data));
+		innersvg.selectAll("#jump_hi").attr("d", jump_hi_area(data));
+		
+		// the heartrate line
+		innersvg.selectAll("#heartrateline").attr("d", heartrateline(data));
+		
+
+		
+		
+		
+		
+		
+		
+		innersvg.selectAll("#now")
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
+		
+		
+		innersvg.selectAll('#todaymarker')
+		.attr("x", function(d) {	return xScale(data.today);})
+		.attr("y", function(d){		return 50;})
+		.attr("width", function(d){	return 1;})
+		.attr("height", function(d){return 400;});
+		
+		
+		// the squad average rects
+		innersvg.selectAll('#squad_avg')
+		.attr("x", function(d) {	return (xScale(d.SESS_START) - 5);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.SQUAD_AVG);})
+		.attr("width", function(d){	return (((xScale(d.SESS_END) - xScale(d.SESS_START)) + 10));})
+		.attr("height", function(d){return 1;});
+		
+		
+		//the game diamonds
+		innersvg.selectAll("#gametriangles")
+		.attr("transform", function(d) { 
+			return "translate(" + xScale(d.GAME_START) + "," + (chart_h - margin.bottom - 15) + ")" });
+		
+		//the past game result triangles
+		innersvg.selectAll("#gameresult")
+		.attr("transform", function(d) { 
+			return d.WIN_LOSS == "W" ? "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 30) + ")" : "translate(" + xScale(d.SESS_START) + "," + (chart_h - margin.bottom - 10) + ")";});
+		
+		
+		
+
+		
+		innersvg.selectAll("#ChronicLoad")
+		.attr("d", chronicloadarea(data));
+	
+		
+		innersvg.selectAll("#sessionload")
+		.attr("x", function(d){	return xScale(d.SESS_START); })
+		.attr("y", function(d){	return chart_h - margin.bottom - y1(d.SESS_LOAD); })
+		.attr("width", function(d){	return (xScale(d.SESS_END) - xScale(d.SESS_START));})
+		.attr("height", function(d){return y1(d.SESS_LOAD);
+		});
+		
+		innersvg.selectAll("#gameload")
+		.attr("x", function(d){	return xScale(d.SESS_START); })
+		.attr("y", function(d){	return chart_h - margin.bottom - y1(d.GAME_LOAD); })
+		.attr("width", function(d){	return (xScale(d.SESS_END) - xScale(d.SESS_START));})
+		.attr("height", function(d){return y1(d.GAME_LOAD);
+		});
+		
+		
+		
+		
+		// the pre practice rects
+		innersvg.selectAll('#prepracticeload')
+		.attr("x", function(d) {	return xScale(d.PRE_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.PRE_END) - xScale(d.PRE_START));})
+		.attr("height", function(d){return y1(d.PRE_LOAD);});
+		
+		
+		// the practice rects
+		innersvg.selectAll('#practiceload')
+		.attr("x", function(d) {	return xScale(d.PRACT_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom - y1(d.PRACT_LOAD) - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.PRACT_END) - xScale(d.PRACT_START));})
+		.attr("height", function(d){return y1(d.PRACT_LOAD);});
+		
+		
+		// the post practice rects
+		innersvg.selectAll('#postpracticeload')
+		.attr("x", function(d) {	return xScale(d.POST_START);})
+		.attr("y", function(d){		return chart_h - margin.bottom -y1(d.POST_LOAD) - y1(d.PRACT_LOAD) - y1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xScale(d.POST_END) - xScale(d.POST_START));})
+		.attr("height", function(d){return y1(d.POST_LOAD);	});
+		
+		
+		// the session line
+		innersvg.selectAll("#sessloadline").attr("d", sessloadline(data));
+		
+		
+		// the acute load line
+		innersvg.selectAll("#ACLoad").attr("d", acuteline(data));
+
+
+		// the accel load line
+		innersvg.selectAll("#accel").attr("d", accelline(data));
+
+		// the decel load line
+		innersvg.selectAll("#decel").attr("d", decelline(data));
+		
+		// the acute load line sensors for the tooltips
+		innersvg.selectAll("#ACLoadDot")
+    	.attr("cx", function(d) { return xScale(d.SESS_START); })
+    	.attr("cy", function(d) { return y2(d.ACUTE); });
+		
+		@restrict(roles = allOfGroup("redoxadmin")) {
+		// the ford and fort lines
+		innersvg.selectAll("#fortline").attr("d", fortline(data3));
+		innersvg.selectAll("#fordline").attr("d", fordline(data3));
+		innersvg.selectAll("#fortadjline").attr("d", fortadjline(data3));
+		innersvg.selectAll("#fordadjline").attr("d", fordadjline(data3));
+		
+		// update FORD values
+	    innersvg.selectAll("#FORD")
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORD); });
+		
+		// update FORT values
+	    innersvg.selectAll("#FORT")
+    	.attr("cx", function(d) { return xScale(d.TEST_TIME); })
+    	.attr("cy", function(d) { return y3(d.FORT); });
+		
+		}
+		
+		
+		// the alert flags along the acute load line
+		innersvg.selectAll("#UPFlags")
+		.attr("transform", function(d) { return "translate(" + xScale(d.SESS_START) + "," + (y2(d.ACUTE) + (d.ACUTE > (d.CHRONIC * 1.5) ? 5 : -5)) + ")" });
+		
+		innersvg.selectAll("#xaxis").call(xAxis);
+		
+	} // end re_draw_chart
+	
+	   
+    // add the y axis
+// 	innersvg.append("g").attr("class", "y axis").call(yAxis)
+// 		// push the y-axis to the right by 5px and upwards off the gridline by 6px
+// 		.attr("transform", "translate(" + 5 + ", -" + 6 + ")");
+    
+    // horizontal gridlines
+	innersvg.append("g")
+	.attr("class", "grid")
+	.attr("id", "gridlines")
+	.call(make_gridline()
+			.tickSize(-width, 0, 0) 
+			.tickFormat(""))
+	    
+	    
+	    
+		
+	var perfbuttontoggled = false;	
+	var gameresultbuttontoggled = false;
+	var schedulebuttontoggled = false;
+	var redoxbuttontoggled = false;
+	
+	var numButtonsToggle2 = 9;
+	var drawUpperButtons = function(){
+		
+		// first remove all elements from this svg container
+		uppersvg.selectAll("g").remove();
+		
+		//drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, true);
+		//drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, true);
+		// drawGAMELOADButton("gameload", 3, true)
+		
+		
+		if(document.cookie.indexOf("perfbut") >= 0) {
+
+			var cookiearray = document.cookie.split(';')
+			for(var i=0; i<cookiearray.length; i++){
+		        if(cookiearray[i].split('=')[0].trim() === "perfbut"){
+		        	perfbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "rdxbut"){
+		        	redoxbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "grbut"){
+		        	gameresultbuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+		        if(cookiearray[i].split('=')[0].trim() === "schbut"){
+		        	schedulebuttontoggled = (cookiearray[i].split('=')[1].trim() === "true");
+		        }
+	         }
+		} 
+		
+		drawPERFORMANCEButton("ACLoad", "ChronicLoad", "UPFlags", 
+				"sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline",
+				"gameload", 0, perfbuttontoggled);
+		drawGAMERESULTButton("gameresult", 1, gameresultbuttontoggled);
+		drawSCHEDULEButton("gametriangles", 2, schedulebuttontoggled);
+		drawREDOXButton("FORD", "FORT", "fordline", "fortline", "fordadjline", "fortadjline",3, redoxbuttontoggled);
+		
+		drawSEASONVIEWButton(7);
+		drawMONTHVIEWButton(8);
+		drawWEEKVIEWButton(9);
+		
+		
+	}
+	
+	drawUpperButtons();
+    
+    
+		
+
+		
+		
+//special function to draw and control button for PERFORMANCE
+function drawPERFORMANCEButton(id1, id2, id3, id4, id5, id6, id7, id8, id9, id10, i, toggled){
+		
+				
+			// the 3 lines for acute chronic
+			d3.select("#"+id1)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+			
+			d3.select("#"+id2)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+			
+			d3.selectAll("#"+id3)
+			.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+	
+			// the lines toggled by the practive loads(session)
+			d3.selectAll("#"+id4).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.2 : 0;})
+        		
+        	d3.selectAll("#"+id5).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        	
+	        d3.selectAll("#"+id6).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        	
+	        d3.selectAll("#"+id7).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        		
+    	    d3.selectAll("#"+id8).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.7 : 0;})
+	        		
+	        d3.selectAll("#"+id9).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        		
+	        // the gane loads
+	        d3.selectAll("#"+id10).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.8 : 0;})
+	
+
+			
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("PERF");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("PERFORMANCE");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GPSDATA_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				    	document.cookie=isActive? "perfbut=true;" : "perfbut=false;";
+				        // Hide or show the line
+				
+				// the ac lines
+				d3.select("#"+id1).style("opacity", function(d) { 
+		        	this.active = !this.active; isActive = this.active; return	this.active ? 1 : 0; })
+		        
+		       	d3.select("#"+id2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        
+		        d3.selectAll("#"+id3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active; return	this.active ? 1 : 0;})
+				       
+		        // toggle the state of the AC button
+		        d3.select("#ACLoad_Button").style("stroke", isActive ? acutechronic_button_border_colour : "grey")
+		        							.style("stroke-width", isActive ? 2 : 0);
+				    
+				// the lines toggled by the practive loads(session)
+		        d3.selectAll("#"+id4).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.2 : 0;})
+		        
+		       	d3.selectAll("#"+id5).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0;})
+		        
+		        d3.selectAll("#"+id6).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        
+		        d3.selectAll("#"+id7).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0; })
+		        	
+		        d3.selectAll("#"+id8).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.7 : 0; })
+		        	
+		        d3.selectAll("#"+id9).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        	
+	        	// toggle the state of the practice button
+		        d3.select("#Session_Load_Button").style("stroke", isActive ? sessionloads_button_border_colour : "grey")
+		        									.style("stroke-width", isActive ? 2 : 0);
+				
+				// game loads
+		        d3.selectAll("#"+id10).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.8 : 0;})
+		        
+		        	// toggle the state of the game loads button
+		        d3.select("#Game_Load_Button").style("stroke", isActive ? gameloads_button_border_colour : "grey")
+		        								.style("stroke-width", isActive ? 2 : 0);
+		        	
+		      
+		        	        
+				// update the buttons border
+				d3.select("#GPSDATA_Button").style("stroke", isActive ? "#464640" : "grey")
+											.style("stroke-width", isActive ? 2 : 0)
+				        	
+				});
+					
+	} // end drawPERFORMANCEButton
+	
+//special function to draw and control button for GAME
+function drawGAMERESULTButton(lineid1, i, toggled){
+			
+			
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GR");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("GAME RESULT");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GAMERES_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				    	document.cookie=isActive? "grbut=true;" : "grbut=false;";
+				        // Hide or show the line
+				        
+				d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+				        
+				        // update the buttons border
+				        d3.select("#GAMERES_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawGAMERESULTButton
+	
+//special function to draw and control button for GAME
+function drawSCHEDULEButton(lineid1, i, toggled){
+			
+			
+					d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})		
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SCH");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SCHEDULE");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "GAME_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				    	document.cookie=isActive? "schbut=true;" : "schbut=false;";
+				        // Hide or show the line
+				        
+				        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+				        
+				        // update the buttons border
+				        d3.select("#GAME_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawSCHEDULEButton
+	
+//special function to draw and control button for redox
+function drawREDOXButton(dotid1, dotid2, lineid1, lineid2, lineid3, lineid4, i, toggled){
+			
+			
+					d3.selectAll("#"+dotid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+dotid2).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+	        		
+	        		d3.selectAll("#"+lineid2).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})
+	        		
+	        		d3.selectAll("#"+lineid3).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})
+	        		
+	        		d3.selectAll("#"+lineid4).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.9 : 0;})	
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("RX");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("REDOX");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "REDOX_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+				    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				    	var isActive;
+				    	this.active = !this.active;	
+				    	isActive = this.active;
+				    	document.cookie=isActive? "rdxbut=true;" : "rdxbut=false;";
+				        // Hide or show the line
+				        
+				        d3.selectAll("#"+dotid1).style("opacity", function(d) {
+		        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+dotid2).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+	        			
+	        			d3.selectAll("#"+lineid4).style("opacity", function(d) {
+	        			this.active = !this.active;	isActive = this.active;	return	this.active ? 0.9 : 0;})
+				        
+				        // update the buttons border
+				        d3.select("#REDOX_Button")
+				        	.style("stroke", isActive ? "#464640" : "grey").style("stroke-width", isActive ? 2 : 0)});
+					
+	} // end drawREDOXButton
+	
+	
+//special function to zoom to one month view
+function drawSEASONVIEWButton(i){
+			
+					    
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SE");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("SEASON");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "SEASON_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
+				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+
+ 						var back = d3.min(data, function (d) { return d.SESS_START; }).getTime();
+						//var forward = d3.max(data, function (d) { return d.SESS_END; }).getTime();
+						var forward = new Date(Date.now());
+
+						xScale.domain([back,  forward]);
+						document.cookie="xl="+xScale.domain()[0]+";";
+						document.cookie="xr="+xScale.domain()[1]+";";
+						zoom.x(xScale);
+						re_draw_chart();
+						});
+					
+	} // end drawSEASONVIEWButton
+	
+//special function to zoom to one month view
+function drawMONTHVIEWButton(i){
+			
+					    
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("MN");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("MONTH");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "MONTH_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
+				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				        var back = new Date(Date.now() + -21*24*3600*1000);
+						var forward = new Date(Date.now() + 7*24*3600*1000);
+						 xScale.domain([back,  forward]);
+						 document.cookie="xl="+xScale.domain()[0]+";";
+						document.cookie="xr="+xScale.domain()[1]+";";
+						 zoom.x(xScale);
+						 re_draw_chart();
+						});
+					
+	} // end drawMONTHVIEWButton
+	
+//special function to zoom to one week view
+function drawWEEKVIEWButton(i){
+			
+					    
+					
+					var abutton;
+					if(width < 1000){
+// 						var dx = i<5 ? (width/((numButtonsToggle2/2) + 1)) * (i % 5) : (width/((numButtonsToggle2/2) + 1)) * ((i % 5) + 1);
+// 						var dy = i>4 ? 50 : 0;
+// 						abutton = uppersvg.append("g").attr("transform", "translate("+ dx + "," + dy + ")");
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("WK");
+					} else {
+						abutton = uppersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtonsToggle2 + 1))) + "," + 0 + ")");
+						abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("WEEK");
+					}
+					
+					
+			        
+					// get the width of the text and use it to tailor the width of the rect around it
+		 			var textWidth = abutton.select("text").node().getBBox().width;
+					
+					abutton.append("rect").attr("rx", 10).attr("ry", 10)
+				    .attr("width", textWidth + 20).attr("height", 20)
+				    .attr("class", "legend").attr("id", "WEEK_Button") 
+				    .attr("cursor", "pointer")
+				    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", 2)
+				    .style("stroke", "#464640").style("opacity", function(d) { this.active = true;})
+				    .style("shape-rendering", "auto")
+				    .on("click", function(){
+				    	
+				        var sixdaysago = new Date(Date.now() + -6*24*3600*1000);
+						var onedayahead = new Date(Date.now() + 24*3600*1000);
+						 xScale.domain([sixdaysago,  onedayahead]);
+							document.cookie="xl="+xScale.domain()[0]+";";
+							document.cookie="xr="+xScale.domain()[1]+";";
+						 zoom.x(xScale);
+						 re_draw_chart();
+						 
+				        });
+					
+	} // end drawWEEKVIEWButton
+		
+		
+		
+var numButtons = 7;
+		
+		
+		
+//special function to draw and control button for acute chronic load
+function drawACButton(lineid1, lineid2, flagid, i, toggled){
+			
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.select("#"+lineid1)
+        		.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+        		
+        	d3.select("#"+lineid2)
+        		.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+	        	
+	        d3.selectAll("#"+flagid)
+	        	.style("opacity", function(d) { this.active = toggled;	return toggled ? 1 : 0;})
+	        	
+			var abutton;
+			if(width < 1000){
+// 				var dx = i<5 ? (width/((numButtons/2) + 1)) * (i % 5) : (width/((numButtons/2) + 1)) * ((i % 5) + 1);
+// 				var dy = i>4 ? 50 : 0;
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text);
+			}
+			
+			//abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", acutechronic_button_border_colour).text(acutechronic_button_text_small);
+	        
+			//acutechronic_button_text_small
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "ACLoad_Button") 
+		    .attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0).style("shape-rendering", "auto")
+		    .style("stroke", toggled ? acutechronic_button_border_colour : "grey").style("opacity", function(d) { this.active = toggled;})
+		    .on("click", function(){
+		    	
+		    	var isActive;
+		        // Hide or show the line
+		        d3.select("#"+lineid1).style("opacity", function(d) { 
+		        	this.active = !this.active; isActive = this.active; return	this.active ? 1 : 0; })
+		        
+		       	d3.select("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        
+		        d3.selectAll("#"+flagid).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active; return	this.active ? 1 : 0;})
+		        
+		        // update the buttons border
+		        d3.select("#ACLoad_Button")
+		        	.style("stroke", isActive ? acutechronic_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        	})
+	        	.on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", acutechronic_button_border_colour);
+	    			buttontip .html(acutechronichelptext  +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+			
+		} // end drawACButton
+		
+		
+		
+//special function to draw and control button for session loads
+function drawSESSButton(rectid1, rectid2, rectid3, rectid4, rectid5, lineid1, i, toggled){
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+rectid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.2 : 0;})
+        		
+        	d3.selectAll("#"+rectid2).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        	
+	        d3.selectAll("#"+rectid3).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        	
+	        d3.selectAll("#"+rectid4).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.4 : 0;})
+	        		
+    	    d3.selectAll("#"+rectid5).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.7 : 0;})
+	        		
+	        d3.selectAll("#"+lineid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+	        		
+
+	        		
+	        		
+	        	
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", sessionloads_button_border_colour).text(sessionloads_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", sessionloads_button_border_colour).text(sessionloads_button_text);
+			}
+	        	
+			
+
+	        
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "Session_Load_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? sessionloads_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+rectid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.2 : 0;})
+		        
+		       	d3.selectAll("#"+rectid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0;})
+		        
+		        d3.selectAll("#"+rectid3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        
+		        d3.selectAll("#"+rectid4).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.4 : 0; })
+		        	
+		        d3.selectAll("#"+rectid5).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.7 : 0; })
+		        	
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0; })
+		        
+		        // update the buttons border
+		        d3.select("#Session_Load_Button")
+		        	.style("stroke", isActive ? sessionloads_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        })
+		        .on("mouseover", function(d) {
+		    			buttontip.transition()
+		    				.duration(200)
+		    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", sessionloads_button_border_colour);
+		    			buttontip .html(practiceloadhelptext  +"<br><br>" )
+		    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+		    		.on("mouseout", function(d) {       
+		    			buttontip.transition()        
+		                    .duration(500)      
+		                    .style("opacity", 0);
+		    		});
+			
+		} // end drawSESSButton
+		
+		
+		
+//special function to draw and control button for session loads
+function drawGAMELOADButton(rectid1, i, toggled){
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+rectid1).style("opacity", function(d) { 
+	        		this.active = toggled;	return toggled ? 0.8 : 0;})
+	        		
+        		
+	        	
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", gameloads_button_border_colour).text(gameloads_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", gameloads_button_border_colour).text(gameloads_button_text);
+			}
+	        	
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "Game_Load_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? gameloads_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	
+
+		    	
+		    	var isActive;
+		    	
+		        // Hide or show the line
+		        d3.selectAll("#"+rectid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.8 : 0;})
+		        	
+		        
+		        
+		        // update the buttons border
+		        d3.select("#Game_Load_Button")
+		        	.style("stroke", isActive ? gameloads_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        	})
+		        	.on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", gameloads_button_border_colour);
+	    			buttontip .html(gameloadhelptext +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+			
+		} // end drawGAMELOADButton
+
+
+
+
+		//special function to draw and control button for accel decel
+function drawACCDECButton(lineid1, lineid2, i, toggled){
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", accdec_button_border_colour).text(accdec_button_text);
+			}
+
+
+			
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "ACCDEC_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? accdec_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+
+
+		        // update the buttons border
+		        d3.select("#ACCDEC_Button")
+		        	.style("stroke", isActive ? accdec_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        })
+		        .on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", accdec_button_border_colour);
+	    			buttontip .html(accelhelptext +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+
+		} // end drawACCDECButton
+		
+//special function to draw and control button for Cod's
+function drawCODButton(lineid1, lineid2, lineid3, lineid4, lineid5, lineid6, i, toggled){
+	
+
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid4).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+	        		
+	        d3.selectAll("#"+lineid6).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.3 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", cod_button_border_colour).text(cod_button_text);
+			}
+
+
+			
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "COD_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? cod_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+
+		       	d3.selectAll("#"+lineid4).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})		        	
+		       	d3.selectAll("#"+lineid5).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid6).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.3 : 0;})
+		        		        	
+		        // update the buttons border
+		        d3.select("#COD_Button")
+		        	.style("stroke", isActive ? cod_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        })
+		        .on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", cod_button_border_colour);
+	    			buttontip .html(codhelptext +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+
+		} // end drawCODButton
+		
+		
+		
+//special function to draw and control button for accel decel
+function drawJUMPButton(lineid1, lineid2, lineid3, i, toggled){
+	
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+
+        	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+	        		
+	        d3.selectAll("#"+lineid3).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 0.6 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", jump_button_border_colour).text(jump_button_text);
+			}
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "JUMP_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? jump_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})
+
+		       	d3.selectAll("#"+lineid2).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})
+		        	
+		       	d3.selectAll("#"+lineid3).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 0.6 : 0;})		        	
+
+		        		        	
+		        // update the buttons border
+		        d3.select("#JUMP_Button")
+		        	.style("stroke", isActive ? jump_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        })
+		        .on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", jump_button_border_colour);
+	    			buttontip .html(jumpshelptext  +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+
+		} // end drawCODButton
+		
+//special function to draw and control button for hre
+function drawHREButton(lineid1, i, toggled){
+	
+			// turns the line associated with this button on or off according to toggled parameter
+			d3.selectAll("#"+lineid1).style("opacity", function(d) {
+	        		this.active = toggled;	return toggled ? 1 : 0;})
+
+
+			var abutton;
+			if(width < 1000){
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text_small);
+			} else {
+				abutton = lowersvg.append("g").attr("transform", "translate("+ (i * (width/(numButtons + 1))) + "," + 0 + ")");
+				abutton.append("text").attr("x", 10).attr("y", 15).attr("fill", hre_button_border_colour).text(hre_button_text);
+			}
+
+
+			
+
+			// get the width of the text and use it to tailor the width of the rect around it
+ 			var textWidth = abutton.select("text").node().getBBox().width;
+			abutton.append("rect").attr("rx", 10).attr("ry", 10)
+		    .attr("width", textWidth + 20).attr("height", 20)
+		    .attr("class", "legend").attr("id", "HRE_Button").attr("cursor", "pointer")
+		    .style("fill", "rgba(255,255,0,0.1)").style("stroke-width", toggled ? 2 : 0)
+		    .style("stroke", toggled ? hre_button_border_colour : "grey").style("shape-rendering", "auto")
+		    .style("opacity", function(d) {	this.active = toggled;})
+		    .on("click", function(){
+		    	var isActive;
+		        // Hide or show the line
+		        d3.selectAll("#"+lineid1).style("opacity", function(d) {
+		        	this.active = !this.active;	isActive = this.active;	return	this.active ? 1 : 0;})
+		        	
+
+		        		        	
+		        // update the buttons border
+		        d3.select("#HRE_Button")
+		        	.style("stroke", isActive ? hre_button_border_colour : "grey").style("stroke-width", isActive ? 2 : 0)
+		        })
+		        .on("mouseover", function(d) {
+	    			buttontip.transition()
+	    				.duration(200)
+	    				.style("opacity", 1).style("color", "#595050").style("background", "rgba(251,251,251, 0.9)").style("border-color", hre_button_border_colour);
+	    			buttontip .html(hreexerthelptext +"<br><br>" )
+	    				.style("left", (d3.event.pageX - 60) + "px").style("top", (d3.event.pageY -250) + "px");})
+	    		.on("mouseout", function(d) {       
+	    			buttontip.transition()        
+	                    .duration(500)      
+	                    .style("opacity", 0);
+	    		});
+
+		} // end drawHREButton
+		
+
+		
+		
+		
+			var drawLowerButtons = function(){
+			
+			// first remove all elements from this svg container
+			lowersvg.selectAll("g").remove();
+			// combined a/c load button
+			drawACButton("ACLoad", "ChronicLoad", "UPFlags", 1, perfbuttontoggled);
+			
+			// player session loads
+			drawSESSButton("sessionload", "postpracticeload", "practiceload", "prepracticeload", "squad_avg", "sessloadline", 2, perfbuttontoggled);
+			
+			// game data button
+			drawGAMELOADButton("gameload", 3, perfbuttontoggled)
+			
+			
+			//acc/dec load button 	
+			drawACCDECButton("accel", "decel", 4, perfbuttontoggled);
+			
+			//COD  button 	
+			drawCODButton("cod_l_lo", "cod_l_med", "cod_l_hi", "cod_r_hi", "cod_r_med", "cod_r_lo", 5, perfbuttontoggled);
+			
+			
+			//JUMP  button 	
+			drawJUMPButton("jump_lo", "jump_med", "jump_hi", 6, perfbuttontoggled);
+			
+			//HRE  button 	
+			drawHREButton("heartrateline", 7, perfbuttontoggled);
+			
+			//SQUAD AVG button 	
+			//drawSQUADAVGButton("squadavgline", 7, true);
+			
+			
+			
+		}
+		
+			drawLowerButtons();
+
+	
+	// handling window resizing
+	d3.select(window).on('resize', resize);
+	
+	function resize() {
+	    // update width
+	    width = parseInt(d3.select('#chart_centre').style('width'), 10);
+	    
+	    d3.select('#chart_upper').attr("width", width);
+	    d3.select('#uppersvg').attr("width", width);
+	    d3.select('#outersvg').attr("width", width);
+	    d3.select('#innersvg').attr("width", width - (margin.left + margin.right));
+	    d3.select('#background_shading').attr("width", width - (margin.left + margin.right));
+	    d3.select('#zoomrect').attr("width", width);
+	    d3.select('#gridlines').call(make_gridline().tickSize(-width, 0, 0));
+	    d3.select('#lowersvg').attr("width", width + margin.left + margin.right);
+	    
+	    xScale.range([0, width]);
+	    drawLowerButtons();
+	    drawUpperButtons();
+	    re_draw_chart();
+	}
+	
+	// function to keep moving the present time marker along
+	setInterval(function(){ 
+		
+		data.today = new Date();
+		
+		innersvg.selectAll("#now")
+		.attr("transform", function(d) { 
+
+			return "translate(" + xScale(data.today) + "," + (chart_h - margin.bottom - 10) + ")" });
+		
+		
+		innersvg.selectAll('#todaymarker')
+		.attr("x", function(d) {	return xScale(data.today);})
+		.attr("y", function(d){		return 50;})
+		.attr("width", function(d){	return 1;})
+		.attr("height", function(d){return 400;});
+	
+	}, 1000);
+
+
+
+});
+	
+	});
+
+	
+
+	
+	
+
+	
+	});
+
+</script>
+
+
+}
+
+

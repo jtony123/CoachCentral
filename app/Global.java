@@ -114,6 +114,21 @@ public class Global extends GlobalSettings {
             Ebean.saveManyToManyAssociations(user3,
                     "permissions");
             
+            User user4 = new User();
+            user4.email = "paul.colgan@orreco.com";
+            user4.userName = "Paul";
+            user4.setPassword("paul$0rrec0");
+            user4.roles = new ArrayList<SecurityRole>();
+            user4.roles.add(SecurityRole.findByName("coach"));
+            user4.permissions = new ArrayList<UserPermission>();
+            user4.permissions.add(UserPermission.findByValue("view"));
+
+            user4.save();
+            Ebean.saveManyToManyAssociations(user4,
+                    "roles");
+            Ebean.saveManyToManyAssociations(user4,
+                    "permissions");
+            
             
         }
         
@@ -151,6 +166,7 @@ public class Global extends GlobalSettings {
         	User userGrainne = User.findByEmail("grainne.conefrey@orreco.com");
         	User userDemo = User.findByEmail("demo@orreco.com");
         	User userJeremy = User.findByEmail("jeremyholsopple@gmail.com");
+        	User userPaul = User.findByEmail("paul.colgan@orreco.com");
         	
         	System.out.println("adding default demo Players");
         	
@@ -169,6 +185,7 @@ public class Global extends GlobalSettings {
 	       	userAnthony.players.add(player1);
 	       	userGrainne.players.add(player1);
 	       	userDemo.players.add(player1);
+	       	userPaul.players.add(player1);
 	       	player1.save();
         	
     	Player player2 = new Player("Mosi Ruines", 2, null, userAnthony);
@@ -180,6 +197,7 @@ public class Global extends GlobalSettings {
 		   	userAnthony.players.add(player2);
 		   	userGrainne.players.add(player2);
 		   	userDemo.players.add(player2);
+		   	userPaul.players.add(player2);
 		   	player2.save();
         	
         	
@@ -192,6 +210,7 @@ public class Global extends GlobalSettings {
 	       	userAnthony.players.add(player3);
 	       	userGrainne.players.add(player3);
 	       	userDemo.players.add(player3);
+	       	userPaul.players.add(player3);
 	       	player3.save();
         	
         	Player player4 = new Player("Finn Browne", 4, null, userAnthony);
@@ -203,6 +222,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player4);
         	userGrainne.players.add(player4);
         	userDemo.players.add(player4);
+        	userPaul.players.add(player4);
         	player4.save();
         	
         	Player player5 = new Player("Harry Anderstown", 5, null, userAnthony);
@@ -214,6 +234,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player5);
         	userGrainne.players.add(player5);
         	userDemo.players.add(player5);
+        	userPaul.players.add(player5);
         	player5.save();
         	
         	Player player6 = new Player("Jack McGowan", 6, null, userAnthony);
@@ -225,6 +246,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player6);
         	userGrainne.players.add(player6);
         	userDemo.players.add(player6);
+        	userPaul.players.add(player6);
         	player6.save();
         	
         	Player player7 = new Player("Niall Smith", 7, null, userAnthony);
@@ -236,6 +258,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player7);
         	userGrainne.players.add(player7);
         	userDemo.players.add(player7);
+        	userPaul.players.add(player7);
         	player7.save();
         	
         	Player player8 = new Player("Sam Fernandez", 8, null, userAnthony);
@@ -247,6 +270,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player8);
         	userGrainne.players.add(player8);
         	userDemo.players.add(player8);
+        	userPaul.players.add(player8);
         	player8.save();
         	
         	Player player9 = new Player("Brian Harvey", 9, null, userAnthony);
@@ -258,6 +282,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player9);
         	userGrainne.players.add(player9);
         	userDemo.players.add(player9);
+        	userPaul.players.add(player9);
         	player9.save();
         	
         	Player player10 = new Player("Michael Stewart", 10, null, userAnthony);
@@ -269,6 +294,7 @@ public class Global extends GlobalSettings {
         	userAnthony.players.add(player10);
         	userGrainne.players.add(player10);
         	userDemo.players.add(player10);
+        	userPaul.players.add(player10);
         	player10.save();
         	
         	

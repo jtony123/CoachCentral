@@ -1,0 +1,359 @@
+div.acutetooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 150px;                  
+  height: 20px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+.acutealert {
+	color: red;
+}
+div.rdxtip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 8px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+div.tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 150px;                  
+  height: 120px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: none;         
+}
+div.gametip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #74DB88;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+#gametiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #E1FFE7;
+}
+#gametiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #FFFFFF;
+}
+div.datatip {   
+position: absolute;        
+  text-align: left;    
+  background-color: #778899;       
+  width: auto;                  
+  height: auto;                 
+  padding: 5px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+   border-radius: 12px;           
+  pointer-events: auto;
+   
+}
+#datatiptable tr:nth-child(even){
+	max-width: 100%;
+    background-color: #F0F8FF;
+}
+#datatiptable tr:nth-child(odd){
+	max-width: 100%;
+    background-color: #FFFFFF;
+}
+#gpscliprect {
+		rx: 20;
+	ry: 20;
+}
+.backgroundrect {
+	stroke: #FAFAFA;
+	stroke-width: 2px;
+	fill: #FBFBFB;
+	rx: 20;
+	ry: 20;
+	
+}
+.ChronicLoad {
+	clip-path: url(#gpsclip);
+	stroke-width: 1px;
+	stroke: lightblue;
+	fill: #AFDFF3;
+	fill-opacity: 0.3;
+}
+.ACLoad {
+	clip-path: url(#gpsclip);
+	stroke-width: 1px;
+	stroke: red;
+	fill: none;
+}
+.alerttriangles {
+	clip-path: url(#gpsclip);
+	
+}
+.UPFlags {
+	stroke-width: 1px;
+	stroke: red;
+	fill: red;
+	fill-opacity: 0.8;
+}
+.load {
+	clip-path: url(#gpsclip);
+	stroke-width: 1px;
+	stroke: #3399CC;
+	fill: none;
+}
+.cod_l_lo {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F1CEEE;
+	fill: #F1CEEE;
+	fill-opacity: 0.3;
+}
+.cod_l_med {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F085E7;
+	fill: #F085E7;
+	fill-opacity: 0.3;
+}
+.cod_l_hi {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F11BDF;
+	fill: #F11BDF;
+	fill-opacity: 0.3;
+}
+.cod_r_lo {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F1CEEE;
+	fill: #F1CEEE;
+	fill-opacity: 0.3;
+}
+.cod_r_med {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F085E7;
+	fill: #F085E7;
+	fill-opacity: 0.3;
+}
+.cod_r_hi {
+	clip-path: url(#gpsclip);
+	stroke-width: 0px;
+	stroke: #F11BDF;
+	fill: #F11BDF;
+	fill-opacity: 0.3;
+}
+.jump_lo {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: #919EB1;
+	fill: #919EB1;
+	fill-opacity: 0.6;
+}
+.jump_med {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: #728BAF;
+	fill: #728BAF;
+	fill-opacity: 0.6;
+}
+.jump_hi {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: #587CAF;
+	fill: #587CAF;
+	fill-opacity: 0.6;
+}
+.squad_avg {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: black;
+	fill: black;
+	fill-opacity: 0.7;
+}
+.squadavg {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: black;
+	stroke-dasharray: 10 5;
+	fill: none;
+	fill-opacity: 0.7;
+}
+.heartrate {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: #8de2dd;
+	fill: none;
+	fill-opacity: 0.6;
+}
+.prepracticeload {
+	clip-path: url(#gpsclip);
+/* 	stroke-width: 2; */
+	stroke: #3399CC;
+	fill: #3399CC;
+	fill-opacity: 0.4;
+	
+}
+ .practiceload {
+	clip-path: url(#gpsclip);
+/* 	stroke-width: 2; */
+	stroke: #3399CC;
+	fill: #3399CC;
+	fill-opacity: 1.0;
+	
+}
+.postpracticeload {
+	clip-path: url(#gpsclip);
+/* 	stroke-width: 2; */
+	stroke: #3399CC;
+	fill: #3399CC;
+	fill-opacity: 0.4;
+	
+}
+.sessionload {
+	clip-path: url(#gpsclip);
+	stroke: #3399CC;
+	fill: #3399CC;
+	fill-opacity: 0.2;
+	
+}
+.gameload {
+	clip-path: url(#gpsclip);
+	stroke: #5aac6b;
+	fill: #74DB88;
+	fill-opacity: 0.8;
+	
+}
+.accel {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: orange;
+	fill:none;
+}
+.decel {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: gold;
+	fill:none;
+}
+.now_marker {
+	stroke-width: 1;
+	stroke: black;
+	fill: green;
+	fill-opacity: 0.2;
+}
+.game3angles {
+	clip-path: url(#gpsclip);
+}
+.gametriangles {
+	stroke-width: 1;
+	stroke: black;
+	fill-opacity: 0.6;
+}
+.defenceline {
+	clip-path: url(#rdxclip);
+	stroke-width: 1;
+	stroke: blue;
+	fill: none;
+}
+.defenceadjline {
+	clip-path: url(#rdxclip);
+	stroke-width: 2;
+	stroke: blue;
+	stroke-dasharray: 10 5;
+	fill: none;
+}
+.DEFENCE {
+	stroke: blue;
+	opacity: 1;
+}
+.stressline {
+	clip-path: url(#rdxclip);
+	stroke-width: 1;
+	stroke: purple;
+	fill: none;
+}
+.stressadjline {
+	clip-path: url(#rdxclip);
+	stroke-width: 2;
+	stroke: purple;
+	stroke-dasharray: 10 5;
+	fill: none;
+}
+.STRESS {
+	stroke: purple;
+	opacity: 1;
+}
+.STRESSGROUP {
+	clip-path: url(#rdxclip);
+}
+.DEFENCEGROUP {
+	clip-path: url(#rdxclip);
+}
+.handle { 
+	fill: red;
+ } 
+.leftbookend {
+	clip-path: url(#ctxclip);
+		fill: lightgrey;
+	fill-opacity: 0.8;
+}
+.rightbookend {
+	clip-path: url(#ctxclip);
+	fill: lightgrey;
+	fill-opacity: 0.8;
+}
+	
+.overlay {
+	clip-path: url(#ctxclip);
+	fill: #FBFBFB;
+	fill-opacity: 0;
+}
+.selection {
+	fill: lightgrey;
+	fill-opacity: 0.1;
+	
+}
+.contextarea {
+  fill: steelblue;
+}
+.zoom {
+		rx: 20;
+	ry: 20;
+	stroke-width : 0px;
+	stroke: grey;
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+.tick line {
+    stroke: lightgrey;
+    stroke-opacity: 0.6;
+    shape-rendering: crispEdges;
+}
+.domain {
+stroke-width : 0px;
+}
