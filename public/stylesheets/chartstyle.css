@@ -87,6 +87,51 @@ position: absolute;
 		rx: 20;
 	ry: 20;
 }
+
+#gpsbutton {
+	text-align: center;
+}
+
+.showhidebuttons {
+	stroke : #464640;
+	stroke-width : 1;
+	cursor: pointer;
+    fill: lightgrey;
+    fill-opacity: 0.3;
+}
+
+.acshowhidebutton {
+	stroke : #464640;
+	stroke-width : 1;
+	cursor: pointer;
+    fill: lightgrey;
+    fill-opacity: 0.3;
+}
+
+.loadshowhidebutton {
+	stroke : #464640;
+	stroke-width : 1;
+	cursor: pointer;
+    fill: lightgrey;
+    fill-opacity: 0.3;
+}
+
+.othersshowhidebutton {
+	stroke : #464640;
+	stroke-width : 1;
+	cursor: pointer;
+    fill: lightgrey;
+    fill-opacity: 0.3;
+}
+
+.closedgpsrect {
+	stroke: #FAFAFA;
+	stroke-width: 2px;
+	fill: #FBFBFB;
+	rx: 10;
+	ry: 10;
+}
+
 .backgroundrect {
 	stroke: #FAFAFA;
 	stroke-width: 2px;

@@ -248,46 +248,55 @@ var	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h),
 	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
 //var gpstoggle = d3.select("#gpstoggle").attr("width", windowwidth).attr("height", gps_toggle_1);
 var gpsdatasvg = d3.select("#gpsdatasvg").attr("width", windowwidth).attr("height", gpsdatasvg_h),
-	gps_margin = {top: 20, right: 20, bottom: 20, left: 50},
+	gps_margin = {top: 20, right: 20, bottom: 20, left: 70},
 	width = +gpsdatasvg.attr("width") - gps_margin.left - gps_margin.right,
 	height = +gpsdatasvg.attr("height") - gps_margin.top - gps_margin.bottom;
 	
 	
 var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("height", 100),
-	context_margin = {top: 20, right: 20, bottom: 30, left: 50},
+	context_margin = {top: 20, right: 20, bottom: 30, left: 70},
 	height2 = +contextsvg.attr("height") - context_margin.top - context_margin.bottom;
+	
 var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
 	rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
 	height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
+	
 var xfocus = d3.scaleTime().range([0, width]),
 	yfocus = d3.scaleLinear().range([height, 0]),
 	yfocus1 = d3.scaleLinear().range([height, 0]);
 	yfocus2 = d3.scaleLinear().range([height3, 0]);
+	
 var xcontext = d3.scaleTime().range([0, width]),
 	ycontext = d3.scaleLinear().range([height2, 0]);
+	
 var xAxis = d3.axisBottom(xfocus);
 var xAxis2 = d3.axisBottom(xcontext).tickArguments([d3.timeMonth]);
 var yAxis = d3.axisLeft(yfocus).tickSize(-width, 0, 0).tickFormat("");
 var yAxisRdx = d3.axisLeft(yfocus2).tickArguments([5, "s"]).tickSize(-width, 0, 0).tickPadding([-15]);
+
 var brush = d3.brushX()
 .extent([[0, 0], [width, height2]])
 .on("brush end", brushed);
+
 var zoom = d3.zoom()
 .scaleExtent([1, 600])
 .translateExtent([[0, 0], [width, height]])
 .extent([[0, 0], [width, height]])
 .on("zoom", zoomed);
+
 var contextarea = d3.area()
 .curve(d3.curveMonotoneX)
 .x(function(d) { return xcontext(d.SESS_START); })
 .y0(height2)
 .y1(function(d) { return ycontext(d.SESS_LOAD); });
+
 gpsdatasvg.append("defs").append("clipPath")
 .attr("id", "gpsclip")
 .append("rect")
 .attr("id", "gpscliprect")
 .attr("width", width)
 .attr("height", height);
+
 contextsvg.append("defs").append("clipPath")
 .attr("id", "ctxclip")
 .append("rect")
@@ -296,21 +305,26 @@ contextsvg.append("defs").append("clipPath")
 .attr("height", height2)
 .attr("rx", 10)
 .attr("ry",10);
+
 redoxsvg.append("defs").append("clipPath")
 .attr("id", "rdxclip")
 .append("rect")
 .attr("id", "rdxcliprect")
 .attr("width", width)
 .attr("height", height3);
+
 var focus = gpsdatasvg.append("g")
 .attr("class", "focus")
 .attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+
 var context = contextsvg.append("g")
 .attr("class", "contextarea")
 .attr("transform", "translate(" + context_margin.left + "," + 20 + ")");
+
 var redoxfocus = redoxsvg.append("g")
 .attr("class", "redoxfocus")
 .attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+
 var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
 var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
 var xl = threeweeksago, 
@@ -332,41 +346,26 @@ var now = new Date();
 		d.SESS_START = new Date((+d.SESS_START)*1000);
 		d.SESS_END = new Date((+d.SESS_END)*1000);
 		
-		d.PRE_LOAD = (+d.PRE_LOAD);
-		d.PRE_START = new Date((+d.PRE_START)*1000);
-		d.PRE_END = new Date((+d.PRE_END)*1000);
+		d.PRE_LOAD = (+d.PRE_LOAD);d.PRE_START = new Date((+d.PRE_START)*1000);d.PRE_END = new Date((+d.PRE_END)*1000);
 		
-		d.PRACT_LOAD = (+d.PRACT_LOAD);
-		d.PRACT_START = new Date((+d.PRACT_START)*1000);
-		d.PRACT_END = new Date((+d.PRACT_END)*1000);
+		d.PRACT_LOAD = (+d.PRACT_LOAD);d.PRACT_START = new Date((+d.PRACT_START)*1000);d.PRACT_END = new Date((+d.PRACT_END)*1000);
 		
-		d.POST_LOAD = (+d.POST_LOAD);
-		d.POST_START = new Date((+d.POST_START)*1000);
-		d.POST_END = new Date((+d.POST_END)*1000);
-		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);
-		d.DECEL_TOTAL = (+d.DECEL_TOTAL);
+		d.POST_LOAD = (+d.POST_LOAD);d.POST_START = new Date((+d.POST_START)*1000);d.POST_END = new Date((+d.POST_END)*1000);
 		
-		d.COD_L_LO = (+d.COD_L_LO);
-		d.COD_L_MED = (+d.COD_L_MED);
-		d.COD_L_HI = (+d.COD_L_HI);
-		d.COD_R_LO = (+d.COD_R_LO);
-		d.COD_R_MED = (+d.COD_R_MED);
-		d.COD_R_HI = (+d.COD_R_HI);
+		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);d.DECEL_TOTAL = (+d.DECEL_TOTAL);
 		
-		d.JUMP_LO = (+d.JUMP_LO);
-		d.JUMP_MED = (+d.JUMP_MED);
-		d.JUMP_HI = (+d.JUMP_HI);
+		d.COD_L_LO = (+d.COD_L_LO);d.COD_L_MED = (+d.COD_L_MED);d.COD_L_HI = (+d.COD_L_HI);
+		d.COD_R_LO = (+d.COD_R_LO);d.COD_R_MED = (+d.COD_R_MED);d.COD_R_HI = (+d.COD_R_HI);
+		
+		d.JUMP_LO = (+d.JUMP_LO);d.JUMP_MED = (+d.JUMP_MED);d.JUMP_HI = (+d.JUMP_HI);
 		
 		d.HR_EXERT = ((+d.HR_EXERT)/10);
 		
-		d.GAME_LOAD = (+d.GAME_LOAD);
-		d.GAME_MINS = (+d.GAME_MINS);
-		
+		d.GAME_LOAD = (+d.GAME_LOAD);d.GAME_MINS = (+d.GAME_MINS);
 		
 		d.SQUAD_AVG = (+d.SQUAD_AVG);
 		
-		d.ACUTE = (+d.ACUTE);
-		d.CHRONIC = (+d.CHRONIC);
+		d.ACUTE = (+d.ACUTE);d.CHRONIC = (+d.CHRONIC);
 	});
 	
 	
@@ -382,7 +381,8 @@ var now = new Date();
 	
 	
 // drawing graph elements
-	drawgpsfocus(data);
+	drawGPS(data);
+	drawGPSButtons(data);
 	
 context.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height2);
 context.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height2 + ")").call(xAxis2);
@@ -393,29 +393,579 @@ context.select(".brush").append("rect").attr("class", "rightbookend").attr("widt
 gpsdatasvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
  
  
+}); // end of d3 csv loader
+
+
+
+
+
+
+
+
+function drawGPS(data) {
+	
+	focus.append("rect")
+	.attr("class", "backgroundrect").attr("width", width).attr("height", height + 25);
+	
+	//the axes
+	focus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(xAxis);
+	focus.append("g").attr("class", "axis axis--y").call(yAxis);
+	//the cod areas
+	focus.append("path").datum(data).attr("class", "cod_l_lo").attr("id", "cod_l_lo").attr("d", cod_l_lo_area);
+	focus.append("path").datum(data).attr("class", "cod_l_med").attr("id", "cod_l_med").attr("d", cod_l_med_area);
+	focus.append("path").datum(data).attr("class", "cod_l_hi").attr("id", "cod_l_hi").attr("d", cod_l_hi_area);
+	focus.append("path").datum(data).attr("class", "cod_r_lo").attr("id", "cod_r_lo").attr("d", cod_r_lo_area);
+	focus.append("path").datum(data).attr("class", "cod_r_med").attr("id", "cod_r_med").attr("d", cod_r_med_area);
+	focus.append("path").datum(data).attr("class", "cod_r_hi").attr("id", "cod_r_hi").attr("d", cod_r_hi_area);
+	// the jumps
+	focus.append("path").datum(data).attr("class", "jump_lo").attr("id", "jump_lo").attr("d", jump_lo_area);
+	focus.append("path").datum(data).attr("class", "jump_med").attr("id", "jump_lo").attr("d", jump_med_area);
+	focus.append("path").datum(data).attr("class", "jump_hi").attr("id", "jump_lo").attr("d", jump_hi_area);
+	//the squad average rects
+	focus.selectAll('squadavgrectangles')
+	.data(data).enter().append("rect").filter(function(d) { return d.SQUAD_AVG > 0})
+	.attr("class", "squad_avg").attr("id", "squad_avg")
+	.attr("x", function(d) {	return (xfocus(d.SESS_START) - 5);})
+	.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
+	.attr("width", function(d){	return (((xfocus(d.SESS_END) - xfocus(d.SESS_START)) + 10));})
+	.attr("height", function(d){return 1;});
+	//the chronic load area
+	focus.append("path").datum(data).attr("class", "ChronicLoad").attr("id", "ChronicLoad").attr("d", chronicloadarea(height));
+	//the acute load line graphline(d, xScale, yScale, xvar, yvar)
+	focus.append("path").datum(data).attr("class", "ACLoad").attr("id", "ACLoad").attr("d", acuteline);
+	//be careful where u place this rect
+	focus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
+	
+	// adding the flags along the acute line
+	focus.append("g").attr("class", "alerttriangles")
+	.selectAll().data(data).enter().append("path")
+	.attr("class", "UPFlags").attr("id", "UPFlags")
+	.filter(function(d){
+		return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold) ? d.ACUTE : null;})
+	.attr("d", d3.symbol().type(d3.symbolTriangle).size(20))
+	.attr("transform", function(d) { 
+		return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 90) + ")"});
+		
+	// add sensor circles (dots) to the Acute Load line
+	focus.selectAll("dot").data(data).enter().append("circle")
+		.attr("id", "ACLoadDot").attr("r", 20)
+	.style("opacity", 0)
+	.attr("cx", function(d) { return xfocus(d.SESS_START); })
+	.attr("cy", function(d) { return yfocus(d.ACUTE); })
+	.on("mouseover", function(d) {
+		acutetooltip.transition().duration(200)
+			.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
+		acutetooltip .html("Acute : " + (parseInt(d.ACUTE)))
+			.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
+		})
+	.on("mouseout", function(d) {       
+		acutetooltip.transition().duration(500).style("opacity", 0);
+	});
+	
+	
+	//the load line
+	focus.append("path").datum(data).attr("class", "load").attr("id", "load").attr("d", sessloadline);
+		
+	//the heartrate line
+	focus.append("path").datum(data).attr("class", "heartrate").attr("id", "heartrate").attr("d", heartrateline);
+	// the accel load line
+	focus.append("path").datum(data).attr("class", "accel").attr("id", "accel").attr("d", accelline);
+	// the decel load line
+	focus.append("path").datum(data).attr("class", "decel").attr("id", "decel").attr("d", decelline);
+	// the pre practice rects
+	focus.selectAll('prepracticerectangles')
+	.data(data).enter().append("rect")
+	.attr("class", "prepracticeload").attr("id", "prepracticeload")
+		.attr("x", function(d) {	return xfocus(d.PRE_START);})
+		.attr("y", function(d){		return height - yfocus1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xfocus(d.PRE_END) - xfocus(d.PRE_START));})
+		.attr("height", function(d){return yfocus1(d.PRE_LOAD);});
+	// the practice rects
+	focus.selectAll('practicerectangles')
+	.data(data).enter().append("rect")
+	.attr("class", "practiceload").attr("id", "practiceload")
+		.attr("x", function(d) {	return xfocus(d.PRACT_START);})
+		.attr("y", function(d){		return height - yfocus1(d.PRACT_LOAD)  - yfocus1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xfocus(d.PRACT_END) - xfocus(d.PRACT_START));})
+		.attr("height", function(d){return yfocus1(d.PRACT_LOAD);});
+	
+	// the post practice rects
+	focus.selectAll('postpracticerectangles')
+	.data(data).enter().append("rect")
+	.attr("class", "postpracticeload").attr("id", "postpracticeload")
+	.attr("x", function(d) {	return xfocus(d.POST_START);})
+	.attr("y", function(d){		return height -yfocus1(d.POST_LOAD) - yfocus1(d.PRACT_LOAD) - yfocus1(d.PRE_LOAD);})
+	.attr("width", function(d){	return (xfocus(d.POST_END) - xfocus(d.POST_START));})
+	.attr("height", function(d){return yfocus1(d.POST_LOAD);});
+	// the session rects
+	focus.selectAll('sessionrect')
+	.data(data).enter().append("rect")
+	.attr("class", "sessionload").attr("id", "sessionload")
+	.attr("x", function(d) {	return xfocus(d.SESS_START);})
+	.attr("y", function(d){		return height - yfocus1(d.SESS_LOAD);})
+	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+	.attr("height", function(d){return yfocus1(d.SESS_LOAD);})
+	.on("mouseover", function(d) {
+		tooltip.transition()
+			.duration(200)
+			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
+		tooltip .html("Session Load........ " + (d.SESS_LOAD) +"<br><br>" 
+					+ "Pre Practice Load... " + (d.PRE_LOAD) +"<br><br>"
+					+ "Practice Load....... " + (d.PRACT_LOAD) +"<br><br>"
+					+ "Post Practice Load.. " + (d.POST_LOAD) )
+			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+	.on("mouseout", function(d) {       
+		tooltip.transition()        
+	        .duration(500)      
+	        .style("opacity", 0);
+	})
+	.on("click", function(d) {
+		// remove the tooltip
+		tooltip.style("opacity", 0);
+		gametip.transition().duration(100).style("opacity", 0);
+		datatip.transition().duration(100)
+		.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899");
+		datatip .html(datatiptable(d))
+		.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
+	});
+	
+	// the game rects
+	focus.selectAll('gameloadrect')
+	.data(data).enter().append("rect")
+	.attr("class", "gameload").attr("id", "gameload")
+	.attr("x", function(d) {	return xfocus(d.SESS_START);})
+	.attr("y", function(d){		return height - yfocus1(d.GAME_LOAD);})
+	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+	.attr("height", function(d){return yfocus1(d.GAME_LOAD);})
+	.on("mouseover", function(d) {
+		tooltip.transition()
+			.duration(200)
+			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
+		tooltip .html("Game Load " + (d.GAME_LOAD) +"<br>" 
+					+ "Minutes.. " + (d.GAME_MINS) +"<br>"
+					+ "Points... " + (d.POINTS) +"<br>"
+					+ "Rebounds. " + (d.REBOUNDS) +"<br>"
+					+ "Assists.. " + (d.ASSISTS) +"<br>"
+					+ "Steals... " + (d.STEALS) +"<br>"
+					+ "Blocks... " + (d.BLOCKS) +"<br>"
+					+ "Fouls.... " + (d.FOULS) )
+			.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+	.on("mouseout", function(d) {       
+		tooltip.transition()        
+	        .duration(500)      
+	        .style("opacity", 0);
+	})
+	.on("click", function(d) {
+		// remove the tooltip
+		tooltip.style("opacity", 0);
+		datatip.transition().duration(100).style("opacity", 0);
+		gametip.transition().duration(100)
+		.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899").style("background-color", "#74DB88");
+		gametip .html(gametiptable(d))
+		.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
+	});
+	// adding the marker for today
+	focus.append("path").attr("class", "now_marker").attr("id", "now_marker")
+	.attr("d", d3.symbol().type(d3.symbolDiamond).size(200))
+	.attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
+	
+} // end drawGPS()
+
+
+var GPSview_state = true;
+var ACview_state = true;
+var LOADview_state = true;
+var OTHERSview_state = true;
+
+function drawGPSButtons(data){
+	
+
+			
+	var GPS_showhide_button = gpsdatasvg.append("g").attr("class", "GPSDATA_Button")
+		.attr("transform", "translate("+ 12 + "," + 20 + ")");
+		
+	GPS_showhide_button.append("text").attr("id", "gpsbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("hide");
+	
+	var textWidth = GPS_showhide_button.select("text").node().getBBox().width;
+					
+	GPS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
+    .attr("width", textWidth + 20).attr("height", 20)
+    .attr("class", "showhidebuttons").attr("id", "GPSDATA_Button") 
+    .on("click", function(){
+    	
+    	//showhideGPS focus panel()
+    	GPSview_state = !GPSview_state;
+    	d3.select(".showhidebuttons").style("stroke-width", GPSview_state ? 1 : 0);
+    	if(GPSview_state){
+    		gpsdatasvg.selectAll(".closedgpsfocus").remove();
+    		gpsdatasvg.attr("height", gpsdatasvg_h);
+    		focus = gpsdatasvg.append("g").attr("class", "focus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+    		drawGPS(data);
+    		redrawChart();
+    	} else {
+    		gpsdatasvg.selectAll(".focus").remove();
+		    gpsdatasvg.attr("height", 45);
+		    var gpsclosed = gpsdatasvg.append("g").attr("class", "closedgpsfocus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+    		gpsclosed.append("rect").attr("class", "closedgpsrect").attr("width", width).attr("height", 25);
+    	}
+		d3.selectAll("#gpsbutton").text(function(d) {return GPSview_state ? "hide" : "GPS";});        	
+		});
+	
+	
+	
+	var AC_showhide_button = gpsdatasvg.append("g").attr("class", "AC_Button")
+		.attr("transform", "translate("+ 12 + "," + 80 + ")");
+	
+	AC_showhide_button.append("text").attr("id", "acbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-A:C");
+	var actextWidth = AC_showhide_button.select("text").node().getBBox().width;
+	AC_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
+    .attr("width", actextWidth + 20).attr("height", 20)
+    .attr("class", "acshowhidebutton").attr("id", "AC_Button") 
+    .on("click", function(){
+    	
+    	//showhide the AC graphlines
+    	ACview_state = !ACview_state;
+    	d3.select(".acshowhidebutton").style("stroke-width", ACview_state ? 1 : 0);
+    	if(ACview_state){
+    		focus.select(".ChronicLoad").transition(d3.easeCubic).duration(1000).attr("d", chronicloadarea(height));
+    		focus.select(".ACLoad").transition(d3.easeCubic).duration(1000).attr("d", acuteline);
+    		focus.selectAll("#UPFlags").transition(d3.easeCubic).duration(1000).attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
+    		focus.selectAll("#ACLoadDot").attr("cx", function(d) { return xfocus(d.SESS_START); }).attr("cy", function(d) { return yfocus(d.ACUTE); });
+    		
+    	} else {
+    		focus.select(".ChronicLoad").transition(d3.easeCubic).duration(1000).attr("d", chronicloadarea2(height));
+    		focus.select(".ACLoad").transition(d3.easeCubic).duration(1000).attr("d", acuteline2(height));
+    		focus.selectAll("#UPFlags").transition(d3.easeCubic).duration(1000).attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + ","+ height +") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
+    		focus.selectAll("#ACLoadDot").attr("cx", function(d) { return xfocus(d.SESS_START); }).attr("cy", height);
+    		
+		}
+		d3.selectAll("#acbutton").text(function(d) {return ACview_state ? "+A:C" : "-A:C";});        	
+		});
+	
+	
+	
+	
+	
+	var LOADS_showhide_button = gpsdatasvg.append("g").attr("class", "LOAD_Button")
+	.attr("transform", "translate("+ 12 + "," + 140 + ")");
+
+	LOADS_showhide_button.append("text").attr("id", "loadbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-LOD");
+	var actextWidth = LOADS_showhide_button.select("text").node().getBBox().width;
+	LOADS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
+	.attr("width", actextWidth + 20).attr("height", 20)
+	.attr("class", "loadshowhidebutton").attr("id", "LOAD_Button") 
+	.on("click", function(){
+		
+		//showhide the AC graphlines
+		LOADview_state = !LOADview_state;
+		d3.select(".loadshowhidebutton").style("stroke-width", LOADview_state ? 1 : 0);
+		if(LOADview_state){
+			focus.select(".load").transition(d3.easeCubic).duration(1000).attr("d", sessloadline);
+		 	focus.selectAll('#sessionload')
+		 	.transition(d3.easeCubic).duration(1000)
+		 	//.attr("x", function(d) {	return xfocus(d.SESS_START);})
+		 	.attr("y", function(d){		return height - yfocus1(d.SESS_LOAD);})
+		 	//.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+		 	.attr("height", function(d){return yfocus1(d.SESS_LOAD);})
+		 	
+		 	focus.selectAll('#prepracticeload')
+		 	.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height - yfocus1(d.PRE_LOAD);})
+			.attr("height", function(d){return yfocus1(d.PRE_LOAD);});
+			
+		 	focus.selectAll('#practiceload')
+		 	.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height - yfocus1(d.PRACT_LOAD)  - yfocus1(d.PRE_LOAD);})
+			.attr("height", function(d){return yfocus1(d.PRACT_LOAD);});
+		 	
+		 	focus.selectAll('#postpracticeload')
+		 	.transition(d3.easeCubic).duration(1000)
+		 	.attr("y", function(d){		return height -yfocus1(d.POST_LOAD) - yfocus1(d.PRACT_LOAD) - yfocus1(d.PRE_LOAD);})
+		 	.attr("height", function(d){return yfocus1(d.POST_LOAD);});
+		 	
+			focus.selectAll('#gameload')
+			.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height - yfocus1(d.GAME_LOAD);})
+			.attr("height", function(d){return yfocus1(d.GAME_LOAD);});
+			
+			focus.selectAll('#squad_avg')
+			.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
+			.attr("height", function(d){return 1;});
+			
+			
+// 			focus.select(".ACLoad").transition(d3.easeCubic).duration(1000).attr("d", acuteline);
+// 			focus.selectAll("#UPFlags").transition(d3.easeCubic).duration(1000).attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
+		
+		} else {
+			focus.select(".load").transition(d3.easeCubic).duration(1000).attr("d", sessloadline2(height));
+		 	
+			focus.selectAll('#sessionload')
+		 	.transition(d3.easeCubic).duration(1000)
+		 	//.attr("x", function(d) {	return xfocus(d.SESS_START);})
+		 	.attr("y", function(d){		return height})
+		 	//.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+		 	.attr("height", function(d){ return 0;})
+		 	
+		 	focus.selectAll('#prepracticeload')
+		 	.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height;})
+			.attr("height", function(d){return 0;});
+			
+		 	focus.selectAll('#practiceload')
+		 	.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height;})
+			.attr("height", function(d){return 0;});
+		 	
+		 	focus.selectAll('#postpracticeload')
+		 	.transition(d3.easeCubic).duration(1000)
+		 	.attr("y", function(d){		return height;})
+		 	.attr("height", function(d){return 0;});
+		 	
+			focus.selectAll('#gameload')
+			.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height;})
+			.attr("height", function(d){return 0;});
+			
+			focus.selectAll('#squad_avg')
+			.transition(d3.easeCubic).duration(1000)
+			.attr("y", function(d){		return height;})
+			.attr("height", function(d){return 0;});
+
+		}
+		d3.selectAll("#loadbutton").text(function(d) {return LOADview_state ? "+LOD" : "-LOD";});        	
+		});
+	
+	
+	
+	
+	
+	
+	
+	
+	var OTHERS_showhide_button = gpsdatasvg.append("g").attr("class", "OTHERS_Button")
+	.attr("transform", "translate("+ 12 + "," + 200 + ")");
+
+	OTHERS_showhide_button.append("text").attr("id", "othersbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-OTH");
+	var actextWidth = OTHERS_showhide_button.select("text").node().getBBox().width;
+	OTHERS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
+	.attr("width", actextWidth + 20).attr("height", 20)
+	.attr("class", "othersshowhidebutton").attr("id", "OTHERS_Button") 
+	.on("click", function(){
+		
+		//showhide the AC graphlines
+		OTHERSview_state = !OTHERSview_state;
+		d3.select(".othersshowhidebutton").style("stroke-width", OTHERSview_state ? 1 : 0);
+		if(OTHERSview_state){
+			
+			focus.select(".cod_l_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_l_lo_area);
+			focus.select(".cod_l_med").transition(d3.easeCubic).duration(1000).attr("d", cod_l_med_area);
+			focus.select(".cod_l_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_l_hi_area);
+			focus.select(".cod_r_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_r_lo_area);
+			focus.select(".cod_r_med").transition(d3.easeCubic).duration(1000).attr("d", cod_r_med_area);
+			focus.select(".cod_r_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_r_hi_area);
+			focus.select(".jump_lo").transition(d3.easeCubic).duration(1000).attr("d", jump_lo_area);
+			focus.select(".jump_med").transition(d3.easeCubic).duration(1000).attr("d", jump_med_area);
+			focus.select(".jump_hi").transition(d3.easeCubic).duration(1000).attr("d", jump_hi_area);
+			focus.select(".heartrate").transition(d3.easeCubic).duration(1000).attr("d", heartrateline);
+			focus.select(".accel").transition(d3.easeCubic).duration(1000).attr("d", accelline);
+			focus.select(".decel").transition(d3.easeCubic).duration(1000).attr("d", decelline);
+			
+		} else {
+			
+			focus.select(".cod_l_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_l_lo_area2);
+			focus.select(".cod_l_med").transition(d3.easeCubic).duration(1000).attr("d", cod_l_med_area2);
+			focus.select(".cod_l_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_l_hi_area2);
+			focus.select(".cod_r_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_r_lo_area2);
+			focus.select(".cod_r_med").transition(d3.easeCubic).duration(1000).attr("d", cod_r_med_area2);
+			focus.select(".cod_r_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_r_hi_area2);
+			focus.select(".jump_lo").transition(d3.easeCubic).duration(1000).attr("d", jump_lo_area2);
+			focus.select(".jump_med").transition(d3.easeCubic).duration(1000).attr("d", jump_med_area2);
+			focus.select(".jump_hi").transition(d3.easeCubic).duration(1000).attr("d", jump_hi_area2);
+			focus.select(".heartrate").transition(d3.easeCubic).duration(1000).attr("d", heartrateline2);
+			focus.select(".accel").transition(d3.easeCubic).duration(1000).attr("d", accelline2);
+			focus.select(".decel").transition(d3.easeCubic).duration(1000).attr("d", decelline2);
+
+		}
+		d3.selectAll("#othersbutton").text(function(d) {return OTHERSview_state ? "+OTH" : "-OTH";});        	
+		});
+		
+}
+
+
+
+
+function redrawGPS() {
+	
+	//focus.selectAll(".ChronicLoad").attr("x",function(d) { return xfocus(d.SESS_START); });
+	if(ACview_state) {
+		focus.select(".ChronicLoad").attr("d", chronicloadarea(height));
+		focus.select(".ACLoad").attr("d", acuteline);
+		focus.selectAll("#UPFlags").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
+		focus.selectAll("#ACLoadDot").attr("cx", function(d) { return xfocus(d.SESS_START); }).attr("cy", function(d) { return yfocus(d.ACUTE); });
+		
+	}else {
+		focus.select(".ChronicLoad").attr("d", chronicloadarea2(height));
+		focus.select(".ACLoad").attr("d", acuteline2(height));
+		focus.selectAll("#UPFlags").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + ","+ height +") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
+		focus.selectAll("#ACLoadDot").attr("cx", function(d) { return xfocus(d.SESS_START); }).attr("cy", height);
+	}
+	
+	if(LOADview_state) {
+		focus.select(".load").attr("d", sessloadline);
+	 	focus.selectAll('#sessionload')
+	 	.attr("x", function(d) {	return xfocus(d.SESS_START);})
+	 	.attr("y", function(d){		return height - yfocus1(d.SESS_LOAD);})
+	 	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+	 	.attr("height", function(d){return yfocus1(d.SESS_LOAD);})
+	 	
+		focus.selectAll('#prepracticeload')
+		.attr("x", function(d) {	return xfocus(d.PRE_START);})
+		.attr("y", function(d){		return height - yfocus1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xfocus(d.PRE_END) - xfocus(d.PRE_START));})
+		.attr("height", function(d){return yfocus1(d.PRE_LOAD);});
+		
+	 	focus.selectAll('#practiceload')
+		.attr("x", function(d) {	return xfocus(d.PRACT_START);})
+		.attr("y", function(d){		return height - yfocus1(d.PRACT_LOAD)  - yfocus1(d.PRE_LOAD);})
+		.attr("width", function(d){	return (xfocus(d.PRACT_END) - xfocus(d.PRACT_START));})
+		.attr("height", function(d){return yfocus1(d.PRACT_LOAD);});
+	 	
+	 	focus.selectAll('#postpracticeload')
+	 	.attr("x", function(d) {	return xfocus(d.POST_START);})
+	 	.attr("y", function(d){		return height -yfocus1(d.POST_LOAD) - yfocus1(d.PRACT_LOAD) - yfocus1(d.PRE_LOAD);})
+	 	.attr("width", function(d){	return (xfocus(d.POST_END) - xfocus(d.POST_START));})
+	 	.attr("height", function(d){return yfocus1(d.POST_LOAD);});
+	 	
+		focus.selectAll('#gameload')
+		.attr("x", function(d) {	return xfocus(d.SESS_START);})
+		.attr("y", function(d){		return height - yfocus1(d.GAME_LOAD);})
+		.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+		.attr("height", function(d){return yfocus1(d.GAME_LOAD);});
+		
+		focus.selectAll('#squad_avg')
+		.attr("x", function(d) {	return (xfocus(d.SESS_START) - 5);})
+		.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
+		.attr("width", function(d){	return (((xfocus(d.SESS_END) - xfocus(d.SESS_START)) + 10));})
+		.attr("height", function(d){return 1;});
+		
+		
+	} else {
+		focus.select(".load").attr("d", sessloadline2(height));
+	 	focus.selectAll('#sessionload')
+	 	.attr("x", function(d) {	return xfocus(d.SESS_START);})
+	 	.attr("y", function(d){		return height})
+	 	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+	 	.attr("height", function(d){ return 0;})
+	 	
+		focus.selectAll('#prepracticeload')
+		.attr("x", function(d) {	return xfocus(d.PRE_START);})
+		.attr("y", function(d){		return height;})
+		.attr("width", function(d){	return (xfocus(d.PRE_END) - xfocus(d.PRE_START));})
+		.attr("height", function(d){return 0;});
+		
+	 	focus.selectAll('#practiceload')
+		.attr("x", function(d) {	return xfocus(d.PRACT_START);})
+		.attr("y", function(d){		return height;})
+		.attr("width", function(d){	return (xfocus(d.PRACT_END) - xfocus(d.PRACT_START));})
+		.attr("height", function(d){return 0;});
+	 	
+	 	focus.selectAll('#postpracticeload')
+	 	.attr("x", function(d) {	return xfocus(d.POST_START);})
+	 	.attr("y", function(d){		return height;})
+	 	.attr("width", function(d){	return (xfocus(d.POST_END) - xfocus(d.POST_START));})
+	 	.attr("height", function(d){return 0;});
+	 	
+		focus.selectAll('#gameload')
+		.attr("x", function(d) {	return xfocus(d.SESS_START);})
+		.attr("y", function(d){		return height;})
+		.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
+		.attr("height", function(d){return 0;});
+		
+		focus.selectAll('#squad_avg')
+		.attr("x", function(d) {	return (xfocus(d.SESS_START) - 5);})
+		.attr("y", function(d){		return height;})
+		.attr("width", function(d){	return (((xfocus(d.SESS_END) - xfocus(d.SESS_START)) + 10));})
+		.attr("height", function(d){return 0;});
+	}
+	
+	if(OTHERSview_state){
+		focus.select(".cod_l_lo").attr("d", cod_l_lo_area);
+		focus.select(".cod_l_med").attr("d", cod_l_med_area);
+		focus.select(".cod_l_hi").attr("d", cod_l_hi_area);
+		focus.select(".cod_r_lo").attr("d", cod_r_lo_area);
+		focus.select(".cod_r_med").attr("d", cod_r_med_area);
+		focus.select(".cod_r_hi").attr("d", cod_r_hi_area);
+		focus.select(".jump_lo").attr("d", jump_lo_area);
+		focus.select(".jump_med").attr("d", jump_med_area);
+		focus.select(".jump_hi").attr("d", jump_hi_area);
+		focus.select(".heartrate").attr("d", heartrateline);
+		focus.select(".accel").attr("d", accelline);
+		focus.select(".decel").attr("d", decelline);
+		
+	} else {
+		
+		focus.select(".cod_l_lo").attr("d", cod_l_lo_area2);
+		focus.select(".cod_l_med").attr("d", cod_l_med_area2);
+		focus.select(".cod_l_hi").attr("d", cod_l_hi_area2);
+		focus.select(".cod_r_lo").attr("d", cod_r_lo_area2);
+		focus.select(".cod_r_med").attr("d", cod_r_med_area2);
+		focus.select(".cod_r_hi").attr("d", cod_r_hi_area2);
+		focus.select(".jump_lo").attr("d", jump_lo_area2);
+		focus.select(".jump_med").attr("d", jump_med_area2);
+		focus.select(".jump_hi").attr("d", jump_hi_area2);
+		focus.select(".heartrate").attr("d", heartrateline2);
+		focus.select(".accel").attr("d", accelline2);
+		focus.select(".decel").attr("d", decelline2);
+		
+		
+		
+	}
+	
+
+	
+
+	
+
+ 	
+
+ 
+ 	focus.selectAll("#now_marker").attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
+ 	
+} // end redrawGPS()
+
+
+
+
+
+
+
+
+
+
+// schedule
 var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
 	
 	data2.forEach(function(d) {
 		d.GAME_START = new Date((+d.GAME_START)*1000);
 		d.GAME_END = new Date((+d.GAME_END)*1000);
-		
 		d.OPPONENT = d.OPPONENT;
 		d.LOCATION = d.LOCATION;
-		//console.log("today is " + today);
-		//console.log("got " + d.GAME_START +" - " + d.GAME_END +" - " + d.OPPONENT +" - " + d.LOCATION);
-		
 	});
 	
+	drawSchedule(data2);
+	
+}); // end of calendar loader
+
+
+function drawSchedule(data2) {
 	//all game diamonds from the schedule file
 	focus.append("g").attr("class", "game3angles")
 	.selectAll(".gametriangles").data(data2).enter().append("path")
 	.attr("class", "gametriangles").attr("id", "gametriangles")
-	.attr("stroke-width", 1)
-	.style("stroke", "black")
 	.style("fill", function(d) {
 		return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
 	})
-	.style("opacity", 0.6)
 	.attr("d", d3.symbol().type(d3.symbolDiamond).size(function(d) { return d.GAME_START > today ? 50 : 50}))
 	// offset up by 5 if exceeding threshold, down by 5 otherwise
 	.attr("transform", function(d) { 
@@ -432,460 +982,138 @@ var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, d
             .duration(500)      
             .style("opacity", 0);
 	});
+} // end drawSchedule()
+
+function redrawSchedule(){
+	focus.selectAll("#gametriangles").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height - 8) + ")" });
+} // end redrawSchedule()
+
+
+
+
+
+
+
+// redox
+var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
 	
+	data3.forEach(function(d) {
+		d.TIME_KEY = +d.TEST_TIME;
+		d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
+		d.FORD = +d.FORD;d.FORD_ADJ = +d.FORD_ADJ;d.FORD_INC = +d.FORD_INC;
+		d.FORT = +d.FORT;d.FORT_ADJ = +d.FORT_ADJ;d.FORT_INC = +d.FORT_INC;
+		d.NOTES = d.NOTES;
+	});
 	
-	var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
-		
-		data3.forEach(function(d) {
-			
-			d.TIME_KEY = +d.TEST_TIME;
-			d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
-			
-			d.FORD = +d.FORD;
-			d.FORT = +d.FORT;
-			d.FORD_ADJ = +d.FORD_ADJ;
-			d.FORT_ADJ = +d.FORT_ADJ;
-			d.FORD_INC = +d.FORD_INC;
-			d.FORT_INC = +d.FORT_INC;
-			d.NOTES = d.NOTES;
-			
-		});
-		
-		yfocus2.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
-		
-		
-		
-		redoxfocus.append("rect")
-		.attr("class", "backgroundrect").attr("width", width).attr("height", height3);
-		
-		redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
-		
-		redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
-		
-		
-		// the defence line
-		redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline")
-		.attr("d", defenceline);
-		
-		// the defence adjusted line
-		redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline")
-		.attr("d", defenceadjline);
-		
-		// add defence circles
-	    redoxfocus.append("g").attr("class", "DEFENCEGROUP")
-	    .selectAll().data(data3).enter()
-	    .append("circle")
-  		.attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 5)
-    	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
-    	.attr("cx", function(d) { return xfocus(d.TEST_TIME); })
-    	.attr("cy", function(d) { return yfocus2(d.FORD); })
-    	.on("mouseover", function(d) {
-    		console.log("redx tipping");
-    		rdxtip.transition()
-			.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-			.style("width", "auto").style("height", "auto")
-			.attr("id", "rdxtip")
-			.on("end", function(d){this.className='rdxtip'});;
-		rdxtip .html(rdxnotes(d))
-			.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-		})
-		.on("mouseout", function(d) {       
-			rdxtip.transition().delay(2000)
-			.style("width", "0px").style("height", "0px")
-			.on("end", function(d){rdxtip.html(""); this.className=''; });
-		})
-		.on("click", function(d) {
-			linktip
-			//.transition()
-			//.duration(100)
-			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-				+"<button>Toggle</button></form> ") 
-			.style("left", "200px").style("top", "50px");
-			document.getElementById("fordtoggle").submit();
-		});
-		
-	    
-	    // the stress line
-		redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline")
-		.attr("d", stressline);
-		
-		// the stress adjusted line
-		redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline")
-		.attr("d", stressadjline);
-		
-		// add DEFENCE circles
-	    redoxfocus.append("g").attr("class", "STRESSGROUP")
-	    .selectAll().data(data3).enter()
-	    .append("circle")
-  		.attr("class", "STRESS").attr("id", "STRESS").attr("r", 5)
-    	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
-    	.attr("cx", function(d) { return xfocus(d.TEST_TIME); })
-    	.attr("cy", function(d) { return yfocus2(d.FORT); })
-    	.on("mouseover", function(d) {
-    		rdxtip.transition()
-			.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-			.style("width", "auto").style("height", "auto")
-			.attr("id", "rdxtip")
-			.on("end", function(d){this.className='rdxtip'});;
-		rdxtip .html(rdxnotes(d))
-			.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-		})
-		.on("mouseout", function(d) {       
-			rdxtip.transition().delay(2000)
-			.style("width", "0px").style("height", "0px")
-			.on("end", function(d){rdxtip.html(""); this.className=''; });
-		})
-		.on("click", function(d) {
-			linktip
-			//.transition()
-			//.duration(100)
-			.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-			linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-				+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-				+"<button>Toggle</button></form> ") 
-			.style("left", "200px").style("top", "50px");
-			document.getElementById("fordtoggle").submit();
-		});
-		
-    	
-		
-	}); // end redox loader
+	yfocus2.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
 	
+	redoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
+	redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
+	drawRedox(data3);
+
+}); // end redox loader
+
+
+function drawRedox(data3) {
+
+	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
 	
-	
-}); // end of calendar loader
- 
- 
-}); // end of d3 csv loader
-function drawgpsfocus(data) {
-	
-	focus.append("rect")
-	.attr("class", "backgroundrect").attr("width", width).attr("height", height + 25);
-	
-//the axes
-focus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(xAxis);
-focus.append("g").attr("class", "axis axis--y").call(yAxis);
-//the cod areas
-focus.append("path").datum(data).attr("class", "cod_l_lo").attr("id", "cod_l_lo").attr("d", cod_l_lo_area);
-focus.append("path").datum(data).attr("class", "cod_l_med").attr("id", "cod_l_med").attr("d", cod_l_med_area);
-focus.append("path").datum(data).attr("class", "cod_l_hi").attr("id", "cod_l_hi").attr("d", cod_l_hi_area);
-focus.append("path").datum(data).attr("class", "cod_r_lo").attr("id", "cod_r_lo").attr("d", cod_r_lo_area);
-focus.append("path").datum(data).attr("class", "cod_r_med").attr("id", "cod_r_med").attr("d", cod_r_med_area);
-focus.append("path").datum(data).attr("class", "cod_r_hi").attr("id", "cod_r_hi").attr("d", cod_r_hi_area);
-// the jumps
-focus.append("path").datum(data).attr("class", "jump_lo").attr("id", "jump_lo").attr("d", jump_lo_area);
-focus.append("path").datum(data).attr("class", "jump_med").attr("id", "jump_lo").attr("d", jump_med_area);
-focus.append("path").datum(data).attr("class", "jump_hi").attr("id", "jump_lo").attr("d", jump_hi_area);
-//the squad average rects
-focus.selectAll('squadavgrectangles')
-.data(data).enter().append("rect").filter(function(d) { return d.SQUAD_AVG > 0})
-.attr("class", "squad_avg").attr("id", "squad_avg")
-.attr("x", function(d) {	return (xfocus(d.SESS_START) - 5);})
-.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
-.attr("width", function(d){	return (((xfocus(d.SESS_END) - xfocus(d.SESS_START)) + 10));})
-.attr("height", function(d){return 1;});
-//the chronic load area
-focus.append("path").datum(data).attr("class", "ChronicLoad").attr("id", "ChronicLoad").attr("d", chronicloadarea(height));
-//the acute load line graphline(d, xScale, yScale, xvar, yvar)
-focus.append("path").datum(data).attr("class", "ACLoad").attr("id", "ACLoad").attr("d", acuteline);
-//be careful where u place this rect
-focus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
-// adding the flags along the acute line
-focus.append("g").attr("class", "alerttriangles")
-.selectAll().data(data).enter().append("path")
-.attr("class", "UPFlags").attr("id", "UPFlags")
-.filter(function(d){
-	return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold) ? d.ACUTE : null;})
-.attr("d", d3.symbol().type(d3.symbolTriangle).size(20))
-.attr("transform", function(d) { 
-	return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 90) + ")"});
-	
-// add sensor circles (dots) to the Acute Load line
-focus.selectAll("dot").data(data).enter().append("circle")
-	.attr("id", "ACLoadDot").attr("r", 20)
-.style("opacity", 0)
-.attr("cx", function(d) { return xfocus(d.SESS_START); })
-.attr("cy", function(d) { return yfocus(d.ACUTE); })
-.on("mouseover", function(d) {
-	acutetooltip.transition().duration(200)
-		.style("opacity", 0.9).style("color", "red").style("background", "rgba(255,0,0, 0.1)").style("border-color", "red");
-	acutetooltip .html("Acute : " + (parseInt(d.ACUTE)))
-		.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -50) + "px");
+	//Defence(ford)
+	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 5)
+	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
+	.on("mouseover", function(d) {
+		console.log("redx tipping");
+		rdxtip.transition()
+		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+		.style("width", "auto").style("height", "auto")
+		.attr("id", "rdxtip")
+		.on("end", function(d){this.className='rdxtip'});;
+	rdxtip .html(rdxnotes(d))
+		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
 	})
-.on("mouseout", function(d) {       
-	acutetooltip.transition().duration(500).style("opacity", 0);
-});
+	.on("mouseout", function(d) {       
+		rdxtip.transition().delay(2000)
+		.style("width", "0px").style("height", "0px")
+		.on("end", function(d){rdxtip.html(""); this.className=''; });
+	})
+	.on("click", function(d) {
+		linktip
+		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+			+"<button>Toggle</button></form> ") 
+		.style("left", "200px").style("top", "50px");
+		document.getElementById("fordtoggle").submit();
+	});
 	
+    
+    // stress(fort)
+	redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
+	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
+	redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 5)
+	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
+	.on("mouseover", function(d) {
+		rdxtip.transition()
+		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+		.style("width", "auto").style("height", "auto")
+		.attr("id", "rdxtip")
+		.on("end", function(d){this.className='rdxtip'});;
+	rdxtip .html(rdxnotes(d))
+		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+	})
+	.on("mouseout", function(d) {       
+		rdxtip.transition().delay(2000)
+		.style("width", "0px").style("height", "0px")
+		.on("end", function(d){rdxtip.html(""); this.className=''; });
+	})
+	.on("click", function(d) {
+		linktip
+		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+			+"<button>Toggle</button></form> ") 
+		.style("left", "200px").style("top", "50px");
+		document.getElementById("fordtoggle").submit();
+	});
+} // end drawRedox()
+
+function redrawRedox() {
 	
-//the load line
-focus.append("path").datum(data).attr("class", "load").attr("id", "load").attr("d", sessloadline);
-	
-//the heartrate line
-focus.append("path").datum(data).attr("class", "heartrate").attr("id", "heartrate").attr("d", heartrateline);
-// the accel load line
-focus.append("path").datum(data).attr("class", "accel").attr("id", "accel").attr("d", accelline);
-// the decel load line
-focus.append("path").datum(data).attr("class", "decel").attr("id", "decel").attr("d", decelline);
-// the pre practice rects
-focus.selectAll('prepracticerectangles')
-.data(data).enter().append("rect")
-.attr("class", "prepracticeload").attr("id", "prepracticeload")
-	.attr("x", function(d) {	return xfocus(d.PRE_START);})
-	.attr("y", function(d){		return height - yfocus1(d.PRE_LOAD);})
-	.attr("width", function(d){	return (xfocus(d.PRE_END) - xfocus(d.PRE_START));})
-	.attr("height", function(d){return yfocus1(d.PRE_LOAD);});
-// the practice rects
-focus.selectAll('practicerectangles')
-.data(data).enter().append("rect")
-.attr("class", "practiceload").attr("id", "practiceload")
-	.attr("x", function(d) {	return xfocus(d.PRACT_START);})
-	.attr("y", function(d){		return height - yfocus1(d.PRACT_LOAD)  - yfocus1(d.PRE_LOAD);})
-	.attr("width", function(d){	return (xfocus(d.PRACT_END) - xfocus(d.PRACT_START));})
-	.attr("height", function(d){return yfocus1(d.PRACT_LOAD);});
-	
-// the post practice rects
-focus.selectAll('postpracticerectangles')
-.data(data).enter().append("rect")
-.attr("class", "postpracticeload").attr("id", "postpracticeload")
-.attr("x", function(d) {	return xfocus(d.POST_START);})
-.attr("y", function(d){		return height -yfocus1(d.POST_LOAD) - yfocus1(d.PRACT_LOAD) - yfocus1(d.PRE_LOAD);})
-.attr("width", function(d){	return (xfocus(d.POST_END) - xfocus(d.POST_START));})
-.attr("height", function(d){return yfocus1(d.POST_LOAD);});
-// the session rects
-focus.selectAll('sessionrect')
-.data(data).enter().append("rect")
-.attr("class", "sessionload").attr("id", "sessionload")
-.attr("x", function(d) {	return xfocus(d.SESS_START);})
-.attr("y", function(d){		return height - yfocus1(d.SESS_LOAD);})
-.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
-.attr("height", function(d){return yfocus1(d.SESS_LOAD);})
-.on("mouseover", function(d) {
-	tooltip.transition()
-		.duration(200)
-		.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
-	tooltip .html("Session Load........ " + (d.SESS_LOAD) +"<br><br>" 
-				+ "Pre Practice Load... " + (d.PRE_LOAD) +"<br><br>"
-				+ "Practice Load....... " + (d.PRACT_LOAD) +"<br><br>"
-				+ "Post Practice Load.. " + (d.POST_LOAD) )
-		.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-.on("mouseout", function(d) {       
-	tooltip.transition()        
-        .duration(500)      
-        .style("opacity", 0);
-})
-.on("click", function(d) {
-	// remove the tooltip
-	tooltip.style("opacity", 0);
-	gametip.transition().duration(100).style("opacity", 0);
-	datatip.transition().duration(100)
-	.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899");
-	datatip .html(datatiptable(d))
-	.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
-});
-// the game rects
-focus.selectAll('gameloadrect')
-.data(data).enter().append("rect")
-.attr("class", "gameload").attr("id", "gameload")
-.attr("x", function(d) {	return xfocus(d.SESS_START);})
-.attr("y", function(d){		return height - yfocus1(d.GAME_LOAD);})
-.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
-.attr("height", function(d){return yfocus1(d.GAME_LOAD);})
-.on("mouseover", function(d) {
-	tooltip.transition()
-		.duration(200)
-		.style("opacity", 0.9).style("color", "blue").style("background", "rgba(128,0,128, 0.1)").style("border-color", "purple");
-	tooltip .html("Game Load " + (d.GAME_LOAD) +"<br>" 
-				+ "Minutes.. " + (d.GAME_MINS) +"<br>"
-				+ "Points... " + (d.POINTS) +"<br>"
-				+ "Rebounds. " + (d.REBOUNDS) +"<br>"
-				+ "Assists.. " + (d.ASSISTS) +"<br>"
-				+ "Steals... " + (d.STEALS) +"<br>"
-				+ "Blocks... " + (d.BLOCKS) +"<br>"
-				+ "Fouls.... " + (d.FOULS) )
-		.style("left", (d3.event.pageX + 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-.on("mouseout", function(d) {       
-	tooltip.transition()        
-        .duration(500)      
-        .style("opacity", 0);
-})
-.on("click", function(d) {
-	// remove the tooltip
-	tooltip.style("opacity", 0);
-	datatip.transition().duration(100).style("opacity", 0);
-	gametip.transition().duration(100)
-	.style("opacity", 0.9).style("color", "#2F4F4F").style("border-color", "#778899").style("background-color", "#74DB88");
-	gametip .html(gametiptable(d))
-	.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY -250) + "px");
-});
-// adding the marker for today
-focus.append("path").attr("class", "now_marker").attr("id", "now_marker")
-.attr("d", d3.symbol().type(d3.symbolDiamond).size(200))
-.attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
-	
-	
-var toggled = true;
-console.log("toggled is " + toggled);
-d3.select("#gpsdatasvg")
-.attr("height", function(d) { this.active = toggled;	return toggled ? gpsdatasvg_h : 0;})
-d3.select("#gpscliprect")
-.attr("height", function(d) { this.active = toggled;	return toggled ? gpsdatasvg_h : 0;})
-			
-		
-				var abutton = gpsdatasvg.append("g").attr("transform", "translate("+ 5 + "," + 20 + ")");
-					abutton.append("text").attr("id", "gpsbutton").attr("x", 10).attr("y", 15).attr("fill", "#464640").text("-");
-				
-				// get the width of the text and use it to tailor the width of the rect around it
-	 			var textWidth = abutton.select("text").node().getBBox().width;
-				
-				abutton.append("rect").attr("rx", 2).attr("ry", 2)
-			    .attr("width", textWidth + 20).attr("height", 20)
-			    .attr("class", "legend").attr("id", "GPSDATA_Button") 
-			    .attr("cursor", "pointer")
-			    .style("fill", "lightgrey")
-			    .style("fill-opacity", 0.3)
-			    .style("stroke-width", toggled ? 1 : 0)
-			    
-			    .style("stroke", toggled ? "#464640" : "grey").style("opacity", function(d) { this.active = toggled;})
-			    .style("shape-rendering", "auto")
-			    .on("click", function(){
-			    	
-			    	console.log("clicked");
-			    	
-			    	//showhidePerformance()
-			    	toggled = !toggled;
-			    	if(toggled){
-			    		focus = gpsdatasvg.append("g")
-			    		.attr("class", "focus")
-			    		.attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
-			    		drawgpsfocus(data);
-			    		redrawChart();
-			    	} else {
-			    		gpsdatasvg.select(".focus").remove();
-					    gpsdatasvg.attr("height", 50);
-			    	}
-//				    gpsdatasvg.select(".focus").remove();
-//				    gpsdatasvg.attr("height", 50);
-			    //var gpsdatasvg = d3.select("#gpsdatasvg").attr("width", windowwidth).attr("height", gpsdatasvg_h),
-				//.attr("height", function(d) { return toggled ? gpsdatasvg_h : 50;})
-				
-				
-				d3.selectAll("#gpsbutton").text(function(d) {return toggled ? "-" : "+";});
-			    	//document.cookie=isActive? "perfbut=true;" : "perfbut=false;";
-			        // Hide or show the line
-			        // the ac lines
-//				d3.select("#"+id1).attr("height", function(d) { 
-//		        	this.active = !this.active; isActive = this.active; return	this.active ? gpsdatasvg_h : 0; })
-			
-			        	
-			});
-	
-}
+	redoxfocus.selectAll("#defenceline").attr("d", defenceline);
+	redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
+	redoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); });
+	redoxfocus.selectAll("#stressline").attr("d", stressline);
+	redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
+	redoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
+}  //end redrawRedox()
+
+
+
+
+
+
 function redrawChart() {
-	
 	
 	datatip.transition().duration(200).style("opacity", 0);
 	gametip.transition().duration(200).style("opacity", 0);
-	
-	
-	focus.select(".ChronicLoad").attr("d", chronicloadarea(height));
-	focus.select(".ACLoad").attr("d", acuteline);
-	
-	// the alert flags along the acute load line
-	focus.selectAll("#UPFlags")
-	.attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
-	
-	// the acute load line sensors for the tooltips
-	focus.selectAll("#ACLoadDot")
-	.attr("cx", function(d) { return xfocus(d.SESS_START); })
-	.attr("cy", function(d) { return yfocus(d.ACUTE); });
-	
-	
-	focus.select(".load").attr("d", sessloadline);
-	focus.select(".cod_l_lo").attr("d", cod_l_lo_area);
-	focus.select(".cod_l_med").attr("d", cod_l_med_area);
-	focus.select(".cod_l_hi").attr("d", cod_l_hi_area);
-	focus.select(".cod_r_lo").attr("d", cod_r_lo_area);
-	focus.select(".cod_r_med").attr("d", cod_r_med_area);
-	focus.select(".cod_r_hi").attr("d", cod_r_hi_area);
-	focus.select(".jump_lo").attr("d", jump_lo_area);
-	focus.select(".jump_med").attr("d", jump_med_area);
-	focus.select(".jump_hi").attr("d", jump_hi_area);
-	
-	// the squad average rects
-	focus.selectAll('#squad_avg')
-	.attr("x", function(d) {	return (xfocus(d.SESS_START) - 5);})
-	.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
-	.attr("width", function(d){	return (((xfocus(d.SESS_END) - xfocus(d.SESS_START)) + 10));})
-	.attr("height", function(d){return 1;});
-	
-	focus.select(".heartrate").attr("d", heartrateline);
-	focus.select(".accel").attr("d", accelline);
-	focus.select(".decel").attr("d", decelline);
-	
-	
-	focus.selectAll('#prepracticeload')
-	.attr("x", function(d) {	return xfocus(d.PRE_START);})
-	.attr("y", function(d){		return height - yfocus1(d.PRE_LOAD);})
-	.attr("width", function(d){	return (xfocus(d.PRE_END) - xfocus(d.PRE_START));})
-	.attr("height", function(d){return yfocus1(d.PRE_LOAD);});
-	
- 	focus.selectAll('#practiceload')
-	.attr("x", function(d) {	return xfocus(d.PRACT_START);})
-	.attr("y", function(d){		return height - yfocus1(d.PRACT_LOAD)  - yfocus1(d.PRE_LOAD);})
-	.attr("width", function(d){	return (xfocus(d.PRACT_END) - xfocus(d.PRACT_START));})
-	.attr("height", function(d){return yfocus1(d.PRACT_LOAD);});
- 	
- // the post practice rects
- 	focus.selectAll('#postpracticeload')
- 	.attr("x", function(d) {	return xfocus(d.POST_START);})
- 	.attr("y", function(d){		return height -yfocus1(d.POST_LOAD) - yfocus1(d.PRACT_LOAD) - yfocus1(d.PRE_LOAD);})
- 	.attr("width", function(d){	return (xfocus(d.POST_END) - xfocus(d.POST_START));})
- 	.attr("height", function(d){return yfocus1(d.POST_LOAD);});
-	
- // the session rects
- 	focus.selectAll('#sessionload')
- 	.attr("x", function(d) {	return xfocus(d.SESS_START);})
- 	.attr("y", function(d){		return height - yfocus1(d.SESS_LOAD);})
- 	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
- 	.attr("height", function(d){return yfocus1(d.SESS_LOAD);})
- 	
-	focus.selectAll('#gameload')
-	.attr("x", function(d) {	return xfocus(d.SESS_START);})
-	.attr("y", function(d){		return height - yfocus1(d.GAME_LOAD);})
-	.attr("width", function(d){	return (xfocus(d.SESS_END) - xfocus(d.SESS_START));})
-	.attr("height", function(d){return yfocus1(d.GAME_LOAD);});
- 
- 	focus.selectAll("#now_marker")
- 	.attr("transform", function(d) { 
- 		return "translate(" + xfocus(today) + "," + height + ")" });
- 	
-	focus.selectAll("#gametriangles")
-	.attr("transform", function(d) { 
-		return "translate(" + xfocus(d.GAME_START) + "," + (height - 8) + ")" })
-		
-	// the ford line
-	redoxfocus.selectAll("#defenceline").attr("d", defenceline);
-	
-	// the ford adjusted line
-	redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
-	
-	
-	redoxfocus.selectAll("#DEFENCE")
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); })
-	.attr("cy", function(d) { return yfocus2(d.FORD); });
-    
-	redoxfocus.selectAll("#stressline").attr("d", stressline);
-	
-	redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
-	
-	redoxfocus.selectAll("#STRESS")
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); })
-	.attr("cy", function(d) { return yfocus2(d.FORT); });
+	redrawGPS();
+	redrawRedox();
+	redrawSchedule();
 	
 	focus.select(".axis--x").call(xAxis);
 } // end redrawchart
+
+
+
+
+
+
 	
 	
 	
@@ -970,6 +1198,9 @@ function resize() {
 			  .translate(-xl, 0));
 	
 } // end resize
+
+
+
 function checkcookie() {
 	
 	if(document.cookie.indexOf("xl") >= 0) {
@@ -1009,4 +1240,4 @@ function checkcookie() {
 </script>
     
     
-    }
+}
