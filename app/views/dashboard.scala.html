@@ -218,6 +218,7 @@
 	</div>
 	<div class="chart_centre" class="row" id="chart_centre">
 	<svg id="gpsdatasvg"></svg>
+	<svg id="schedulesvg"></svg>
 	<svg id="contextsvg"></svg>
 	</div>
 	<div class="chart_lower" class="row" id="chart_lower">
@@ -231,26 +232,28 @@
 var acuteloadupperthreshold = 1.5,
 	acuteloadlowerthreshold = 0.8;
 	
-var acutechronic_button_border_colour = "red";
-var sessionloads_button_border_colour = "#3399CC";
-var gameloads_button_border_colour = "#74DB88";
-var accdec_button_border_colour = "orange";
-var cod_button_border_colour = "#F11BDF";
-var jump_button_border_colour = "#587CAF";
-var hre_button_border_colour = "#1FE234";
-var squadavg_button_border_colour = "#CECE0B";
 // //Adds the svg canvas
 var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
 var windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
+
 var max_gpssvg_h = 500,
+	max_schedsvg_h = 50,
 	max_rdxsvg_h = 300;
+	
+	
 var	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h),
+	schedpane_h = Math.max(((windowHeight/32)), max_schedsvg_h),
 	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
-//var gpstoggle = d3.select("#gpstoggle").attr("width", windowwidth).attr("height", gps_toggle_1);
+
 var gpsdatasvg = d3.select("#gpsdatasvg").attr("width", windowwidth).attr("height", gpsdatasvg_h),
 	gps_margin = {top: 20, right: 20, bottom: 20, left: 70},
 	width = +gpsdatasvg.attr("width") - gps_margin.left - gps_margin.right,
 	height = +gpsdatasvg.attr("height") - gps_margin.top - gps_margin.bottom;
+	
+var schedulesvg = d3.select("#schedulesvg").attr("width", windowwidth).attr("height", schedpane_h),
+	sch_margin = {top: 0, right: 20, bottom: 0, left: 70},
+	height4 = +schedulesvg.attr("height") - sch_margin.top - sch_margin.bottom;
 	
 	
 var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("height", 100),
@@ -297,6 +300,13 @@ gpsdatasvg.append("defs").append("clipPath")
 .attr("width", width)
 .attr("height", height);
 
+schedulesvg.append("defs").append("clipPath")
+.attr("id", "schedclip")
+.append("rect")
+.attr("id", "schcliprect")
+.attr("width", width)
+.attr("height", height4);
+
 contextsvg.append("defs").append("clipPath")
 .attr("id", "ctxclip")
 .append("rect")
@@ -317,9 +327,13 @@ var focus = gpsdatasvg.append("g")
 .attr("class", "focus")
 .attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
 
+var schedule = schedulesvg.append("g")
+.attr("class", "schedulearea")
+.attr("transform", "translate(" + sch_margin.left + "," + sch_margin.top + ")");
+
 var context = contextsvg.append("g")
 .attr("class", "contextarea")
-.attr("transform", "translate(" + context_margin.left + "," + 20 + ")");
+.attr("transform", "translate(" + context_margin.left + "," + 0 + ")");
 
 var redoxfocus = redoxsvg.append("g")
 .attr("class", "redoxfocus")
@@ -569,6 +583,56 @@ function drawGPS(data) {
 	.attr("d", d3.symbol().type(d3.symbolDiamond).size(200))
 	.attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
 	
+	
+	
+	
+// 	//the past game result triangles
+// 	schedule.append("g").attr("class", "gameresults")
+// 	.selectAll(".gameresult").data(data).enter().append("path")
+
+// // 	.filter(function(d){
+// // 			return d.GAME_LOAD > 0 ? d.SESS_START : null;
+// // 		})
+// 	.attr("id", "gameresult")
+// 	.attr("stroke-width", 1)
+// 	.style("stroke", "black")
+// 	.style("fill", function(d) {
+// 		return d.WIN_LOSS == "W" ? "green" : "red";
+// 	})
+// 	.style("opacity", 1)
+
+// 	.attr("d", d3.symbol().type(d3.symbolTriangle).size(100))
+// 	.attr("transform", function(d) { 
+		
+// 		return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")";})
+		
+// 	.on("mouseover", function(d) {
+// 		tooltip.transition()
+// 			.duration(200)
+// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+// 		tooltip .html("Home Team : " + (d.HOME_TEAM) +"<br><br>" 
+// 					+ "Away Team : " + (d.AWAY_TEAM) +"<br><br>" 
+// 					+ "Score Diff: " + (d.SCORE_DIFF) +"<br><br>" 
+// 					)
+// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+// 	.on("mouseout", function(d) {       
+// 		tooltip.transition()        
+//             .duration(500)      
+//             .style("opacity", 0);
+// 	});
+	
+	
+	//the past game text
+	schedule.append("g").attr("class", "gameresulttext")
+	.selectAll(".gameresulttxt").data(data).enter().append("text")
+	.attr("id", "gameresulttxt")
+	.attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")";})
+	.attr("x", 5)
+	//.attr("y", 10)
+	.text( function (d) { return d.WIN_LOSS == "W" ? "W" : "L";});
+	
+	
+	
 } // end drawGPS()
 
 
@@ -639,7 +703,7 @@ function drawGPSButtons(data){
     		focus.selectAll("#ACLoadDot").attr("cx", function(d) { return xfocus(d.SESS_START); }).attr("cy", height);
     		
 		}
-		d3.selectAll("#acbutton").text(function(d) {return ACview_state ? "+A:C" : "-A:C";});        	
+		d3.selectAll("#acbutton").text(function(d) {return ACview_state ? "-A:C" : "+A:C";});        	
 		});
 	
 	
@@ -733,7 +797,7 @@ function drawGPSButtons(data){
 			.attr("height", function(d){return 0;});
 
 		}
-		d3.selectAll("#loadbutton").text(function(d) {return LOADview_state ? "+LOD" : "-LOD";});        	
+		d3.selectAll("#loadbutton").text(function(d) {return LOADview_state ? "-LOD" : "+LOD";});        	
 		});
 	
 	
@@ -787,7 +851,7 @@ function drawGPSButtons(data){
 			focus.select(".decel").transition(d3.easeCubic).duration(1000).attr("d", decelline2);
 
 		}
-		d3.selectAll("#othersbutton").text(function(d) {return OTHERSview_state ? "+OTH" : "-OTH";});        	
+		d3.selectAll("#othersbutton").text(function(d) {return OTHERSview_state ? "-OTH" : "+OTH";});        	
 		});
 		
 }
@@ -924,12 +988,6 @@ function redrawGPS() {
 	
 
 	
-
-	
-
- 	
-
- 
  	focus.selectAll("#now_marker").attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
  	
 } // end redrawGPS()
@@ -951,6 +1009,8 @@ var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, d
 		d.GAME_END = new Date((+d.GAME_END)*1000);
 		d.OPPONENT = d.OPPONENT;
 		d.LOCATION = d.LOCATION;
+		d.OPP_LOGO = d.OPP_LOGO;
+		//console.log(d.OPP_LOGO);
 	});
 	
 	drawSchedule(data2);
@@ -959,17 +1019,47 @@ var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, d
 
 
 function drawSchedule(data2) {
-	//all game diamonds from the schedule file
-	focus.append("g").attr("class", "game3angles")
-	.selectAll(".gametriangles").data(data2).enter().append("path")
-	.attr("class", "gametriangles").attr("id", "gametriangles")
-	.style("fill", function(d) {
-		return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
-	})
-	.attr("d", d3.symbol().type(d3.symbolDiamond).size(function(d) { return d.GAME_START > today ? 50 : 50}))
+	
+	schedule.append("rect")
+	.attr("class", "schedbgrect").attr("width", width).attr("height", height4);
+	
+// 	//all game diamonds from the schedule file
+// 	schedule.append("g").attr("class", "game3angles")
+// 	.selectAll(".gametriangles").data(data2).enter().append("path")
+// 	//focus.selectAll(".game3angles").data(data2).enter().append("path")
+// 	.attr("class", "gametriangles").attr("id", "gametriangles")
+// 	.style("fill", function(d) {
+// 		return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
+// 	})
+// 	.attr("d", d3.symbol().type(d3.symbolDiamond).size(function(d) { return d.GAME_START > today ? 50 : 50}))
+// 	// offset up by 5 if exceeding threshold, down by 5 otherwise
+// 	.attr("transform", function(d) { 
+// 		return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 25) + ")" })
+// 	.on("mouseover", function(d) {
+// 		tooltip.transition()
+// 			.duration(200)
+// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+// 		tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
+// 					+ "Location : " + (d.LOCATION) +"<br><br>" )
+// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
+// 	.on("mouseout", function(d) {       
+// 		tooltip.transition()        
+//             .duration(500)      
+//             .style("opacity", 0);
+// 	});
+	
+	
+	// the opponents logos
+	schedule.append("g").attr("class", "opponents")
+	.selectAll(".opponents").data(data2).enter().append("image")
+	.attr("class", "opponenticon").attr("id", "opponenticon")
+	.attr("x", -10)
+	.attr("width", 25).attr("height", 25)
+	.attr("href", function(d){ return "/assets/images/TeamLogos/"+ d.OPP_LOGO + ".png"; })
+	
 	// offset up by 5 if exceeding threshold, down by 5 otherwise
 	.attr("transform", function(d) { 
-		return "translate(" + xfocus(d.GAME_START) + "," + (height - 8) + ")" })
+		return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 50) + ")" })
 	.on("mouseover", function(d) {
 		tooltip.transition()
 			.duration(200)
@@ -982,10 +1072,34 @@ function drawSchedule(data2) {
             .duration(500)      
             .style("opacity", 0);
 	});
+	
+	
+	//the past game text
+	schedule.append("g").attr("class", "homegametext")
+	.selectAll(".homegametxt").data(data2).enter().append("text")
+	.attr("id", "homegametxt")
+	.attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 10) + ")";})
+	.attr("x", -5)
+	//.attr("y", 10)
+	.text( function (d) { return d.LOCATION == "Dallas" ? "H" : "A";});
+	
+
+	
+	
+
+	
 } // end drawSchedule()
 
 function redrawSchedule(){
-	focus.selectAll("#gametriangles").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height - 8) + ")" });
+	//schedule.selectAll("#gametriangles").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 25) + ")" });
+	schedule.selectAll("#opponenticon").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 50) + ")" });
+	//schedule.selectAll("#gameresult").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")"; });
+	schedule.selectAll("#gameresulttxt").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")"; });
+	schedule.selectAll("#homegametxt").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 10) + ")"; });
+
+
+
+
 } // end redrawSchedule()
 
 
@@ -1102,9 +1216,11 @@ function redrawChart() {
 	
 	datatip.transition().duration(200).style("opacity", 0);
 	gametip.transition().duration(200).style("opacity", 0);
+	
 	redrawGPS();
 	redrawRedox();
 	redrawSchedule();
+	
 	
 	focus.select(".axis--x").call(xAxis);
 } // end redrawchart
@@ -1119,13 +1235,13 @@ function redrawChart() {
 	
 function brushed() {
 	
-	console.log("brushing");
+	//console.log("brushing");
 	var s = d3.event.selection || xcontext.range();
 	
 	if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") {
 		document.cookie="xl="+ s[0] +";";
 		document.cookie="xr="+ s[1] +";";
-		console.log("returning");
+		//console.log("returning");
 		return;
 	}
 	xfocus.domain(s.map(xcontext.invert, xcontext));
@@ -1216,7 +1332,7 @@ function checkcookie() {
 	        		xl = threeweeksago;
 	        	} else {
 	        		xl = cookiearray[i].split('=')[1].trim();
-	        		console.log("not Nan");
+	        		//console.log("not Nan");
 	        	}
 	        	
 	        }

@@ -83,8 +83,11 @@ position: absolute;
 	max-width: 100%;
     background-color: #FFFFFF;
 }
+
+
+
 #gpscliprect {
-		rx: 20;
+	rx: 20;
 	ry: 20;
 }
 
@@ -101,26 +104,26 @@ position: absolute;
 }
 
 .acshowhidebutton {
-	stroke : #464640;
-	stroke-width : 1;
+	stroke : red;
+	stroke-width : 2;
 	cursor: pointer;
-    fill: lightgrey;
+    fill: #AFDFF3;
     fill-opacity: 0.3;
 }
 
 .loadshowhidebutton {
-	stroke : #464640;
-	stroke-width : 1;
+	stroke : #5aac6b;
+	stroke-width : 2;
 	cursor: pointer;
-    fill: lightgrey;
+    fill: #3399CC;
     fill-opacity: 0.3;
 }
 
 .othersshowhidebutton {
-	stroke : #464640;
+	stroke : #F11BDF;
 	stroke-width : 1;
 	cursor: pointer;
-    fill: lightgrey;
+    fill: #919EB1;
     fill-opacity: 0.3;
 }
 
@@ -138,6 +141,14 @@ position: absolute;
 	fill: #FBFBFB;
 	rx: 20;
 	ry: 20;
+}
+
+.schedbgrect {
+	stroke: #FAFAFA;
+	stroke-width: 2px;
+	fill: #FBFBFB;
+	rx: 10;
+	ry: 10;
 	
 }
 .ChronicLoad {
@@ -311,12 +322,27 @@ position: absolute;
 	fill-opacity: 0.2;
 }
 .game3angles {
-	clip-path: url(#gpsclip);
+	clip-path: url(#schedclip);
 }
 .gametriangles {
 	stroke-width: 1;
 	stroke: black;
 	fill-opacity: 0.6;
+}
+
+.opponents {
+	clip-path: url(#schedclip);
+}
+
+.homegametext {
+	clip-path: url(#schedclip);
+	font-size: 10px;
+}
+
+.gameresulttext {
+	clip-path: url(#schedclip);
+	font-size: 10px;
+	
 }
 .defenceline {
 	clip-path: url(#rdxclip);

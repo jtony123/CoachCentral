@@ -216,11 +216,21 @@ public class Application extends Controller {
     	return CompletableFuture.completedFuture(ok(player.playerPhoto).as("playerPhoto"));
     }
     
+    public CompletionStage<Result> teamLogo(String team) {
+		
+    	System.out.println("teamLogo called");
+       	
+   	 //return ok(new java.io.File("public/images/TeamLogos/" + team + "png.csv"));
+   	 
+   	return CompletableFuture.completedFuture(ok(new java.io.File("public/images/TeamLogos/" + team + "png.csv")));
+    	
+    }
+    
     
    public Result getCalendarCSV(){
     	
 	    //System.out.println("getCalendarCSV called");
-	   	return ok(new java.io.File(filepath + "Schedule1.csv"));
+	   	return ok(new java.io.File(filepath + "Schedule2.csv"));
     }
     
     
@@ -236,7 +246,7 @@ public class Application extends Controller {
 		MultipartFormData<File> body = request().body().asMultipartFormData();
 		FilePart<File> filename = body.getFile("filename");
 		
-		File file = new File(filepath + "Schedule1.csv");
+		File file = new File(filepath + "Schedule2.csv");
 		
 		// create the new file
 		if ( !file.exists() ){
