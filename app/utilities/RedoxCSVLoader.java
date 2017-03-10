@@ -106,7 +106,6 @@ public class RedoxCSVLoader {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					System.out.println("time parsed is "+utctime);
 					
 					Date actual = new Date(utctime.getTime());
 					// generate a unix timestamp from this date

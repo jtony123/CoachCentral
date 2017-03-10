@@ -223,6 +223,7 @@
 	</div>
 	<div class="chart_lower" class="row" id="chart_lower">
 		<svg id="redoxsvg"></svg>
+		<svg id="tempredoxsvg"></svg>
 	</div>
 </div>
 </div><!-- end  outer container-->
@@ -230,7 +231,8 @@
 <script src="@routes.Assets.at("javascripts/TooltipTables.js")" type="text/javascript"></script>
 <script>
 var acuteloadupperthreshold = 1.5,
-	acuteloadlowerthreshold = 0.8;
+	acuteloadlowerthreshold = 0.8,
+	amberzone = 0.1;
 	
 // //Adds the svg canvas
 var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
@@ -263,6 +265,11 @@ var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("heigh
 var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
 	rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
 	height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
+
+//temp test
+var tempredoxsvg = d3.select("#tempredoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
+rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
+height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
 	
 var xfocus = d3.scaleTime().range([0, width]),
 	yfocus = d3.scaleLinear().range([height, 0]),
@@ -323,6 +330,14 @@ redoxsvg.append("defs").append("clipPath")
 .attr("width", width)
 .attr("height", height3);
 
+//temp test
+tempredoxsvg.append("defs").append("clipPath")
+.attr("id", "rdxclip")
+.append("rect")
+.attr("id", "rdxcliprect")
+.attr("width", width)
+.attr("height", height3);
+
 var focus = gpsdatasvg.append("g")
 .attr("class", "focus")
 .attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
@@ -339,6 +354,20 @@ var redoxfocus = redoxsvg.append("g")
 .attr("class", "redoxfocus")
 .attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
 
+var tempredoxfocus = tempredoxsvg.append("g")
+.attr("class", "redoxfocus")
+.attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+
+
+var GPSview_state;
+var ACview_state = true;
+var LOADview_state = true;
+var OTHERSview_state = true;
+
+
+var jan2016 = new Date(2016, 0, 1);
+var apr2016 = new Date(2016, 3, 1);
+var threeMonthsAhead = new Date(Date.now() + 90*24*3600*1000);
 var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
 var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
 var xl = threeweeksago, 
@@ -383,7 +412,7 @@ var now = new Date();
 	});
 	
 	
-	xcontext.domain([lastsep, oneweekahead]);
+	xcontext.domain([jan2016, threeMonthsAhead]);
 	ycontext.domain([0, d3.max(data, function(d) { return d.SESS_LOAD; })]);
 	xfocus.domain(xcontext.domain());
 	yfocus.domain([0, 1500]);
@@ -395,7 +424,19 @@ var now = new Date();
 	
 	
 // drawing graph elements
-	drawGPS(data);
+	if(GPSview_state){
+		gpsdatasvg.selectAll(".closedgpsfocus").remove();
+		gpsdatasvg.attr("height", gpsdatasvg_h);
+		focus = gpsdatasvg.append("g").attr("class", "focus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+		drawGPS(data);
+		redrawChart();
+	} else {
+		gpsdatasvg.selectAll(".focus").remove();
+	    gpsdatasvg.attr("height", 45);
+	    var gpsclosed = gpsdatasvg.append("g").attr("class", "closedgpsfocus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+		gpsclosed.append("rect").attr("class", "closedgpsrect").attr("width", width).attr("height", 25);
+	}
+	//drawGPS(data);
 	drawGPSButtons(data);
 	
 context.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height2);
@@ -405,7 +446,8 @@ context.append("g").attr("class", "brush").call(brush) .call(brush.move, xfocus.
 context.select(".brush").append("rect").attr("class", "leftbookend").attr("width", xl).attr("height", height2);
 context.select(".brush").append("rect").attr("class", "rightbookend").attr("width", width).attr("height", height2);
 gpsdatasvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
- 
+//redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
+
  
 }); // end of d3 csv loader
 
@@ -454,16 +496,13 @@ function drawGPS(data) {
 	focus.append("g").attr("class", "alerttriangles")
 	.selectAll().data(data).enter().append("path")
 	.attr("class", "UPFlags").attr("id", "UPFlags")
-	.filter(function(d){
-		return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold) ? d.ACUTE : null;})
+	.filter(function(d){ return d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold) ? d.ACUTE : null;})
 	.attr("d", d3.symbol().type(d3.symbolTriangle).size(20))
-	.attr("transform", function(d) { 
-		return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 90) + ")"});
+	.attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 90) + ")"});
 		
 	// add sensor circles (dots) to the Acute Load line
 	focus.selectAll("dot").data(data).enter().append("circle")
-		.attr("id", "ACLoadDot").attr("r", 20)
-	.style("opacity", 0)
+	.attr("id", "ACLoadDot").attr("r", 20).style("opacity", 0)
 	.attr("cx", function(d) { return xfocus(d.SESS_START); })
 	.attr("cy", function(d) { return yfocus(d.ACUTE); })
 	.on("mouseover", function(d) {
@@ -585,50 +624,13 @@ function drawGPS(data) {
 	
 	
 	
-	
-// 	//the past game result triangles
-// 	schedule.append("g").attr("class", "gameresults")
-// 	.selectAll(".gameresult").data(data).enter().append("path")
-
-// // 	.filter(function(d){
-// // 			return d.GAME_LOAD > 0 ? d.SESS_START : null;
-// // 		})
-// 	.attr("id", "gameresult")
-// 	.attr("stroke-width", 1)
-// 	.style("stroke", "black")
-// 	.style("fill", function(d) {
-// 		return d.WIN_LOSS == "W" ? "green" : "red";
-// 	})
-// 	.style("opacity", 1)
-
-// 	.attr("d", d3.symbol().type(d3.symbolTriangle).size(100))
-// 	.attr("transform", function(d) { 
-		
-// 		return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")";})
-		
-// 	.on("mouseover", function(d) {
-// 		tooltip.transition()
-// 			.duration(200)
-// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-// 		tooltip .html("Home Team : " + (d.HOME_TEAM) +"<br><br>" 
-// 					+ "Away Team : " + (d.AWAY_TEAM) +"<br><br>" 
-// 					+ "Score Diff: " + (d.SCORE_DIFF) +"<br><br>" 
-// 					)
-// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-// 	.on("mouseout", function(d) {       
-// 		tooltip.transition()        
-//             .duration(500)      
-//             .style("opacity", 0);
-// 	});
-	
-	
+	// ******NB Note that this code must stay in the GPS part although it is added to the schedule apart
 	//the past game text
 	schedule.append("g").attr("class", "gameresulttext")
 	.selectAll(".gameresulttxt").data(data).enter().append("text")
 	.attr("id", "gameresulttxt")
 	.attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")";})
 	.attr("x", 5)
-	//.attr("y", 10)
 	.text( function (d) { return d.WIN_LOSS == "W" ? "W" : "L";});
 	
 	
@@ -636,10 +638,7 @@ function drawGPS(data) {
 } // end drawGPS()
 
 
-var GPSview_state = true;
-var ACview_state = true;
-var LOADview_state = true;
-var OTHERSview_state = true;
+
 
 function drawGPSButtons(data){
 	
@@ -648,7 +647,10 @@ function drawGPSButtons(data){
 	var GPS_showhide_button = gpsdatasvg.append("g").attr("class", "GPSDATA_Button")
 		.attr("transform", "translate("+ 12 + "," + 20 + ")");
 		
-	GPS_showhide_button.append("text").attr("id", "gpsbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("hide");
+	GPS_showhide_button.append("text").attr("id", "gpsbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640")
+	.text(function() {
+		return GPSview_state? "hide" : "GPS";
+	});
 	
 	var textWidth = GPS_showhide_button.select("text").node().getBBox().width;
 					
@@ -659,6 +661,7 @@ function drawGPSButtons(data){
     	
     	//showhideGPS focus panel()
     	GPSview_state = !GPSview_state;
+    	document.cookie="gpsviewstate="+ GPSview_state +";";
     	d3.select(".showhidebuttons").style("stroke-width", GPSview_state ? 1 : 0);
     	if(GPSview_state){
     		gpsdatasvg.selectAll(".closedgpsfocus").remove();
@@ -722,6 +725,8 @@ function drawGPSButtons(data){
 		
 		//showhide the AC graphlines
 		LOADview_state = !LOADview_state;
+		
+		
 		d3.select(".loadshowhidebutton").style("stroke-width", LOADview_state ? 1 : 0);
 		if(LOADview_state){
 			focus.select(".load").transition(d3.easeCubic).duration(1000).attr("d", sessloadline);
@@ -1000,7 +1005,7 @@ function redrawGPS() {
 
 
 
-
+var data2;
 // schedule
 var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, data2) {
 	
@@ -1010,7 +1015,6 @@ var calendar = d3.csv('@routes.Application.getCalendarCSV()', function(error2, d
 		d.OPPONENT = d.OPPONENT;
 		d.LOCATION = d.LOCATION;
 		d.OPP_LOGO = d.OPP_LOGO;
-		//console.log(d.OPP_LOGO);
 	});
 	
 	drawSchedule(data2);
@@ -1022,33 +1026,7 @@ function drawSchedule(data2) {
 	
 	schedule.append("rect")
 	.attr("class", "schedbgrect").attr("width", width).attr("height", height4);
-	
-// 	//all game diamonds from the schedule file
-// 	schedule.append("g").attr("class", "game3angles")
-// 	.selectAll(".gametriangles").data(data2).enter().append("path")
-// 	//focus.selectAll(".game3angles").data(data2).enter().append("path")
-// 	.attr("class", "gametriangles").attr("id", "gametriangles")
-// 	.style("fill", function(d) {
-// 		return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
-// 	})
-// 	.attr("d", d3.symbol().type(d3.symbolDiamond).size(function(d) { return d.GAME_START > today ? 50 : 50}))
-// 	// offset up by 5 if exceeding threshold, down by 5 otherwise
-// 	.attr("transform", function(d) { 
-// 		return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 25) + ")" })
-// 	.on("mouseover", function(d) {
-// 		tooltip.transition()
-// 			.duration(200)
-// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-// 		tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
-// 					+ "Location : " + (d.LOCATION) +"<br><br>" )
-// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-// 	.on("mouseout", function(d) {       
-// 		tooltip.transition()        
-//             .duration(500)      
-//             .style("opacity", 0);
-// 	});
-	
-	
+
 	// the opponents logos
 	schedule.append("g").attr("class", "opponents")
 	.selectAll(".opponents").data(data2).enter().append("image")
@@ -1056,23 +1034,14 @@ function drawSchedule(data2) {
 	.attr("x", -10)
 	.attr("width", 25).attr("height", 25)
 	.attr("href", function(d){ return "/assets/images/TeamLogos/"+ d.OPP_LOGO + ".png"; })
-	
-	// offset up by 5 if exceeding threshold, down by 5 otherwise
-	.attr("transform", function(d) { 
-		return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 50) + ")" })
+	.attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 50) + ")" })
 	.on("mouseover", function(d) {
-		tooltip.transition()
-			.duration(200)
-			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-		tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
-					+ "Location : " + (d.LOCATION) +"<br><br>" )
+		tooltip.transition().duration(200).style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
+		tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" + "Location : " + (d.LOCATION) +"<br><br>" )
 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
 	.on("mouseout", function(d) {       
-		tooltip.transition()        
-            .duration(500)      
-            .style("opacity", 0);
+		tooltip.transition().duration(500).style("opacity", 0);
 	});
-	
 	
 	//the past game text
 	schedule.append("g").attr("class", "homegametext")
@@ -1080,25 +1049,16 @@ function drawSchedule(data2) {
 	.attr("id", "homegametxt")
 	.attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 10) + ")";})
 	.attr("x", -5)
-	//.attr("y", 10)
 	.text( function (d) { return d.LOCATION == "Dallas" ? "H" : "A";});
-	
-
-	
-	
-
 	
 } // end drawSchedule()
 
+
 function redrawSchedule(){
-	//schedule.selectAll("#gametriangles").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 25) + ")" });
+	
 	schedule.selectAll("#opponenticon").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 50) + ")" });
-	//schedule.selectAll("#gameresult").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")"; });
 	schedule.selectAll("#gameresulttxt").attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")"; });
 	schedule.selectAll("#homegametxt").attr("transform", function(d) { return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 10) + ")"; });
-
-
-
 
 } // end redrawSchedule()
 
@@ -1117,6 +1077,10 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 		d.FORD = +d.FORD;d.FORD_ADJ = +d.FORD_ADJ;d.FORD_INC = +d.FORD_INC;
 		d.FORT = +d.FORT;d.FORT_ADJ = +d.FORT_ADJ;d.FORT_INC = +d.FORT_INC;
 		d.NOTES = d.NOTES;
+		
+		// temp test
+		d.FORD_ADJ2 = +d.FORD_ADJ2;
+		d.FORT_ADJ2 = +d.FORT_ADJ2;
 	});
 	
 	yfocus2.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
@@ -1124,6 +1088,14 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 	redoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
 	redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
 	redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
+	redoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + 260 + ")").call(xAxis);
+	
+	// temp test
+	tempredoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
+	tempredoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	tempredoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
+	tempredoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + 260 + ")").call(xAxis);
+	
 	drawRedox(data3);
 
 }); // end redox loader
@@ -1131,32 +1103,172 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 
 function drawRedox(data3) {
 
-	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
-	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
-	
-	//Defence(ford)
-	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 5)
-	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
+
+	// temp test
+	tempredoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+	tempredoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline2").attr("d", defenceadjline2);
+	tempredoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 10)
+	.style("fill", function(d) { 
+		if(d.FORD_INC > 0) {
+			
+			var diff = Math.abs(d.FORT_ADJ2 - d.FORD_ADJ2);
+			var tenpercent = diff * amberzone;
+			if(d.FORT_ADJ2 > -1) {
+				if (d.FORD <= d.FORD_ADJ2) {
+					return "red";
+				} else {
+					if(d.FORD <= (d.FORD_ADJ2 + tenpercent)){
+						return "orange";
+					} else {
+						return "green";
+					}
+				}
+			} else {
+				return "grey";
+			}
+			
+			
+			return "blue";
+		}else {
+			return "#FBFBFB";
+		}
+		//return d.FORD_INC > 0 ? "blue" : "#FBFBFB"
+				})
+		
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
-	.on("mouseover", function(d) {
-		console.log("redx tipping");
-		rdxtip.transition()
-		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-		.style("width", "auto").style("height", "auto")
-		.attr("id", "rdxtip")
-		.on("end", function(d){this.className='rdxtip'});;
-	rdxtip .html(rdxnotes(d))
-		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-	})
-	.on("mouseout", function(d) {       
-		rdxtip.transition().delay(2000)
-		.style("width", "0px").style("height", "0px")
-		.on("end", function(d){rdxtip.html(""); this.className=''; });
-	})
+// 	.on("mouseover", function(d) {
+// 		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+// 			.style("width", "auto").style("height", "auto").attr("id", "rdxtip")
+// 	.on("end", function(d){this.className='rdxtip'});;
+// 		rdxtip .html(rdxnotes(d)).style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+// 	})
+// 	.on("mouseout", function(d) {       
+// 		rdxtip.transition().delay(2000).style("width", "0px").style("height", "0px")
+// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
+// 	})
+	.on("click", function(d) {
+		linktip.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+			+"<button>Toggle</button></form> ") 
+		.style("left", "200px").style("top", "50px");
+		document.getElementById("fordtoggle").submit();
+	});
+	
+	
+	tempredoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
+	tempredoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline2").attr("d", stressadjline2);
+	tempredoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
+	.style("fill", function(d) { 
+		
+		if(d.FORT_INC > 0) {
+			
+			var diff = Math.abs(d.FORT_ADJ2 - d.FORD_ADJ2);
+			var tenpercent = diff * amberzone;
+			if(d.FORT_ADJ2 > -1) {
+				if (d.FORT >= d.FORT_ADJ2) {
+					return "red";
+				} else {
+					if(d.FORT >= (d.FORT_ADJ2 - tenpercent)){
+						return "orange";
+					} else {
+						return "green";
+					}
+				}
+			} else {
+				return "grey";
+			}
+			
+			
+			return "purple";
+		}else {
+			return "#FBFBFB";
+		}
+		
+		//return d.FORD_INC > 0 ? "purple" : "#FBFBFB"
+		})
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
+// 	.on("mouseover", function(d) {
+// 		rdxtip.transition()
+// 		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+// 		.style("width", "auto").style("height", "auto")
+// 		.attr("id", "rdxtip")
+// 		.on("end", function(d){this.className='rdxtip'});;
+// 	rdxtip .html(rdxnotes(d))
+// 		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+// 	})
+// 	.on("mouseout", function(d) {       
+// 		rdxtip.transition().delay(2000)
+// 		.style("width", "0px").style("height", "0px")
+// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
+// 	})
 	.on("click", function(d) {
 		linktip
 		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+			+"<button>Toggle</button></form> ") 
+		.style("left", "200px").style("top", "50px");
+		document.getElementById("fordtoggle").submit();
+	});
+	
+	
+// 	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline2").attr("d", defenceadjline2);
+// 	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline2").attr("d", stressadjline2);
+	
+	
+	//******************************************************************************************
+
+	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
+	
+	
+	//Defence(ford)
+	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 10)
+	.style("fill", function(d) { 
+		if(d.FORD_INC > 0) {
+			
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
+			var tenpercent = diff * amberzone;
+			
+			if(d.FORD_ADJ > -1) {
+				if (d.FORD <= d.FORD_ADJ) {
+					return "red";
+				} else {
+					if(d.FORD <= (d.FORD_ADJ + tenpercent)){
+						return "orange";
+					} else {
+						return "green";
+					}
+				}
+			} else {
+				return "grey";
+			}
+				
+			
+			return "blue";
+		}else {
+			return "#FBFBFB";
+		}
+		//return d.FORD_INC > 0 ? "blue" : "#FBFBFB"
+				})
+		
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
+// 	.on("mouseover", function(d) {
+// 		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+// 			.style("width", "auto").style("height", "auto").attr("id", "rdxtip")
+// 	.on("end", function(d){this.className='rdxtip'});;
+// 		rdxtip .html(rdxnotes(d)).style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+// 	})
+// 	.on("mouseout", function(d) {       
+// 		rdxtip.transition().delay(2000).style("width", "0px").style("height", "0px")
+// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
+// 	})
+	.on("click", function(d) {
+		linktip.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
 		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
 			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
 			+"<button>Toggle</button></form> ") 
@@ -1169,23 +1281,51 @@ function drawRedox(data3) {
 	redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
 	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
 	redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 5)
-	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
+    .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
+	.style("fill", function(d) { 
+		
+		if(d.FORT_INC > 0) {
+			
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
+			var tenpercent = diff * amberzone;
+			
+			if(d.FORT_ADJ > -1) {
+				if (d.FORT >= d.FORT_ADJ) {
+					return "red";
+				} else {
+					if(d.FORT >= (d.FORT_ADJ - tenpercent)){
+						return "orange";
+					} else {
+						return "green";
+					}
+				}
+			} else {
+				return "grey";
+			}
+			
+			
+			return "purple";
+		}else {
+			return "#FBFBFB";
+		}
+		
+		//return d.FORD_INC > 0 ? "purple" : "#FBFBFB"
+		})
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
-	.on("mouseover", function(d) {
-		rdxtip.transition()
-		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-		.style("width", "auto").style("height", "auto")
-		.attr("id", "rdxtip")
-		.on("end", function(d){this.className='rdxtip'});;
-	rdxtip .html(rdxnotes(d))
-		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-	})
-	.on("mouseout", function(d) {       
-		rdxtip.transition().delay(2000)
-		.style("width", "0px").style("height", "0px")
-		.on("end", function(d){rdxtip.html(""); this.className=''; });
-	})
+// 	.on("mouseover", function(d) {
+// 		rdxtip.transition()
+// 		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+// 		.style("width", "auto").style("height", "auto")
+// 		.attr("id", "rdxtip")
+// 		.on("end", function(d){this.className='rdxtip'});;
+// 	rdxtip .html(rdxnotes(d))
+// 		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+// 	})
+// 	.on("mouseout", function(d) {       
+// 		rdxtip.transition().delay(2000)
+// 		.style("width", "0px").style("height", "0px")
+// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
+// 	})
 	.on("click", function(d) {
 		linktip
 		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
@@ -1199,12 +1339,31 @@ function drawRedox(data3) {
 
 function redrawRedox() {
 	
+	// temp test
+	tempredoxfocus.selectAll("#defenceline").attr("d", defenceline);
+	tempredoxfocus.selectAll("#defenceadjline2").attr("d", defenceadjline2);
+	tempredoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); });
+	tempredoxfocus.selectAll("#stressline").attr("d", stressline);
+	tempredoxfocus.selectAll("#stressadjline2").attr("d", stressadjline2);
+	tempredoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
+
+	
+	
+	
+	
+	
+	
+	
 	redoxfocus.selectAll("#defenceline").attr("d", defenceline);
 	redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
 	redoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); });
 	redoxfocus.selectAll("#stressline").attr("d", stressline);
 	redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
 	redoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
+
+	
+
+
 }  //end redrawRedox()
 
 
@@ -1223,6 +1382,8 @@ function redrawChart() {
 	
 	
 	focus.select(".axis--x").call(xAxis);
+	redoxfocus.select(".axis--x").call(xAxis);
+	tempredoxfocus.select(".axis--x").call(xAxis);
 } // end redrawchart
 
 
@@ -1318,6 +1479,32 @@ function resize() {
 
 
 function checkcookie() {
+	
+// 	var GPSview_state = true;
+// 	var ACview_state = true;
+// 	var LOADview_state = true;
+// 	var OTHERSview_state = true;
+	
+	if(document.cookie.indexOf("gpsviewstate") >= 0) {
+		
+		var cookiearray = document.cookie.split(';');
+		
+		for(var i=0; i<cookiearray.length; i++){
+	        if(cookiearray[i].split('=')[0].trim() === "gpsviewstate"){
+	        	
+        		var setting = cookiearray[i].split('=')[1].trim();
+        		if(setting === "true") {
+        			GPSview_state = true;
+        		} else {
+        			GPSview_state = false;
+        		}
+	        }
+            
+         }
+		
+	} else {
+		GPSview_state = true;
+	}
 	
 	if(document.cookie.indexOf("xl") >= 0) {
 		var lhs,rhs;

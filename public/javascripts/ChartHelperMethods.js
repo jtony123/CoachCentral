@@ -188,6 +188,12 @@ var defenceadjline = d3.line()
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.FORD_ADJ); });
 
+var defenceadjline2 = d3.line()
+.curve(d3.curveMonotoneX)
+.defined(function(d,i) { return i != 0;})
+.x(function(d) { return xfocus(d.TEST_TIME); })
+.y(function(d) { return yfocus2(d.FORD_ADJ2); });
+
 var stressline = d3.line()
 .curve(d3.curveMonotoneX)
 .x(function(d) { return xfocus(d.TEST_TIME); })
@@ -198,3 +204,9 @@ var stressadjline = d3.line()
 .defined(function(d,i) { return i != 0;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.FORT_ADJ); });
+
+var stressadjline2 = d3.line()
+.curve(d3.curveMonotoneX)
+.defined(function(d,i) { return i != 0;})
+.x(function(d) { return xfocus(d.TEST_TIME); })
+.y(function(d) { return yfocus2(d.FORT_ADJ2); });

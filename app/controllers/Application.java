@@ -41,6 +41,7 @@ import utilities.CSVTemplateGenerator;
 import utilities.GameDataLoader;
 import utilities.RedoxCSVLoader;
 import utilities.RedoxCSVUpdater;
+import utilities.RedoxUtilities;
 //import play.db.jpa.*;
 import views.html.dashboard;
 import views.html.index;
@@ -216,15 +217,7 @@ public class Application extends Controller {
     	return CompletableFuture.completedFuture(ok(player.playerPhoto).as("playerPhoto"));
     }
     
-    public CompletionStage<Result> teamLogo(String team) {
-		
-    	System.out.println("teamLogo called");
-       	
-   	 //return ok(new java.io.File("public/images/TeamLogos/" + team + "png.csv"));
-   	 
-   	return CompletableFuture.completedFuture(ok(new java.io.File("public/images/TeamLogos/" + team + "png.csv")));
-    	
-    }
+
     
     
    public Result getCalendarCSV(){
@@ -426,8 +419,11 @@ public class Application extends Controller {
                 
                 File file = (File) fp.getFile();
                 
-                RedoxCSVLoader redoxcsvloader = new RedoxCSVLoader();    
-                Map<String, ArrayList<String>> playerdatabyname = redoxcsvloader.getRedoxData(file.getAbsolutePath());
+                RedoxUtilities rdxutil = new RedoxUtilities();
+                
+                //RedoxCSVLoader redoxcsvloader = new RedoxCSVLoader();  
+                Map<String, ArrayList<String>> playerdatabyname = rdxutil.getRedoxData(file.getAbsolutePath());
+                //Map<String, ArrayList<String>> playerdatabyname = redoxcsvloader.getRedoxData(file.getAbsolutePath());
 
         		//Map<String, ArrayList<String>> playerfiles = redoxcsvloader.getPlayerfilesbyname();
         		Iterator it = playerdatabyname.entrySet().iterator();
@@ -435,10 +431,10 @@ public class Application extends Controller {
         			Map.Entry pair = (Map.Entry) it.next();
         			
         			Player player = Player.findByNameOrAlias((String) pair.getKey());
-        			System.out.println("player found "+player.playername);
-        			for(String s : (List<String>) pair.getValue()){
-        				System.out.println(s);
-        			}
+//        			System.out.println("player found "+player.playername);
+//        			for(String s : (List<String>) pair.getValue()){
+//        				System.out.println(s);
+//        			}
         			
         			// dumping the file into 'no players' if no play by this name found
         			if(player.playername.equalsIgnoreCase("no players")){
@@ -450,38 +446,36 @@ public class Application extends Controller {
         				System.out.println("not dumping");
             			if(player.redoxFilename == null){
             				// generate default file with headers
-            				CSVRedoxGenerator cSVRedoxGenerator = new CSVRedoxGenerator();
-                			player.redoxFilename = cSVRedoxGenerator.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
+            				//CSVRedoxGenerator cSVRedoxGenerator = new CSVRedoxGenerator();
+                			//player.redoxFilename = cSVRedoxGenerator.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
+                			player.redoxFilename = rdxutil.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
+                			
             			}
             			
-            			
-            			CSVAppender cSVAppender = new CSVAppender();
-            			cSVAppender.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
-            			
+            			rdxutil.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
+//            			CSVAppender cSVAppender = new CSVAppender();
+//            			cSVAppender.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
+         			
             			// using the toggleupdater to recalculate the averages
-            			RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
-                		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
-            		
-            			
+//            			RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
+//                		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
+            			rdxutil.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
+                		
             			player.save();
         			}
         		}
     		
-        		
-
-        		
-               
             } else {
             	System.out.println("fp is null");
             }
-            
-            //TODO: check that the file is in order of time
-        
             
     	}
     	
     	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
     }
+   
+   
+   
     
     public CompletionStage<Result> updateRedoxToggleState(int playernumber, String category) {
     	
@@ -495,15 +489,16 @@ public class Application extends Controller {
 
     	// update this players redox file
     	if(player.redoxFilename != null){
-    		RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
+    		RedoxUtilities rdxutil = new RedoxUtilities();
+    		//RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
         	
-    		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
+    		//redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
+    		rdxutil.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
           }
     	
     			
     	//return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
     	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(playernumber, category)));
-    	
     	
     }
     
