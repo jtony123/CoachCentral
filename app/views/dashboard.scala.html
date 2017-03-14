@@ -241,7 +241,7 @@ var windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
 
 var max_gpssvg_h = 500,
 	max_schedsvg_h = 50,
-	max_rdxsvg_h = 300;
+	max_rdxsvg_h = 400;
 	
 	
 var	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h),
@@ -263,12 +263,12 @@ var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("heigh
 	height2 = +contextsvg.attr("height") - context_margin.top - context_margin.bottom;
 	
 var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
-	rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
+	rdx_margins = {contexth: 100, top: 120, right: 20, bottom:20, left: 70},
 	height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
 
 //temp test
 var tempredoxsvg = d3.select("#tempredoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
-rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
+//rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
 height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
 	
 var xfocus = d3.scaleTime().range([0, width]),
@@ -282,7 +282,7 @@ var xcontext = d3.scaleTime().range([0, width]),
 var xAxis = d3.axisBottom(xfocus);
 var xAxis2 = d3.axisBottom(xcontext).tickArguments([d3.timeMonth]);
 var yAxis = d3.axisLeft(yfocus).tickSize(-width, 0, 0).tickFormat("");
-var yAxisRdx = d3.axisLeft(yfocus2).tickArguments([5, "s"]).tickSize(-width, 0, 0).tickPadding([-15]);
+var yAxisRdx = d3.axisLeft(yfocus2).tickArguments([5, "s"]).tickSize(-width, 0, 0).tickPadding([-25]);
 
 var brush = d3.brushX()
 .extent([[0, 0], [width, height2]])
@@ -328,7 +328,54 @@ redoxsvg.append("defs").append("clipPath")
 .append("rect")
 .attr("id", "rdxcliprect")
 .attr("width", width)
-.attr("height", height3);
+.attr("height", height3 + 120);
+
+redoxsvg.append("defs").append("clipPath")
+.attr("id", "rdxctxclip")
+.append("rect")
+.attr("id", "rdxctxcliprect")
+.attr("width", width)
+.attr("height", height3 + 120);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "greenbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "green");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "amberbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "orange");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "redbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "red");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undefbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "greentop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "green");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "ambertop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "orange");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "redtop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "red");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undeftop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "white");
 
 //temp test
 tempredoxsvg.append("defs").append("clipPath")
@@ -350,9 +397,13 @@ var context = contextsvg.append("g")
 .attr("class", "contextarea")
 .attr("transform", "translate(" + context_margin.left + "," + 0 + ")");
 
+var redoxctx = redoxsvg.append("g")
+.attr("class", "redoxctx")
+.attr("transform", "translate(" + rdx_margins.left + "," + "0" + ")");
+
 var redoxfocus = redoxsvg.append("g")
 .attr("class", "redoxfocus")
-.attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
+.attr("transform", "translate(" + rdx_margins.left + "," + rdx_margins.top  + ")");
 
 var tempredoxfocus = tempredoxsvg.append("g")
 .attr("class", "redoxfocus")
@@ -1085,15 +1136,16 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 	
 	yfocus2.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
 	
-	redoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
-	redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
-	redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
-	redoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + 260 + ")").call(xAxis);
+	
+	redoxctx.append("rect").attr("class", "rdxbackgroundrect").attr("width", width).attr("height", height3 + 120);
+	//redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	//redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height3).call(zoom);
+	redoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height3 + ")").call(xAxis);
 	
 	// temp test
-	tempredoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
-	tempredoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
-	tempredoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
+	tempredoxfocus.append("rect").attr("class", "rdxbackgroundrect").attr("width", width).attr("height", height3);
+	//tempredoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	//tempredoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height3).call(zoom);
 	tempredoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + 260 + ")").call(xAxis);
 	
 	drawRedox(data3);
@@ -1104,38 +1156,56 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 function drawRedox(data3) {
 
 
-	// temp test
-	tempredoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
-	tempredoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline2").attr("d", defenceadjline2);
-	tempredoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+
+	redoxfocus.append("path").datum(data3).attr("class", "rdxdangerzone").attr("id", "rdxdangerzone").attr("d", dangerarea(height3));
+	
+	redoxfocus.append("path").datum(data3).attr("class", "rdxsafezone").attr("id", "rdxsafezone").attr("d", safearea);
+	
+	redoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxdefenceamberzone").attr("d", defenceamberarea);
+	redoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxstressamberzone").attr("d", stressamberarea);
+	
+	redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	
+	redoxfocus.selectAll('.verticallines').data(data3).enter().append("line")
+	.attr("class", "verticallines").attr("id", "verticallines") 
+	.attr("x1", function(d) { return xfocus(d.TEST_TIME);})
+	.attr("y1", height3)
+	.attr("x2", function(d) { return xfocus(d.TEST_TIME);})
+	.attr("y2", -30);
+	
+	redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height3).call(zoom);
+	
+	
+	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
+	
+	
+	//Defence(ford)
+	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
     .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 10)
 	.style("fill", function(d) { 
-		if(d.FORD_INC > 0) {
-			
-			var diff = Math.abs(d.FORT_ADJ2 - d.FORD_ADJ2);
-			var tenpercent = diff * amberzone;
-			if(d.FORT_ADJ2 > -1) {
-				if (d.FORD <= d.FORD_ADJ2) {
-					return "red";
+		if(d.FORD_INC > 0) { 
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
+			var tenpercent = diff * amberzone; 
+			if(d.FORD_ADJ > -1) {
+				if (d.FORD <= d.FORD_ADJ) { return "red";
 				} else {
-					if(d.FORD <= (d.FORD_ADJ2 + tenpercent)){
-						return "orange";
-					} else {
-						return "green";
-					}
+					if(d.FORD <= (d.FORD_ADJ + tenpercent)){ return "orange";
+					} else { return "green"; }
 				}
-			} else {
-				return "grey";
-			}
-			
-			
-			return "blue";
-		}else {
-			return "#FBFBFB";
-		}
-		//return d.FORD_INC > 0 ? "blue" : "#FBFBFB"
-				})
-		
+			} else { 
+					if (d.FORD <= 1.1) { 
+						return "red";
+					} else {
+						if(d.FORD <= (1.1 * 1.1)){ 
+							return "orange";
+						} else { 
+							return "green"; 
+						}
+					}
+				} 
+		}else { return "#FBFBFB"; }
+	}) 
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
 // 	.on("mouseover", function(d) {
 // 		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
@@ -1156,38 +1226,37 @@ function drawRedox(data3) {
 		document.getElementById("fordtoggle").submit();
 	});
 	
+
 	
-	tempredoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
-	tempredoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline2").attr("d", stressadjline2);
-	tempredoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+    
+    // stress(fort)
+	redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
+	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
+	redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
     .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
 	.style("fill", function(d) { 
-		
 		if(d.FORT_INC > 0) {
-			
-			var diff = Math.abs(d.FORT_ADJ2 - d.FORD_ADJ2);
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
 			var tenpercent = diff * amberzone;
-			if(d.FORT_ADJ2 > -1) {
-				if (d.FORT >= d.FORT_ADJ2) {
+			if(d.FORT_ADJ > -1) {
+				if (d.FORT >= d.FORT_ADJ) { return "red";
+				} else {
+					if(d.FORT >= (d.FORT_ADJ - tenpercent)){ return "orange";
+					} else { return "green"; }
+				}
+			} else { 
+				//return "grey"; 
+				if (d.FORT >= 2.5) { 
 					return "red";
 				} else {
-					if(d.FORT >= (d.FORT_ADJ2 - tenpercent)){
+					if(d.FORT >= (2.5 - (2.5 * 0.1))){ 
 						return "orange";
-					} else {
-						return "green";
-					}
+					} else { 
+						return "green"; }
 				}
-			} else {
-				return "grey";
-			}
 			
-			
-			return "purple";
-		}else {
-			return "#FBFBFB";
-		}
-		
-		//return d.FORD_INC > 0 ? "purple" : "#FBFBFB"
+			} 
+		}else { return "#FBFBFB"; }
 		})
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
 // 	.on("mouseover", function(d) {
@@ -1214,27 +1283,94 @@ function drawRedox(data3) {
 		document.getElementById("fordtoggle").submit();
 	});
 	
+
+	redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "CTXhighlight").attr("id", "CTXhighlight").attr("r", 21)
+ 	.style("fill", "none")
+ 	.style("stroke", "white")
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70)
+	.append("text").text("hi");
 	
-// 	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline2").attr("d", defenceadjline2);
-// 	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline2").attr("d", stressadjline2);
+
+	
+	
+	
+	redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "STRESSCTX").attr("id", "STRESSCTX").attr("r", 20)
+	.style("fill", function(d) { 
+		if(d.FORT_INC > 0) {
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
+			var tenpercent = diff * amberzone;
+			if(d.FORT_ADJ > -1) {
+				if (d.FORT >= d.FORT_ADJ) { return "url(#redtop)";
+				} else { if(d.FORT >= (d.FORT_ADJ - tenpercent)){ return "url(#ambertop)";
+					} else { return "url(#greentop)"; }
+				}
+			} else { 
+				//return "grey";
+				if (d.FORT >= 2.5) { 
+					return "url(#redtop)";
+				} else {
+					if(d.FORT >= (2.5 - (2.5 * 0.1))){ 
+						return "url(#ambertop)";
+					} else { 
+						return "url(#greentop)"; }
+				}	
+			}
+		}else { return "#FBFBFB"; }
+		})
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70);
+	
+	
+	
+	redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+    .append("circle").attr("class", "DEFENCECTX").attr("id", "DEFENCECTX").attr("r", 20)
+ 	.style("fill", function(d) { 
+		if(d.FORD_INC > 0) {
+			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
+			var tenpercent = diff * amberzone;
+			if(d.FORD_ADJ > -1) {
+				if (d.FORD <= d.FORD_ADJ) { return "url(#redbottom)";
+				} else { if(d.FORD <= (d.FORD_ADJ + tenpercent)){ return "url(#amberbottom)";
+							} else { return "url(#greenbottom)"; }
+				}
+			} else { 
+				//return "grey";
+				if (d.FORD <= 1.1) { 
+						return "url(#redbottom)";
+					} else {
+						if(d.FORD <= (1.1 * 1.1)){ 
+							return "url(#amberbottom)";
+						} else { 
+							return "url(#greenbottom)"; 
+						}
+					}
+			}
+		} else { return "#FBFBFB"; }
+		})
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70);
+	
+
+
+
 	
 	
 	//******************************************************************************************
-
-	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
-	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
 	
-	
-	//Defence(ford)
-	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+	tempredoxfocus.append("path").datum(data3).attr("class", "rdxdangerzone").attr("id", "rdxdangerzone").attr("d", dangerarea(height3));
+	tempredoxfocus.append("path").datum(data3).attr("class", "rdxsafezone").attr("id", "rdxsafezone").attr("d", safearea);
+	tempredoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxdefenceamberzone").attr("d", defenceamberarea);
+	tempredoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxstressamberzone").attr("d", stressamberarea);
+	tempredoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+	tempredoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+	tempredoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline2").attr("d", defenceadjline);
+	tempredoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
     .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 10)
 	.style("fill", function(d) { 
 		if(d.FORD_INC > 0) {
-			
 			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
 			var tenpercent = diff * amberzone;
-			
-			if(d.FORD_ADJ > -1) {
+			if(d.FORT_ADJ > -1) {
 				if (d.FORD <= d.FORD_ADJ) {
 					return "red";
 				} else {
@@ -1247,27 +1383,12 @@ function drawRedox(data3) {
 			} else {
 				return "grey";
 			}
-				
-			
-			return "blue";
 		}else {
 			return "#FBFBFB";
 		}
-		//return d.FORD_INC > 0 ? "blue" : "#FBFBFB"
-				})
-		
+		})
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
-// 	.on("mouseover", function(d) {
-// 		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-// 			.style("width", "auto").style("height", "auto").attr("id", "rdxtip")
-// 	.on("end", function(d){this.className='rdxtip'});;
-// 		rdxtip .html(rdxnotes(d)).style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-// 	})
-// 	.on("mouseout", function(d) {       
-// 		rdxtip.transition().delay(2000).style("width", "0px").style("height", "0px")
-// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
-// 	})
-	.on("click", function(d) {
+ 	.on("click", function(d) {
 		linktip.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
 		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
 			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
@@ -1276,19 +1397,16 @@ function drawRedox(data3) {
 		document.getElementById("fordtoggle").submit();
 	});
 	
-    
-    // stress(fort)
-	redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
-	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
-	redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+	
+	
+	tempredoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
+	tempredoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline2").attr("d", stressadjline);
+	tempredoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
     .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
 	.style("fill", function(d) { 
-		
 		if(d.FORT_INC > 0) {
-			
 			var diff = Math.abs(d.FORT_ADJ - d.FORD_ADJ);
 			var tenpercent = diff * amberzone;
-			
 			if(d.FORT_ADJ > -1) {
 				if (d.FORT >= d.FORT_ADJ) {
 					return "red";
@@ -1302,30 +1420,11 @@ function drawRedox(data3) {
 			} else {
 				return "grey";
 			}
-			
-			
-			return "purple";
 		}else {
 			return "#FBFBFB";
 		}
-		
-		//return d.FORD_INC > 0 ? "purple" : "#FBFBFB"
 		})
 	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
-// 	.on("mouseover", function(d) {
-// 		rdxtip.transition()
-// 		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-// 		.style("width", "auto").style("height", "auto")
-// 		.attr("id", "rdxtip")
-// 		.on("end", function(d){this.className='rdxtip'});;
-// 	rdxtip .html(rdxnotes(d))
-// 		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-// 	})
-// 	.on("mouseout", function(d) {       
-// 		rdxtip.transition().delay(2000)
-// 		.style("width", "0px").style("height", "0px")
-// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
-// 	})
 	.on("click", function(d) {
 		linktip
 		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
@@ -1335,24 +1434,29 @@ function drawRedox(data3) {
 		.style("left", "200px").style("top", "50px");
 		document.getElementById("fordtoggle").submit();
 	});
+	
+	tempredoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height3).call(zoom);
+	
+
+	
+	
+	
 } // end drawRedox()
 
 function redrawRedox() {
 	
 	// temp test
 	tempredoxfocus.selectAll("#defenceline").attr("d", defenceline);
-	tempredoxfocus.selectAll("#defenceadjline2").attr("d", defenceadjline2);
+	tempredoxfocus.selectAll("#defenceadjline2").attr("d", defenceadjline);
 	tempredoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); });
 	tempredoxfocus.selectAll("#stressline").attr("d", stressline);
-	tempredoxfocus.selectAll("#stressadjline2").attr("d", stressadjline2);
+	tempredoxfocus.selectAll("#stressadjline2").attr("d", stressadjline);
 	tempredoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
-
 	
-	
-	
-	
-	
-	
+	tempredoxfocus.selectAll("#rdxdangerzone").attr("d", dangerarea2(height3));
+	tempredoxfocus.selectAll("#rdxdefenceamberzone").attr("d", defenceamberarea);
+	tempredoxfocus.selectAll("#rdxstressamberzone").attr("d", stressamberarea);
+	tempredoxfocus.selectAll("#rdxsafezone").attr("d", safearea);
 	
 	redoxfocus.selectAll("#defenceline").attr("d", defenceline);
 	redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
@@ -1361,6 +1465,22 @@ function redrawRedox() {
 	redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
 	redoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
 
+	redoxctx.selectAll("#STRESSCTX").attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+	redoxctx.selectAll("#DEFENCECTX").attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+	
+	
+	redoxfocus.selectAll("#rdxdangerzone").attr("d", dangerarea(height3));
+	redoxfocus.selectAll("#rdxdefenceamberzone").attr("d", defenceamberarea);
+	redoxfocus.selectAll("#rdxstressamberzone").attr("d", stressamberarea);
+	redoxfocus.selectAll("#rdxsafezone").attr("d", safearea);
+	
+	redoxfocus.selectAll("#verticallines")
+	.attr("x1", function(d) { return xfocus(d.TEST_TIME);})
+	.attr("x2", function(d) { return xfocus(d.TEST_TIME);});
+	
+	redoxctx.selectAll("#CTXhighlight")
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+	
 	
 
 
@@ -1540,6 +1660,30 @@ function checkcookie() {
 	
 	
 } // end checkcookie
+
+(function ($) {
+	  $(document).ready(function(){
+
+	    // hide .navbar first
+	   //$(".navbar").hide();
+
+	    // fade in .navbar
+	    $(function () {
+	        $(window).scroll(function () {
+
+	                 // set distance user needs to scroll before we start fadeIn
+	            if ($(this).scrollTop() > 10) {
+	               // $('.navbar').fadeIn();
+	                $('.navbar').fadeOut();
+	            } else {
+	                //$('.navbar').fadeOut();
+	                $('.navbar').fadeIn();
+	            }
+	        });
+	    });
+
+	});
+	  }(jQuery));
 </script>
     
     

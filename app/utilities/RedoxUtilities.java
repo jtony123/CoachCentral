@@ -375,6 +375,9 @@ public class RedoxUtilities {
 			fortscdb.add(2.5);
 		}
 		
+		CircularDoubleBuffer fordsqueue = new CircularDoubleBuffer(7);
+		CircularDoubleBuffer fortsqueue = new CircularDoubleBuffer(7);
+		
 //		 fordmean2 = headerstrings.indexOf("FORD_MEAN2");
 //		 fordadj2 = headerstrings.indexOf("FORD_ADJ2");
 //		 fortmean2 = headerstrings.indexOf("FORT_MEAN2");
@@ -399,6 +402,9 @@ public class RedoxUtilities {
 				fords.add(entry.getValue()[fordreadings]);
 				forts.add(entry.getValue()[fortreadings]);
 				
+				fordsqueue.add(entry.getValue()[fordreadings]);
+				fortsqueue.add(entry.getValue()[fortreadings]);
+				
 				fordscdb.add(entry.getValue()[fordreadings]);
 				fortscdb.add(entry.getValue()[fortreadings]);
 				
@@ -411,10 +417,13 @@ public class RedoxUtilities {
 					fordtotal += d;
 				  }
 				runningfordavg = fordtotal/fords.size();
-				entry.getValue()[fordmean] = runningfordavg;
+				//entry.getValue()[fordmean] = runningfordavg;
 				
 				fordadjusted = runningfordavg - (runningfordavg * fordAdjustment);
-				entry.getValue()[fordadj] = fordadjusted;
+				//entry.getValue()[fordadj] = fordadjusted;
+				
+				entry.getValue()[fordmean] = fordsqueue.getAverage();
+				entry.getValue()[fordadj] = fordsqueue.getAverage() - (fordsqueue.getAverage() * fordAdjustment);
 				
 				entry.getValue()[fordmean2] = fordscdb.getAverage();
 				entry.getValue()[fordadj2] = fordscdb.getAverage() - (fordscdb.getAverage() * fordAdjustment);
@@ -425,10 +434,14 @@ public class RedoxUtilities {
 					forttotal += d;
 				  }
 				runningfortavg = forttotal/forts.size();
-				entry.getValue()[fortmean] = runningfortavg;
+				//entry.getValue()[fortmean] = runningfortavg;
 				
 				fortadjusted = runningfortavg * fortAdjustment;
-				entry.getValue()[fortadj] = fortadjusted;
+				//entry.getValue()[fortadj] = fortadjusted;
+				
+				entry.getValue()[fortmean] = fortsqueue.getAverage();
+				entry.getValue()[fortadj] = (fortsqueue.getAverage() * fortAdjustment);
+				
 				
 				entry.getValue()[fortmean2] = fortscdb.getAverage();
 				entry.getValue()[fortadj2] = (fortscdb.getAverage() * fortAdjustment);
@@ -441,6 +454,8 @@ public class RedoxUtilities {
 					
 					fordscdb.add(entry.getValue()[fordreadings]);
 					fortscdb.add(entry.getValue()[fortreadings]);
+					fordsqueue.add(entry.getValue()[fordreadings]);
+					fortsqueue.add(entry.getValue()[fortreadings]);
 				}
 				
 				
