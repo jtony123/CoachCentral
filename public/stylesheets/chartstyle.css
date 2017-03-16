@@ -86,15 +86,15 @@ position: absolute;
 
 
 
+
+
+
 #gpscliprect {
 	rx: 20;
 	ry: 20;
 }
 
-#rdxcliprect {
-	rx: 20;
-	ry: 20;
-}
+
 
 #gpsbutton {
 	text-align: center;
@@ -348,104 +348,6 @@ position: absolute;
 	clip-path: url(#schedclip);
 	font-size: 10px;
 	
-}
-.defenceline {
-	clip-path: url(#rdxclip);
-	stroke-width: 1;
-	stroke: blue;
-	fill: none;
-}
-.defenceadjline {
-	clip-path: url(#rdxclip);
-	stroke-width: 1;
-	stroke: blue;
-	stroke-dasharray: 10 5;
-	fill: none;
-}
-.DEFENCE {
-	stroke: blue;
-	opacity: 1;
-}
-.stressline {
-	clip-path: url(#rdxclip);
-	stroke-width: 1;
-	stroke: purple;
-	fill: none;
-}
-.stressadjline {
-	clip-path: url(#rdxclip);
-	stroke-width: 1;
-	stroke: purple;
-	stroke-dasharray: 10 5;
-	fill: none;
-}
-.STRESS {
-	stroke: purple;
-	opacity: 1;
-}
-
-.STRESSCTX {
-	stroke: white;
-	stroke-width: 0px;
-	opacity: 1;
-}
-
-.CTXGROUP {
-	clip-path: url(#rdxclip);
-}
-
-
-.STRESSGROUP {
- 	clip-path: url(#rdxclip);
-}
-.DEFENCEGROUP {
- 	clip-path: url(#rdxclip);
-}
-
-
-.Rdxaxis {
-	clip-path: url(#rdxclip);
-}
-
-.rdxbackgroundrect {
-	stroke: #ddd7d4;
-	stroke-width: 1px;
-	fill: #f4f2f1;
-	rx: 20;
-	ry: 20;
-	
-}
-
-.rdxdangerzone {
-	clip-path: url(#rdxclip);
-/* 	fill: #FBC8B6; */
-	fill: #f0cec2;
-	fill-opacity: 0.5;
-	
-}
-
-.rdxamberzone {
-	clip-path: url(#rdxclip);
-	fill: #ffd966;
-	fill-opacity: 0.5;
-}
-
-.rdxsafezone {
-	clip-path: url(#rdxclip);
-	fill: #B3FFB3;
-	fill-opacity: 0.5;
-}
-
-.verticallines {
-/* 	clip-path: url(#rdxclip); */
-	stroke-width : 1px;
-	stroke: white;
-}
-
-.CTXhighlight {
- 	clip-path: url(#rdxclip);
-	stroke-width : 2px;
-	stroke: white;
 }
 
 

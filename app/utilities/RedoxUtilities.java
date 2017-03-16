@@ -30,15 +30,14 @@ public class RedoxUtilities {
 			+"SymptomFeverPreviously,SymptomSoreThroatToday,SymptomSoreThroatPreviously,SymptomHeadacheToday,"
 			+"SymptomHeadachePreviously,SymptomJointorMuscleAcheToday,SymptomJointorMuscleAchePreviously,"
 			+"SymptomDiarrheaToday,SymptomDiarrheaPreviously,SymptomOther,"
-			+"TEST_TIME,FORD,FORD_INC,FORD_MEAN,FORD_ADJ,FORT,FORT_INC,FORT_MEAN,FORT_ADJ,"
-			+"FORD_MEAN2,FORD_ADJ2,FORT_MEAN2,FORT_ADJ2";
+			+"TEST_TIME,DEFENCE,DEFENCE_INC,DEFENCE_MEAN,DEFENCE_CDT,STRESS,STRESS_INC,STRESS_MEAN,STRESS_CDT";
 	
 	
 	
 	
 	
-	Double fordAdjustment = 0.238;
-	Double fortAdjustment = 1.174;
+	Double defenceAdjustment = 0.238;
+	Double stressAdjustment = 1.174;
 	
 	String header;
 	
@@ -113,8 +112,8 @@ public class RedoxUtilities {
 			int nameindex = headerstrings.indexOf("playername");
 			int testtime = headerstrings.indexOf("test_date");
 			int trainedtoday = headerstrings.indexOf("TrainedToday");
-			int ford = headerstrings.indexOf("FORD");
-			int fort = headerstrings.indexOf("FORT");
+			int defence = headerstrings.indexOf("FORD");
+			int stress = headerstrings.indexOf("FORT");
 			
 			// Read the file line by line
 
@@ -141,8 +140,8 @@ public class RedoxUtilities {
 					String timestring = tokens[testtime];
 					
 				
-					String fordstring = tokens[ford];
-					String fortstring = tokens[fort];
+					String fordstring = tokens[defence];
+					String fortstring = tokens[stress];
 					
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -162,14 +161,13 @@ public class RedoxUtilities {
 					if (playerdatabyname.containsKey(playername)) {
 						
 							String entry = playername + ",,";
-							for(int i = trainedtoday; i < ford; ++i){
+							for(int i = trainedtoday; i < defence; ++i){
 								entry += tokens[i] + ",";
 							}
 							
 							entry+= starttimesecs + ","
-							+ fordstring + ",1,0,-1.1,"
-							+ fortstring + ",1,0,-1.1"
-							+",0,-1.1,0,-1.1";
+							+ fordstring + ",1,0,1.1,"
+							+ fortstring + ",1,0,2.5";
 							
 							playerdatabyname.get(playername).add(entry);
 							
@@ -181,14 +179,13 @@ public class RedoxUtilities {
 						// instantiate a new list of strings for this player
 						
 							String entry = playername + ",,";
-							for(int i = trainedtoday; i < ford; ++i){
+							for(int i = trainedtoday; i < defence; ++i){
 								entry += tokens[i] + ",";
 							}
 							
 							entry+= starttimesecs + ","
-							+ fordstring + ",1,0,-1.1,"
-							+ fortstring + ",1,0,-1.1"
-							+",0,-1.1,0,-1.1";
+							+ fordstring + ",1,0,1.1,"
+							+ fortstring + ",1,0,2.5";
 							
 							ArrayList<String> temp = new ArrayList<String>();
 							temp.add(entry);
@@ -265,19 +262,16 @@ public class RedoxUtilities {
 		//int player_name = 0;
 		int timekey = 0;
 		int notes = 0;
-		int fordreadings = 0;
-		int fordinc = 0;
-		int fordmean = 0;
-		int fordadj = 0;
-		int fortreadings = 0;
-		int fortinc = 0;
-		int fortmean = 0;
-		int fortadj = 0;
+		int defencereadings = 0;
+		int defence_inc = 0;
+		int defence_mean = 0;
+		int defence_cdt = 0;
 		
-		int fordmean2 = 0;
-		int fordadj2 = 0;
-		int fortmean2 = 0;
-		int fortadj2 = 0;
+		int stress_readings = 0;
+		int stress_inc = 0;
+		int stress_mean = 0;
+		int stress_cdt = 0;
+		
 		
 		try {
 			fileReader = new BufferedReader(new FileReader(fileName));
@@ -295,19 +289,16 @@ public class RedoxUtilities {
 			 //player_name = headerstrings.indexOf("playername");
 			 timekey = headerstrings.indexOf("TEST_TIME");
 			 notes = headerstrings.indexOf("NOTES");
-			 fordreadings = headerstrings.indexOf("FORD");
-			 fordinc = headerstrings.indexOf("FORD_INC");
-			 fordmean = headerstrings.indexOf("FORD_MEAN");
-			 fordadj = headerstrings.indexOf("FORD_ADJ");
-			 fortreadings = headerstrings.indexOf("FORT");
-			 fortinc = headerstrings.indexOf("FORT_INC");
-			 fortmean = headerstrings.indexOf("FORT_MEAN");
-			 fortadj = headerstrings.indexOf("FORT_ADJ");
+			 defencereadings = headerstrings.indexOf("DEFENCE");
+			 defence_inc = headerstrings.indexOf("DEFENCE_INC");
+			 defence_mean = headerstrings.indexOf("DEFENCE_MEAN");
+			 defence_cdt = headerstrings.indexOf("DEFENCE_CDT");
 			 
-			 fordmean2 = headerstrings.indexOf("FORD_MEAN2");
-			 fordadj2 = headerstrings.indexOf("FORD_ADJ2");
-			 fortmean2 = headerstrings.indexOf("FORT_MEAN2");
-			 fortadj2 = headerstrings.indexOf("FORT_ADJ2");
+			 stress_readings = headerstrings.indexOf("STRESS");
+			 stress_inc = headerstrings.indexOf("STRESS_INC");
+			 stress_mean = headerstrings.indexOf("STRESS_MEAN");
+			 stress_cdt = headerstrings.indexOf("STRESS_CDT");
+			 
 			 
 			
 			//Read the file line by line
@@ -350,48 +341,28 @@ public class RedoxUtilities {
 		}
 		
 		
-		// find the corresponding key and toggle the included state for ford and fort
+		// find the corresponding key and toggle the included state for defence and stress
 		for (Map.Entry<Long, Double[]> entry : timestamps1.entrySet()) {
 			Long sourcekey = Long.parseLong(timekeytochange);
 			//System.out.println("looking for " + sourcekey);
 			if(sourcekey.equals(entry.getKey())){
 
 				// toggle that state of the FORD_INC and FORT_INC values
-				if(entry.getValue()[fordinc].equals(1.0)){
-					entry.getValue()[fordinc] = 0.0;
-					entry.getValue()[fortinc] = 0.0;
+				if(entry.getValue()[defence_inc].equals(1.0)){
+					entry.getValue()[defence_inc] = 0.0;
+					entry.getValue()[stress_inc] = 0.0;
 				} else {
-					entry.getValue()[fordinc] = 1.0;
-					entry.getValue()[fortinc] = 1.0;
+					entry.getValue()[defence_inc] = 1.0;
+					entry.getValue()[stress_inc] = 1.0;
 				}
 			}
 		}
 		
-		CircularDoubleBuffer fordscdb = new CircularDoubleBuffer(7);
-		CircularDoubleBuffer fortscdb = new CircularDoubleBuffer(7);
 		
-		for (int i = 0; i<7;++i){
-			fordscdb.add(1.1);
-			fortscdb.add(2.5);
-		}
+		// calculating the averages and critical differences for stress and defence
 		
-		CircularDoubleBuffer fordsqueue = new CircularDoubleBuffer(7);
-		CircularDoubleBuffer fortsqueue = new CircularDoubleBuffer(7);
-		
-//		 fordmean2 = headerstrings.indexOf("FORD_MEAN2");
-//		 fordadj2 = headerstrings.indexOf("FORD_ADJ2");
-//		 fortmean2 = headerstrings.indexOf("FORT_MEAN2");
-//		 fortadj2 = headerstrings.indexOf("FORT_ADJ2");
-		
-		// now recalculate the means and adjusted
-		List<Double> fords = new ArrayList<Double>();
-		List<Double> forts = new ArrayList<Double>();
-		
-		Double runningfordavg = 0.0;
-		Double runningfortavg = 0.0;
-		
-		Double fordadjusted = 0.0;
-		Double fortadjusted = 0.0;
+		FIFOQueue defencequeue = new FIFOQueue(7);
+		FIFOQueue stressqueue = new FIFOQueue(7);
 		
 		boolean firstentry = true;
 		
@@ -399,63 +370,25 @@ public class RedoxUtilities {
 			
 		// ignore the first entry
 			if(firstentry){
-				fords.add(entry.getValue()[fordreadings]);
-				forts.add(entry.getValue()[fortreadings]);
 				
-				fordsqueue.add(entry.getValue()[fordreadings]);
-				fortsqueue.add(entry.getValue()[fortreadings]);
+				defencequeue.add(entry.getValue()[defencereadings]);
+				stressqueue.add(entry.getValue()[stress_readings]);
 				
-				fordscdb.add(entry.getValue()[fordreadings]);
-				fortscdb.add(entry.getValue()[fortreadings]);
 				
 				firstentry = false;
 			} else {
 				
-				//updating the ford values
-				Double fordtotal = 0.0;
-				for(Double d : fords){
-					fordtotal += d;
-				  }
-				runningfordavg = fordtotal/fords.size();
-				//entry.getValue()[fordmean] = runningfordavg;
 				
-				fordadjusted = runningfordavg - (runningfordavg * fordAdjustment);
-				//entry.getValue()[fordadj] = fordadjusted;
+				entry.getValue()[defence_mean] = defencequeue.getAverage();
+				entry.getValue()[defence_cdt] = defencequeue.getAverage() - (defencequeue.getAverage() * defenceAdjustment);
 				
-				entry.getValue()[fordmean] = fordsqueue.getAverage();
-				entry.getValue()[fordadj] = fordsqueue.getAverage() - (fordsqueue.getAverage() * fordAdjustment);
+				entry.getValue()[stress_mean] = stressqueue.getAverage();
+				entry.getValue()[stress_cdt] = (stressqueue.getAverage() * stressAdjustment);
 				
-				entry.getValue()[fordmean2] = fordscdb.getAverage();
-				entry.getValue()[fordadj2] = fordscdb.getAverage() - (fordscdb.getAverage() * fordAdjustment);
-				
-				//updating the fort values
-				Double forttotal = 0.0;
-				for(Double d : forts){
-					forttotal += d;
-				  }
-				runningfortavg = forttotal/forts.size();
-				//entry.getValue()[fortmean] = runningfortavg;
-				
-				fortadjusted = runningfortavg * fortAdjustment;
-				//entry.getValue()[fortadj] = fortadjusted;
-				
-				entry.getValue()[fortmean] = fortsqueue.getAverage();
-				entry.getValue()[fortadj] = (fortsqueue.getAverage() * fortAdjustment);
-				
-				
-				entry.getValue()[fortmean2] = fortscdb.getAverage();
-				entry.getValue()[fortadj2] = (fortscdb.getAverage() * fortAdjustment);
-				
-				
-				// only add the ford and fort readings if it is to be included in the mean calculation
-				if(entry.getValue()[fordinc] > 0.0){
-					fords.add(entry.getValue()[fordreadings]);
-					forts.add(entry.getValue()[fortreadings]);
-					
-					fordscdb.add(entry.getValue()[fordreadings]);
-					fortscdb.add(entry.getValue()[fortreadings]);
-					fordsqueue.add(entry.getValue()[fordreadings]);
-					fortsqueue.add(entry.getValue()[fortreadings]);
+				// only add the defence and stress readings if it is to be included in the mean calculation
+				if(entry.getValue()[defence_inc] > 0.0){
+					defencequeue.add(entry.getValue()[defencereadings]);
+					stressqueue.add(entry.getValue()[stress_readings]);
 				}
 				
 				

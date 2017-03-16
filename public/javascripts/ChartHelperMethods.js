@@ -177,63 +177,61 @@ var decelline2 = d3.line()
 
 var amberzone = 0.1;
 
+var stressline = d3.line()
+.curve(d3.curveMonotoneX)
+.x(function(d) { return xfocus(d.TEST_TIME); })
+.y(function(d) { return yfocus2(d.STRESS); });
+
+var stressadjline = d3.line()
+.curve(d3.curveMonotoneX)
+.defined(function(d,i) { return i != 0;})
+.x(function(d) { return xfocus(d.TEST_TIME); })
+.y(function(d) { return yfocus2(d.STRESS_CDT); });
+
+
+var stressamberarea = d3.area()
+.curve(d3.curveMonotoneX)
+.defined(function(d,i) { return i != 0;})
+.x(function(d) { return xfocus(d.TEST_TIME); })
+.y1(function(d) { 
+	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
+	return yfocus2(d.STRESS_CDT - tenpercent); })
+.y0(function(d) { return yfocus2(d.STRESS_CDT); });
+
 
 var defenceline = d3.line()
 .curve(d3.curveMonotoneX)
 .x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORD); });
+.y(function(d) { return yfocus2(d.DEFENCE); });
 
 var defenceadjline = d3.line()
 .curve(d3.curveMonotoneX)
 .defined(function(d,i) { return i != 0;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORD_ADJ); });
+.y(function(d) { return yfocus2(d.DEFENCE_CDT); });
 
-var defenceadjline2 = d3.line()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORD_ADJ2); });
 
 var defenceamberarea = d3.area()
 .curve(d3.curveMonotoneX)
 .defined(function(d,i) { return i != 0;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y0(function(d) { 
-	var tenpercent = (d.FORT_ADJ - d.FORD_ADJ) * amberzone;
-	return yfocus2(d.FORD_ADJ + tenpercent); })
-.y1(function(d) { return yfocus2(d.FORD_ADJ); });
+	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
+	return yfocus2(d.DEFENCE_CDT + tenpercent); })
+.y1(function(d) { return yfocus2(d.DEFENCE_CDT); });
 
-var defenceamberarea2 = d3.area()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y0(function(d) { 
-	var tenpercent = (d.FORT_ADJ2 - d.FORD_ADJ2) * amberzone;
-	return yfocus2(d.FORD_ADJ2 + tenpercent); })
-.y1(function(d) { return yfocus2(d.FORD_ADJ2); });
 
 var safearea = d3.area()
 .curve(d3.curveMonotoneX)
 .defined(function(d,i) { return i != 0;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y0(function(d) { 
-	var tenpercent = (d.FORT_ADJ - d.FORD_ADJ) * amberzone;
-	return yfocus2(d.FORD_ADJ + tenpercent); })
+	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
+	return yfocus2(d.DEFENCE_CDT + tenpercent); })
 .y1(function(d) { 
-	var tenpercent = (d.FORT_ADJ - d.FORD_ADJ) * amberzone;
-	return yfocus2(d.FORT_ADJ - tenpercent); });
+	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
+	return yfocus2(d.STRESS_CDT - tenpercent); });
 
-var safearea2 = d3.area()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y0(function(d) { 
-	var tenpercent = (d.FORT_ADJ2 - d.FORD_ADJ2) * amberzone;
-	return yfocus2(d.FORD_ADJ2 + tenpercent); })
-.y1(function(d) { 
-	var tenpercent = (d.FORT_ADJ2 - d.FORD_ADJ2) * amberzone;
-	return yfocus2(d.FORT_ADJ2 - tenpercent); });
 
 function dangerarea(h) {
 	return d3.area()
@@ -244,58 +242,18 @@ function dangerarea(h) {
 	.y1(0);
 }
 
-function dangerarea2(h) {
-	return d3.area()
-	.curve(d3.curveMonotoneX)
-	.defined(function(d,i) { return i != 0;})
-	.x(function(d) { return xfocus(d.TEST_TIME); })
-	.y0(h)
-	.y1(0);
-}
-
-
-
-
-var stressline = d3.line()
+var defencestressratio = d3.line()
 .curve(d3.curveMonotoneX)
 .x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORT); });
+.y(function(d, i) { return yfocus2((d.STRESS/d.DEFENCE)); });
 
-var stressadjline = d3.line()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORT_ADJ); });
 
-var stressadjline2 = d3.line()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d) { return yfocus2(d.FORT_ADJ2); });
 
-var stressamberarea = d3.area()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y1(function(d) { 
-	var tenpercent = (d.FORT_ADJ - d.FORD_ADJ) * amberzone;
-	return yfocus2(d.FORT_ADJ - tenpercent); })
-.y0(function(d) { return yfocus2(d.FORT_ADJ); });
 
-var stressamberarea2 = d3.area()
-.curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y1(function(d) { 
-	var tenpercent = (d.FORT_ADJ2 - d.FORD_ADJ2) * amberzone;
-	return yfocus2(d.FORT_ADJ2 - tenpercent); })
-.y0(function(d) { return yfocus2(d.FORT_ADJ2); });
 
-//var vertlines = d3.line()
-//.x1(function(d) { return xfocus(d.TEST_TIME); })
-//.y1(0)
-//.x2(function(d) { return xfocus(d.TEST_TIME); })
-//.y2(300);
+
+
+
 
 
 

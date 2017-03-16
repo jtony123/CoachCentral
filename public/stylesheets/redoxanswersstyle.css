@@ -1,0 +1,141 @@
+.col-xs-3, .col-sm-3, .col-md-3, .col-lg-3 {
+	padding: 0px;
+}
+.col-xs-9, .col-sm-9, .col-md-9, .col-lg-9 {
+	padding: 0px;
+}
+
+.leftcol {
+	background-color: #f7f7f7;
+	margin-left:85px;
+/* 	padding-left:10px; */
+/* 	padding-right:10px; */
+}
+
+.answersleftcol {
+	height: 40px;
+	line-height: 40px;
+	
+	color: #edd058;
+	border-bottom: 2px solid lightgrey;
+	text-align: left;
+	vertical-align: middle;
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.rightcol {
+	background-color: #fafafa;
+	margin-right:35px;
+}
+
+
+.resultsrightcol {
+	height: 40px;
+	line-height: 40px;
+	
+	color: #edd058;
+/* 	border-bottom: 2px solid lightgrey; */
+	text-align: left;
+	vertical-align: middle;
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.ansheadings {
+	height: 40px;
+	line-height: 40px;
+	padding-left:10px;
+	padding-right:10px;
+	color: grey;
+	border-bottom: 2px solid lightgrey;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.anssubheadings {
+	display:inline-block;
+	font-size: 12px;
+}
+
+.anssubheadingsright {
+	display: inline-block;
+	float: right;
+}
+
+
+
+
+#EATEN, #TRAINED, #ENERGY, #MUSCLE_SORENESS {
+	display:inline-block;
+	height: 40px;
+	line-height: 40px;
+	
+}
+
+#EATENVALUE, #TRAINEDVALUE, #MUSCSOREVALUE {
+	display:inline-block;
+ 	float:right;
+	height: 40px;
+	line-height: 40px;
+	padding-right:20px;
+	font-size: 24px;
+}
+
+#NRGVALUE {
+	display:inline-block;
+ 	float:right;
+	height: 40px;
+	line-height: 40px;
+	padding-right:20px;
+	font-size: 24px;
+}
+
+#MUSCSOREVALUE {
+	display:in-line-block; 
+	float:right;
+	margin: 5px auto; 
+	height:30px;
+} 
+
+#MUSCSOREICON {
+/* 	margin: 5px auto;  */
+	height:30px;
+	color:green;
+} 
+
+
+#SYMPTOMS, #EXERCISE {
+	height:140px;
+}
+
+.glyphicon-question-sign {
+	color: grey;
+}
+
+.glyphicon-ok {
+	color: green;
+}
+
+.glyphicon-remove {
+	color: red;
+}
+
+#nrgcliprect {
+	rx: 10px;
+	ry: 10px;
+}
+
+.nrgbackgroundrect {
+	fill: #e2e2e2;
+	clip-path: url(#nrgcliprect);
+/* 	rx: 10px; */
+/* 	ry: 10px; */
+}
+
+.nrgforegroundrect {
+/* 	rx: 10px; */
+/* 	ry: 10px; */
+	fill: #fda934;
+	clip-path: url(#nrgcliprect);
+}
