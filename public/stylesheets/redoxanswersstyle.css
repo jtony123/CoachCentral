@@ -139,3 +139,49 @@
 	fill: #fda934;
 	clip-path: url(#nrgcliprect);
 }
+
+#RESULTSHOW {
+	min-height: 75px;
+}
+
+.resultsparas {
+	font-size: 16px;
+	color: grey;
+	padding-left:10px;
+	margin-bottom:5px;
+}
+
+.orrecoss {
+	margin-left: 10px;
+	margin-right: 30px;
+	padding-left:20px;
+	border-top: 2px solid yellow;
+	border-bottom: 2px solid yellow;
+	border-style: dotted none dotted none;
+	background-color: #faf5e3;
+	
+}
+
+#ORRECOSSPIC {
+	display:inline-block;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	height:100px;
+	clip-path: circle(35px at 35px 50px);
+}
+
+#ORRECOSSTEXT {
+	display:inline-block;
+	width: 600px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 50px;
+}
+
+#ORRECOSSNAME {
+	display:inline-block;
+	position: absolute;
+	bottom: 0px;
+	right: 100px;
+	
+}

@@ -313,6 +313,13 @@
 				</div>
 					<div id="RESULTSHOW">
 					</div>
+					
+					<div class="orrecoss">
+						<div style="display: inline-block;"><img class="img-responsive"  id="ORRECOSSPIC" src='@routes.Assets.at("images/player-headshot.png")' alt=""/></div>
+					<div style="display: inline-block; width: 600px;"><i id="ORRECOSSTEXT"></i></div>
+					
+					<p id="ORRECOSSNAME"></p>
+					</div>
 				
 			
 			</div>
@@ -1492,16 +1499,37 @@ function drawRedox(data3) {
 		
 		var notesarray = d.ResultShow.split(';');
 		console.log(notesarray);
-		d3.select("#RESULTSHOW").text(function() {
-			
-		var txt = "";
-			for (var i = 0; i < notesarray.length; i++){
-				txt += notesarray[i] +"<br>";
-				
-			}
-			return txt;
+		d3.selectAll(".resultsparas").remove();
 		
+		for (var i = 0; i < notesarray.length; i++){
+			d3.select("#RESULTSHOW").append("p").attr("class", "resultsparas").text(function() {
+				return notesarray[i];
+			});
+				
 		}
+		
+		
+		
+		d3.select("#ORRECOSSTEXT").attr("class", "ssparas").text(function() {
+			return "\"" + d.NOTES + ".\"";
+		});
+		
+		d3.select("#ORRECOSSNAME").attr("class", "ssparas").text(function() {
+			return "Sports Scientist";
+		});
+		
+		
+		
+// 		d3.select("#RESULTSHOW").text(function() {
+			
+// 		var txt = "";
+// 			for (var i = 0; i < notesarray.length; i++){
+// 				txt += notesarray[i] +"<br>";
+				
+// 			}
+// 			return txt;
+		
+// 		});
 
 		
 	}
