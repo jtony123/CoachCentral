@@ -122,7 +122,7 @@ position: absolute;
 .othersshowhidebutton {
 	stroke : #F11BDF;
 	stroke-width : 1;
-	cursor: pointer;
+/* 	cursor: pointer; */
     fill: #919EB1;
     fill-opacity: 0.3;
 }

@@ -52,51 +52,55 @@
   text-align: center;
   background-color: #aaa;
 }
+
+.ticks {
+  font: 10px sans-serif;
+}
+
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 10px;
+}
+
+.track-inset {
+  stroke: #ddd;
+  stroke-width: 8px;
+}
+
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  cursor: crosshair;
+}
+
+.sliderhandle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
+
 </style>
-<div class="container-fluid" id="groupings_toggle_buttons">
-	<div>
-	@for(c <- categories) {
-		@if(c.name.equals(category)){
-		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
-		} else {
-		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
-   		}
-	}
-	</div>
-</div>
+
 <div class="row" id ="player_carousel">
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
-	  
-	  <div class="btn-group btn-group-justified">
-	  
-	   @if(players.size() > 5){
-	   
-	   <a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
-						<div >
-					
-						</div>
-						<div class="text-nowrap" style="text-align: center;">
-							<<
-						</div>
-					</a>
-	   }
-	   
-	  
-	  @if(players.size() > 5){
-	  
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
-	  		
-	  }
-	  
-	  @if(players.size() > 3){
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
-	  }
-	  
-	  @if(players.size() > 1){
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
-	  }
-	
-	  </div>
+<!-- 		  <div class="btn-group btn-group-justified"> -->
+<!-- 		   @if(players.size() > 1){ -->
+<!-- 		   <a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex - 1), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;"> -->
+<!-- 				<div class="text-nowrap" style="text-align: center;"> -->
+<!-- 					<< -->
+<!-- 				</div> -->
+<!-- 			</a> -->
+<!-- 		   } -->
+<!-- 		  </div> -->
 	  </div>
 	  
 	  
@@ -157,16 +161,7 @@
 						<div class="text-nowrap" style="text-align: center;">
 							@player.playername
 						</div>
-						
-						
-						
-<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
-<!-- 						alerts go here<br> -->
-<!-- 						alert 1<br> -->
-<!-- 						alert 2<br> -->
-<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
-<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
-        				
+      				
         				
 						
 					</a>
@@ -177,32 +172,18 @@
 	  
 	  
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	  
+	  
 	 
-	 	<div class="btn-group btn-group-justified">
-	 		
-	 @if(players.size() > 2){
-	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 4){
-	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 6){
-	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 6){
-	 		<a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
-					
-			<div class="text-nowrap" style="text-align: center;">
-				>>
-				
-			</div>		
-			</a>
-	 }
-	 	</div>
-	 	
+<!-- 	 	<div class="btn-group btn-group-justified"> -->
+<!-- 			@if(players.size() > 1){ -->
+<!-- 			 	<a href='@routes.Application.dashboard(players.get(Math.floorMod((playerIndex + 1), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;"> -->
+<!-- 					<div class="text-nowrap" style="text-align: center;"> -->
+<!-- 						>> -->
+<!-- 					</div>		 -->
+<!-- 				</a> -->
+<!-- 			 } -->
+<!-- 	 	</div> -->
 	  </div>
 	  
 	  
@@ -222,13 +203,14 @@
 	<svg id="contextsvg"></svg>
 	</div>
 	<div class="chart_lower" class="row" id="chart_lower">
-		<svg id="redoxsvg"></svg>
+		<svg id="slidersvg"></svg>
 	</div>
 </div>
 </div><!-- end  outer container-->
 <script src="@routes.Assets.at("javascripts/ChartHelperMethods.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/TooltipTables.js")" type="text/javascript"></script>
 <script>
+
 var acuteloadupperthreshold = 1.5,
 	acuteloadlowerthreshold = 0.8;
 	
@@ -238,13 +220,11 @@ var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
 var windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
 
 var max_gpssvg_h = 500,
-	max_schedsvg_h = 50,
-	max_rdxsvg_h = 300;
+	max_schedsvg_h = 150;
 	
 	
 var	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h),
-	schedpane_h = Math.max(((windowHeight/32)), max_schedsvg_h),
-	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
+	schedpane_h = Math.max(((windowHeight/32)), max_schedsvg_h);
 
 var gpsdatasvg = d3.select("#gpsdatasvg").attr("width", windowwidth).attr("height", gpsdatasvg_h),
 	gps_margin = {top: 20, right: 20, bottom: 20, left: 70},
@@ -260,14 +240,10 @@ var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("heigh
 	context_margin = {top: 20, right: 20, bottom: 30, left: 70},
 	height2 = +contextsvg.attr("height") - context_margin.top - context_margin.bottom;
 	
-var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
-	rdx_margins = {top: 20, right: 20, bottom:20, left: 20},
-	height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
 	
 var xfocus = d3.scaleTime().range([0, width]),
 	yfocus = d3.scaleLinear().range([height, 0]),
 	yfocus1 = d3.scaleLinear().range([height, 0]);
-	yfocus2 = d3.scaleLinear().range([height3, 0]);
 	
 var xcontext = d3.scaleTime().range([0, width]),
 	ycontext = d3.scaleLinear().range([height2, 0]);
@@ -275,7 +251,6 @@ var xcontext = d3.scaleTime().range([0, width]),
 var xAxis = d3.axisBottom(xfocus);
 var xAxis2 = d3.axisBottom(xcontext).tickArguments([d3.timeMonth]);
 var yAxis = d3.axisLeft(yfocus).tickSize(-width, 0, 0).tickFormat("");
-var yAxisRdx = d3.axisLeft(yfocus2).tickArguments([5, "s"]).tickSize(-width, 0, 0).tickPadding([-15]);
 
 var brush = d3.brushX()
 .extent([[0, 0], [width, height2]])
@@ -316,12 +291,6 @@ contextsvg.append("defs").append("clipPath")
 .attr("rx", 10)
 .attr("ry",10);
 
-redoxsvg.append("defs").append("clipPath")
-.attr("id", "rdxclip")
-.append("rect")
-.attr("id", "rdxcliprect")
-.attr("width", width)
-.attr("height", height3);
 
 var focus = gpsdatasvg.append("g")
 .attr("class", "focus")
@@ -335,9 +304,6 @@ var context = contextsvg.append("g")
 .attr("class", "contextarea")
 .attr("transform", "translate(" + context_margin.left + "," + 0 + ")");
 
-var redoxfocus = redoxsvg.append("g")
-.attr("class", "redoxfocus")
-.attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
 
 var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
 var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
@@ -365,15 +331,6 @@ var now = new Date();
 		d.PRACT_LOAD = (+d.PRACT_LOAD);d.PRACT_START = new Date((+d.PRACT_START)*1000);d.PRACT_END = new Date((+d.PRACT_END)*1000);
 		
 		d.POST_LOAD = (+d.POST_LOAD);d.POST_START = new Date((+d.POST_START)*1000);d.POST_END = new Date((+d.POST_END)*1000);
-		
-		d.ACCEL_TOTAL = (+d.ACCEL_TOTAL);d.DECEL_TOTAL = (+d.DECEL_TOTAL);
-		
-		d.COD_L_LO = (+d.COD_L_LO);d.COD_L_MED = (+d.COD_L_MED);d.COD_L_HI = (+d.COD_L_HI);
-		d.COD_R_LO = (+d.COD_R_LO);d.COD_R_MED = (+d.COD_R_MED);d.COD_R_HI = (+d.COD_R_HI);
-		
-		d.JUMP_LO = (+d.JUMP_LO);d.JUMP_MED = (+d.JUMP_MED);d.JUMP_HI = (+d.JUMP_HI);
-		
-		d.HR_EXERT = ((+d.HR_EXERT)/10);
 		
 		d.GAME_LOAD = (+d.GAME_LOAD);d.GAME_MINS = (+d.GAME_MINS);
 		
@@ -424,17 +381,8 @@ function drawGPS(data) {
 	//the axes
 	focus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(xAxis);
 	focus.append("g").attr("class", "axis axis--y").call(yAxis);
-	//the cod areas
-	focus.append("path").datum(data).attr("class", "cod_l_lo").attr("id", "cod_l_lo").attr("d", cod_l_lo_area);
-	focus.append("path").datum(data).attr("class", "cod_l_med").attr("id", "cod_l_med").attr("d", cod_l_med_area);
-	focus.append("path").datum(data).attr("class", "cod_l_hi").attr("id", "cod_l_hi").attr("d", cod_l_hi_area);
-	focus.append("path").datum(data).attr("class", "cod_r_lo").attr("id", "cod_r_lo").attr("d", cod_r_lo_area);
-	focus.append("path").datum(data).attr("class", "cod_r_med").attr("id", "cod_r_med").attr("d", cod_r_med_area);
-	focus.append("path").datum(data).attr("class", "cod_r_hi").attr("id", "cod_r_hi").attr("d", cod_r_hi_area);
-	// the jumps
-	focus.append("path").datum(data).attr("class", "jump_lo").attr("id", "jump_lo").attr("d", jump_lo_area);
-	focus.append("path").datum(data).attr("class", "jump_med").attr("id", "jump_lo").attr("d", jump_med_area);
-	focus.append("path").datum(data).attr("class", "jump_hi").attr("id", "jump_lo").attr("d", jump_hi_area);
+
+
 	//the squad average rects
 	focus.selectAll('squadavgrectangles')
 	.data(data).enter().append("rect").filter(function(d) { return d.SQUAD_AVG > 0})
@@ -480,12 +428,9 @@ function drawGPS(data) {
 	//the load line
 	focus.append("path").datum(data).attr("class", "load").attr("id", "load").attr("d", sessloadline);
 		
-	//the heartrate line
-	focus.append("path").datum(data).attr("class", "heartrate").attr("id", "heartrate").attr("d", heartrateline);
-	// the accel load line
-	focus.append("path").datum(data).attr("class", "accel").attr("id", "accel").attr("d", accelline);
-	// the decel load line
-	focus.append("path").datum(data).attr("class", "decel").attr("id", "decel").attr("d", decelline);
+	
+	
+	
 	// the pre practice rects
 	focus.selectAll('prepracticerectangles')
 	.data(data).enter().append("rect")
@@ -584,42 +529,6 @@ function drawGPS(data) {
 	.attr("transform", function(d) { return "translate(" + xfocus(today) + "," + height + ")" });
 	
 	
-	
-	
-// 	//the past game result triangles
-// 	schedule.append("g").attr("class", "gameresults")
-// 	.selectAll(".gameresult").data(data).enter().append("path")
-
-// // 	.filter(function(d){
-// // 			return d.GAME_LOAD > 0 ? d.SESS_START : null;
-// // 		})
-// 	.attr("id", "gameresult")
-// 	.attr("stroke-width", 1)
-// 	.style("stroke", "black")
-// 	.style("fill", function(d) {
-// 		return d.WIN_LOSS == "W" ? "green" : "red";
-// 	})
-// 	.style("opacity", 1)
-
-// 	.attr("d", d3.symbol().type(d3.symbolTriangle).size(100))
-// 	.attr("transform", function(d) { 
-		
-// 		return "translate(" + xfocus(d.SESS_START) + "," + (height4 - 10) + ")";})
-		
-// 	.on("mouseover", function(d) {
-// 		tooltip.transition()
-// 			.duration(200)
-// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-// 		tooltip .html("Home Team : " + (d.HOME_TEAM) +"<br><br>" 
-// 					+ "Away Team : " + (d.AWAY_TEAM) +"<br><br>" 
-// 					+ "Score Diff: " + (d.SCORE_DIFF) +"<br><br>" 
-// 					)
-// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-// 	.on("mouseout", function(d) {       
-// 		tooltip.transition()        
-//             .duration(500)      
-//             .style("opacity", 0);
-// 	});
 	
 	
 	//the past game text
@@ -757,9 +666,6 @@ function drawGPSButtons(data){
 			.attr("y", function(d){		return height - yfocus(d.SQUAD_AVG);})
 			.attr("height", function(d){return 1;});
 			
-			
-// 			focus.select(".ACLoad").transition(d3.easeCubic).duration(1000).attr("d", acuteline);
-// 			focus.selectAll("#UPFlags").transition(d3.easeCubic).duration(1000).attr("transform", function(d) { return "translate(" + xfocus(d.SESS_START) + "," + (yfocus(d.ACUTE) + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 5 : -5)) + ") rotate(" + (d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) ? 0 : 180) + ")"});
 		
 		} else {
 			focus.select(".load").transition(d3.easeCubic).duration(1000).attr("d", sessloadline2(height));
@@ -807,52 +713,29 @@ function drawGPSButtons(data){
 	
 	
 	
-	var OTHERS_showhide_button = gpsdatasvg.append("g").attr("class", "OTHERS_Button")
+	var ADD_DATA_button = gpsdatasvg.append("g").attr("class", "OTHERS_Button")
 	.attr("transform", "translate("+ 12 + "," + 200 + ")");
 
-	OTHERS_showhide_button.append("text").attr("id", "othersbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-OTH");
-	var actextWidth = OTHERS_showhide_button.select("text").node().getBBox().width;
-	OTHERS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
-	.attr("width", actextWidth + 20).attr("height", 20)
-	.attr("class", "othersshowhidebutton").attr("id", "OTHERS_Button") 
-	.on("click", function(){
+	ADD_DATA_button.append("a")
+	.attr("link:href", "@routes.Application.dashboard(2, category)")
+	.append("text").attr("id", "othersbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("+ Data ");
+// 	var actextWidth = ADD_DATA_button.select("text").node().getBBox().width;
+// 	ADD_DATA_button
+	
+// 	.append("rect").attr("rx", 8).attr("ry", 8)
+// 	.attr("width", actextWidth + 20).attr("height", 20)
+// 	.attr("class", "othersshowhidebutton").attr("id", "OTHERS_Button");
+	
+// 	.on("click", function(){
 		
-		//showhide the AC graphlines
-		OTHERSview_state = !OTHERSview_state;
-		d3.select(".othersshowhidebutton").style("stroke-width", OTHERSview_state ? 1 : 0);
-		if(OTHERSview_state){
-			
-			focus.select(".cod_l_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_l_lo_area);
-			focus.select(".cod_l_med").transition(d3.easeCubic).duration(1000).attr("d", cod_l_med_area);
-			focus.select(".cod_l_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_l_hi_area);
-			focus.select(".cod_r_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_r_lo_area);
-			focus.select(".cod_r_med").transition(d3.easeCubic).duration(1000).attr("d", cod_r_med_area);
-			focus.select(".cod_r_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_r_hi_area);
-			focus.select(".jump_lo").transition(d3.easeCubic).duration(1000).attr("d", jump_lo_area);
-			focus.select(".jump_med").transition(d3.easeCubic).duration(1000).attr("d", jump_med_area);
-			focus.select(".jump_hi").transition(d3.easeCubic).duration(1000).attr("d", jump_hi_area);
-			focus.select(".heartrate").transition(d3.easeCubic).duration(1000).attr("d", heartrateline);
-			focus.select(".accel").transition(d3.easeCubic).duration(1000).attr("d", accelline);
-			focus.select(".decel").transition(d3.easeCubic).duration(1000).attr("d", decelline);
-			
-		} else {
-			
-			focus.select(".cod_l_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_l_lo_area2);
-			focus.select(".cod_l_med").transition(d3.easeCubic).duration(1000).attr("d", cod_l_med_area2);
-			focus.select(".cod_l_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_l_hi_area2);
-			focus.select(".cod_r_lo").transition(d3.easeCubic).duration(1000).attr("d", cod_r_lo_area2);
-			focus.select(".cod_r_med").transition(d3.easeCubic).duration(1000).attr("d", cod_r_med_area2);
-			focus.select(".cod_r_hi").transition(d3.easeCubic).duration(1000).attr("d", cod_r_hi_area2);
-			focus.select(".jump_lo").transition(d3.easeCubic).duration(1000).attr("d", jump_lo_area2);
-			focus.select(".jump_med").transition(d3.easeCubic).duration(1000).attr("d", jump_med_area2);
-			focus.select(".jump_hi").transition(d3.easeCubic).duration(1000).attr("d", jump_hi_area2);
-			focus.select(".heartrate").transition(d3.easeCubic).duration(1000).attr("d", heartrateline2);
-			focus.select(".accel").transition(d3.easeCubic).duration(1000).attr("d", accelline2);
-			focus.select(".decel").transition(d3.easeCubic).duration(1000).attr("d", decelline2);
-
-		}
-		d3.selectAll("#othersbutton").text(function(d) {return OTHERSview_state ? "-OTH" : "+OTH";});        	
-		});
+// // 		<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
+// 		//showhide the AC graphlines
+// 		OTHERSview_state = !OTHERSview_state;
+// 		d3.select(".othersshowhidebutton").style("stroke-width", OTHERSview_state ? 1 : 0);
+		
+		
+// 		d3.selectAll("#othersbutton").text(function(d) {return OTHERSview_state ? " " : "+ Data";});        	
+// 		});
 		
 }
 
@@ -953,38 +836,7 @@ function redrawGPS() {
 		.attr("height", function(d){return 0;});
 	}
 	
-	if(OTHERSview_state){
-		focus.select(".cod_l_lo").attr("d", cod_l_lo_area);
-		focus.select(".cod_l_med").attr("d", cod_l_med_area);
-		focus.select(".cod_l_hi").attr("d", cod_l_hi_area);
-		focus.select(".cod_r_lo").attr("d", cod_r_lo_area);
-		focus.select(".cod_r_med").attr("d", cod_r_med_area);
-		focus.select(".cod_r_hi").attr("d", cod_r_hi_area);
-		focus.select(".jump_lo").attr("d", jump_lo_area);
-		focus.select(".jump_med").attr("d", jump_med_area);
-		focus.select(".jump_hi").attr("d", jump_hi_area);
-		focus.select(".heartrate").attr("d", heartrateline);
-		focus.select(".accel").attr("d", accelline);
-		focus.select(".decel").attr("d", decelline);
-		
-	} else {
-		
-		focus.select(".cod_l_lo").attr("d", cod_l_lo_area2);
-		focus.select(".cod_l_med").attr("d", cod_l_med_area2);
-		focus.select(".cod_l_hi").attr("d", cod_l_hi_area2);
-		focus.select(".cod_r_lo").attr("d", cod_r_lo_area2);
-		focus.select(".cod_r_med").attr("d", cod_r_med_area2);
-		focus.select(".cod_r_hi").attr("d", cod_r_hi_area2);
-		focus.select(".jump_lo").attr("d", jump_lo_area2);
-		focus.select(".jump_med").attr("d", jump_med_area2);
-		focus.select(".jump_hi").attr("d", jump_hi_area2);
-		focus.select(".heartrate").attr("d", heartrateline2);
-		focus.select(".accel").attr("d", accelline2);
-		focus.select(".decel").attr("d", decelline2);
-		
-		
-		
-	}
+
 	
 
 	
@@ -1023,30 +875,6 @@ function drawSchedule(data2) {
 	schedule.append("rect")
 	.attr("class", "schedbgrect").attr("width", width).attr("height", height4);
 	
-// 	//all game diamonds from the schedule file
-// 	schedule.append("g").attr("class", "game3angles")
-// 	.selectAll(".gametriangles").data(data2).enter().append("path")
-// 	//focus.selectAll(".game3angles").data(data2).enter().append("path")
-// 	.attr("class", "gametriangles").attr("id", "gametriangles")
-// 	.style("fill", function(d) {
-// 		return d.GAME_START > today ? "#FBFBFB" : "#7A4D4D";
-// 	})
-// 	.attr("d", d3.symbol().type(d3.symbolDiamond).size(function(d) { return d.GAME_START > today ? 50 : 50}))
-// 	// offset up by 5 if exceeding threshold, down by 5 otherwise
-// 	.attr("transform", function(d) { 
-// 		return "translate(" + xfocus(d.GAME_START) + "," + (height4 - 25) + ")" })
-// 	.on("mouseover", function(d) {
-// 		tooltip.transition()
-// 			.duration(200)
-// 			.style("opacity", 0.9).style("color", "blue").style("background", "rgba(0,128,128, 0.1)").style("border-color", "green");
-// 		tooltip .html("Opponent : " + (d.OPPONENT) +"<br><br>" 
-// 					+ "Location : " + (d.LOCATION) +"<br><br>" )
-// 			.style("left", (d3.event.pageX - 20) + "px").style("top", (d3.event.pageY -150) + "px");})
-// 	.on("mouseout", function(d) {       
-// 		tooltip.transition()        
-//             .duration(500)      
-//             .style("opacity", 0);
-// 	});
 	
 	
 	// the opponents logos
@@ -1108,105 +936,6 @@ function redrawSchedule(){
 
 
 
-// redox
-var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
-	
-	data3.forEach(function(d) {
-		d.TIME_KEY = +d.TEST_TIME;
-		d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
-		d.FORD = +d.FORD;d.FORD_ADJ = +d.FORD_ADJ;d.FORD_INC = +d.FORD_INC;
-		d.FORT = +d.FORT;d.FORT_ADJ = +d.FORT_ADJ;d.FORT_INC = +d.FORT_INC;
-		d.NOTES = d.NOTES;
-	});
-	
-	yfocus2.domain([0 , d3.max(data3, function(d){return d.FORT + 1;})]);
-	
-	redoxfocus.append("rect").attr("class", "backgroundrect").attr("width", width).attr("height", height3);
-	redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
-	redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height).call(zoom);
-	drawRedox(data3);
-
-}); // end redox loader
-
-
-function drawRedox(data3) {
-
-	redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
-	redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
-	
-	//Defence(ford)
-	redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 5)
-	.style("fill", function(d) { return d.FORD_INC > 0 ? "blue" : "#FBFBFB"})
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); })
-	.on("mouseover", function(d) {
-		console.log("redx tipping");
-		rdxtip.transition()
-		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-		.style("width", "auto").style("height", "auto")
-		.attr("id", "rdxtip")
-		.on("end", function(d){this.className='rdxtip'});;
-	rdxtip .html(rdxnotes(d))
-		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-	})
-	.on("mouseout", function(d) {       
-		rdxtip.transition().delay(2000)
-		.style("width", "0px").style("height", "0px")
-		.on("end", function(d){rdxtip.html(""); this.className=''; });
-	})
-	.on("click", function(d) {
-		linktip
-		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-			+"<button>Toggle</button></form> ") 
-		.style("left", "200px").style("top", "50px");
-		document.getElementById("fordtoggle").submit();
-	});
-	
-    
-    // stress(fort)
-	redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
-	redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
-	redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 5)
-	.style("fill", function(d) { return d.FORD_INC > 0 ? "purple" : "#FBFBFB"})
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); })
-	.on("mouseover", function(d) {
-		rdxtip.transition()
-		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-		.style("width", "auto").style("height", "auto")
-		.attr("id", "rdxtip")
-		.on("end", function(d){this.className='rdxtip'});;
-	rdxtip .html(rdxnotes(d))
-		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-	})
-	.on("mouseout", function(d) {       
-		rdxtip.transition().delay(2000)
-		.style("width", "0px").style("height", "0px")
-		.on("end", function(d){rdxtip.html(""); this.className=''; });
-	})
-	.on("click", function(d) {
-		linktip
-		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-			+"<button>Toggle</button></form> ") 
-		.style("left", "200px").style("top", "50px");
-		document.getElementById("fordtoggle").submit();
-	});
-} // end drawRedox()
-
-function redrawRedox() {
-	
-	redoxfocus.selectAll("#defenceline").attr("d", defenceline);
-	redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
-	redoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORD); });
-	redoxfocus.selectAll("#stressline").attr("d", stressline);
-	redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
-	redoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.FORT); });
-}  //end redrawRedox()
-
 
 
 
@@ -1218,7 +947,6 @@ function redrawChart() {
 	gametip.transition().duration(200).style("opacity", 0);
 	
 	redrawGPS();
-	redrawRedox();
 	redrawSchedule();
 	
 	
@@ -1228,7 +956,56 @@ function redrawChart() {
 
 
 
+var slidersvg = d3.select("#slidersvg").attr("width", 200).attr("height", 600),
+slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
+height3 = +slidersvg.attr("height") - context_margin.top - context_margin.bottom;
 
+var xslide = d3.scaleLinear()
+.domain([0, 180])
+.range([0, 500])
+.clamp(true);
+
+var slider = slidersvg.append("g")
+.attr("class", "slider")
+.attr("transform", "translate(" + slider_margin.left + "," + 100 + ")");
+
+slider.append("line")
+.attr("class", "track")
+.attr("y1", xslide.range()[0])
+.attr("y2", xslide.range()[1])
+.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+.attr("class", "track-inset")
+.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+.attr("class", "track-overlay")
+.call(d3.drag()
+    .on("start.interrupt", function() { slider.interrupt(); })
+    .on("start drag", function() { hue(xslide.invert(d3.event.y)); }));
+
+slider.insert("g", ".track-overlay")
+.attr("class", "ticks")
+.attr("transform", "translate(10," + 0 + ")")
+.selectAll("text")
+.data(xslide.ticks(10))
+.enter().append("text")
+.attr("y", xslide)
+.attr("text-anchor", "middle")
+.text(function(d) { return d + "°"; });
+
+var handle = slider.insert("circle", ".track-overlay")
+.attr("class", "sliderhandle")
+.attr("r", 9);
+
+slider.transition() // Gratuitous intro!
+.duration(750)
+.tween("hue", function() {
+  var i = d3.interpolate(0, 0);
+  return function(t) { hue(i(t)); };
+});
+
+function hue(h) {
+handle.attr("cy", xslide(h));
+slidersvg.style("background-color", d3.hsl(h, 0.8, 0.8));
+}
 
 	
 	
@@ -1251,9 +1028,6 @@ function brushed() {
 	  .scale(width / (s[1] - s[0]))
 	  .translate(-s[0], 0));
 	
-	redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-			  .scale(width / (s[1] - s[0]))
-			  .translate(-s[0], 0));
 	
 	context.select(".leftbookend").attr("width", s[0]);
 	context.select(".rightbookend").attr("x", s[1]);
@@ -1279,19 +1053,16 @@ d3.select(window).on('resize', resize);
 function resize() {
     // update width
     windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
-	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
 	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h);
     
 	
     //d3.select('#gpstoggle').attr("width", windowwidth);
     d3.select('#gpsdatasvg').attr("width", windowwidth).attr("height", gpsdatasvg_h);
     
-    d3.select('#redoxsvg').attr("width", windowwidth).attr("height", redoxpane_h);
     
 	width = +gpsdatasvg.attr("width") - gps_margin.left - gps_margin.right,
 	height = +gpsdatasvg.attr("height") - gps_margin.top - gps_margin.bottom,
-	height2 = +gpsdatasvg.attr("height") - context_margin.top - context_margin.bottom,
-	height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
+	height2 = +gpsdatasvg.attr("height") - context_margin.top - context_margin.bottom;
 	
 	 d3.select('#clip').attr("width", width).attr("height", height);
 	 d3.select('#cliprect').attr("width", width).attr("height", height);
