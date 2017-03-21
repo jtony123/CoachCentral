@@ -53,39 +53,7 @@
   background-color: #aaa;
 }
 
-.ticks {
-  font: 10px sans-serif;
-}
 
-.track,
-.track-inset,
-.track-overlay {
-  stroke-linecap: round;
-}
-
-.track {
-  stroke: #000;
-  stroke-opacity: 0.3;
-  stroke-width: 10px;
-}
-
-.track-inset {
-  stroke: #ddd;
-  stroke-width: 8px;
-}
-
-.track-overlay {
-  pointer-events: stroke;
-  stroke-width: 50px;
-  cursor: crosshair;
-}
-
-.sliderhandle {
-  fill: #fff;
-  stroke: #000;
-  stroke-opacity: 0.5;
-  stroke-width: 1.25px;
-}
 
 
 </style>
@@ -956,13 +924,18 @@ function redrawChart() {
 
 
 
-var slidersvg = d3.select("#slidersvg").attr("width", 200).attr("height", 600),
+var slidersvg = d3.select("#slidersvg").attr("width", 200).attr("height", 700),
 slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
 height3 = +slidersvg.attr("height") - context_margin.top - context_margin.bottom;
 
 var xslide = d3.scaleLinear()
-.domain([0, 180])
+.domain([360, 0])
 .range([0, 500])
+.clamp(true);
+
+var yslidecolor = d3.scaleLinear()
+.domain(xslide.domain())
+.range(["red", "orange", "green"])
 .clamp(true);
 
 var slider = slidersvg.append("g")
@@ -979,11 +952,16 @@ slider.append("line")
 .attr("class", "track-overlay")
 .call(d3.drag()
     .on("start.interrupt", function() { slider.interrupt(); })
-    .on("start drag", function() { hue(xslide.invert(d3.event.y)); }));
+    .on("start drag", function() { 
+    	//d3.select(".track-inset").style("stroke", yslidecolor());
+    	trackcolor(xslide.invert(d3.event.y)); })
+    .on("end", function() {
+    	console.log(xslide.invert(d3.event.y));
+    }));
 
 slider.insert("g", ".track-overlay")
 .attr("class", "ticks")
-.attr("transform", "translate(10," + 0 + ")")
+.attr("transform", "translate(25," + 0 + ")")
 .selectAll("text")
 .data(xslide.ticks(10))
 .enter().append("text")
@@ -993,18 +971,28 @@ slider.insert("g", ".track-overlay")
 
 var handle = slider.insert("circle", ".track-overlay")
 .attr("class", "sliderhandle")
-.attr("r", 9);
+.attr("r", 30);
 
-slider.transition() // Gratuitous intro!
+slider.transition() // starting point
 .duration(750)
 .tween("hue", function() {
-  var i = d3.interpolate(0, 0);
-  return function(t) { hue(i(t)); };
+  var i = d3.interpolate(0, 200);
+  return function(t) { trackcolor(i(t)); };
 });
+
+function trackcolor(c) {
+	handle.attr("cy", xslide(c));
+	d3.select(".track-inset").style("stroke", yslidecolor(c));
+	//d3.select(".track-inset").style("stroke", d3.rgb(c, 0, 0));
+	//d3.select(".track-inset").style("stroke", d3.hsl(h, 0.8, 0.8));
+	//slidersvg.style("background-color", d3.hsl(h, 0.8, 0.8));
+	}
 
 function hue(h) {
 handle.attr("cy", xslide(h));
-slidersvg.style("background-color", d3.hsl(h, 0.8, 0.8));
+d3.select(".track-inset").style("stroke", d3.rgb(h, 0, 0));
+//d3.select(".track-inset").style("stroke", d3.hsl(h, 0.8, 0.8));
+//slidersvg.style("background-color", d3.hsl(h, 0.8, 0.8));
 }
 
 	
