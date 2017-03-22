@@ -1,646 +1,1079 @@
+@import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
+@import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
 @import tags._
-@(user : models.User, active: String, players: List[models.Player])
-
+@(user : models.User, active: String, player: models.Player, playerIndex: Integer, players: List[models.Player], category:String, categories: List[models.Category])
 
 
 @main(title = "CoachCentral") {
     
       <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
     @navigationbar(user: models.User, active: String)
-<style> 
-
-body {
-	font:12px Arial;
+    
+        <style> 
+#player_icon {
+  position: relative;
+  perspective: 1000;
 }
-
-
-
-#power-gauge g.arc {
-	fill: steelblue;
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
 }
-
-#power-gauge g.pointer {
-	fill: #e85116;
-	stroke: #b64011;
+@@-webkit-keyframes player_icon_flip {
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
 }
-
-#power-gauge g.pointer2 {
-	fill: #e85116;
-	stroke: #b64011;
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
 }
-	
-#power-gauge g.label text {
-	text-anchor: middle;
-	font-size: 14px;
-	font-weight: bold;
-	fill: #666;
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
 }
-
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
 </style>
 
-
-<div class="container-fluid">
+<div class="container-fluid" id="groupings_toggle_buttons">
 	<div>
-	@for(p <- players) {
-	@if(p.playernumber != 0){
-	<div class="row">
-	<h4 class="col-sm-2">@p.playername</h4>
-		<a href="@routes.Application.dashboard(p.playernumber, p.playername)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@p.playername</span></a>
-	<div class="col-sm-10">
-		<div id="power-gauge-@p.playernumber"></div>
-	</div>
-	</div>
-	
-	
+	@for(c <- categories) {
+		@if(c.name.equals(category)){
+		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
+		} else {
+		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
+   		}
 	}
-	<hr>
-	}
-	
-	
 	</div>
 </div>
 
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	  
+	   @if(players.size() > 5){
+	   
+	   <a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+	   }
+	   
+	  
+	  @if(players.size() > 5){
+	  
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
+	  		
+	  }
+	  
+	  @if(players.size() > 3){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
+	  }
+	  
+	  @if(players.size() > 1){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
+	  }
+	
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
+						}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
+						
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:50px;height:50px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:50px;height:50px;"/>
+						}
+						
+						<table style="text-align:left; font-family:arial; font-size:15px;">
+							<tr>
+								<td>Position</td><td>@player.position</td>
+							</tr>
+							<tr>
+								<td>DoB</td><td>@player.dob</td>
+							</tr>
+							<tr>
+								<td>Height</td><td>@player.height</td>
+							</tr>
+							<tr>
+								<td>Weight</td><td>@player.weight</td>
+							</tr>
+						</table>
+						
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+						
+						
+						
+<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
+<!-- 						alerts go here<br> -->
+<!-- 						alert 1<br> -->
+<!-- 						alert 2<br> -->
+<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
+<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
+        				
+        				
+						
+					</a>
+				</h4>
+			</div><!-- end back face -->
+			</div>
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	 @if(players.size() > 2){
+	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 4){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	 		<a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+					
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>		
+			</a>
+	 }
+	 	</div>
+	 	
+	  </div>
+	  
+	  
+</div><!-- end div player carousel -->
+
+<!-- the panel below the pagination carousel -->
+	
+<div class="chart" class="container-fluid" id="main_chart"  style="border:1px solid #cecece; border-radius: 20px;
+																	margin:20px;
+																	background-color: white;
+																	box-shadow: 0px 0px 10px grey;">
+	<div class="chart_upper" class="row" id="chart_upper" >
+	
+	</div>
+	<div class="chart_centre" class="row" id="chart_centre">
+	<svg id="contextsvg"></svg>
+	<svg id="redoxsvg"></svg>
+	</div>
+	<div class="chart_lower" class="row" id="chart_lower">
+		
+		<div class="row" id ="redoxanswersrow">
+			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+			<div class="leftcol">
+				<div class="answersleftcol">
+					ANSWERS
+				</div>
+				
+				<div class="ansheadings" >
+					<div id="EATEN">
+						EATEN
+					</div>
+					<div class="glyphicon glyphicon-question-sign" id="EATENVALUE">
+					</div>
+				</div>
+				
+				<div class="ansheadings">
+					<div id="TRAINED">
+						TRAINED
+					</div>
+					<div class="glyphicon glyphicon-question-sign" id="TRAINEDVALUE">
+					</div>
+				</div>
+				
+				<div>
+					<div class="ansheadings"  id="SYMPTOMS">
+						SYMPTOMS
+						<div>
+							<div class="anssubheadings" id="HEADACHE">
+								Headache
+							</div>
+							<div class="anssubheadingsright"  id="HEADACHEVALUE">
+							</div>
+						</div>
+					
+						<div>
+							<div class="anssubheadings" id="JMACHE">
+								Joint/Muscle Ache
+							</div>
+							<div class="anssubheadingsright" id="JMACHEVALUE">
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div>
+					<div class="ansheadings"  id="EXERCISE">
+						EXERCISE
+						<div>
+							<div class="anssubheadings" id="PRACTICE">
+								Practice
+							</div>
+							<div class="anssubheadingsright"  id="PRACTICEVALUE">
+							</div>
+						</div>
+					
+						<div>
+							<div class="anssubheadings" id="GYMWEIGHTS">
+								GYM Weights
+							</div>
+							<div class="anssubheadingsright" id="GYMWEIGHTSVALUE">
+							</div>
+						</div>
+					</div>
+				</div>
+					<div class="ansheadings">
+						<div id="ENERGY">
+							ENERGY
+						</div>
+						<div id="NRGVALUE">
+						<svg id="nrgsvg"></svg>
+						</div>
+					</div>
+					
+					<div class="ansheadings">
+						<div id="MUSCLE_SORENESS">
+							MUSCLE SORENESS
+						</div>
+						<div id="MUSCSOREVALUE" style="display:in-line-block; float:right;">
+						<img class="img-responsive"  id="MUSCSOREICON" src='@routes.Assets.at("images/emoticons/happy.png")' alt="" "/>
+						</div>
+					</div>
+					</div>
+			</div>
+			<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+			<div class="rightcol">
+				<div class="resultsrightcol">
+					RESULTS SHOW
+				</div>
+					<div id="RESULTSHOW">
+					</div>
+					
+					<div class="orrecoss">
+						<div style="display: inline-block;"><img class="img-responsive"  id="ORRECOSSPIC" src='@routes.Assets.at("images/player-headshot.png")' alt=""/></div>
+					<div style="display: inline-block; width: 600px;"><i id="ORRECOSSTEXT"></i></div>
+					
+					<p id="ORRECOSSNAME"></p>
+					</div>
+				
+			
+			</div>
+		
+		</div>
+	</div>
+</div>
+</div><!-- end  outer container-->
+
+
+
+
+
+<script src="@routes.Assets.at("javascripts/ChartHelperMethods.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/TooltipTables.js")" type="text/javascript"></script>
 <script>
+var amberzone = 0.1;
+
+////Adds the svg canvas
+var windowHeight = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
+var windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
+
+var max_rdxsvg_h = 400;
 
 
-var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
+var	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
 
 
-// var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
-// 		pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
-// 		minValue: 0,maxValue: 4,
-// minAngle: -90,maxAngle: 90,
-// transitionMs : 4000, majorTicks: 12,labelFormat: d3.format(',g'),labelInset: 10,
-// arcColorFn: d3.interpolateHsl(d3.rgb('#F45822'), d3.rgb('#ADCDF0'))
-// };
+var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("height", 40),
+context_margin = {top: 0, right: 20, bottom: 0, left: 70},
+height2 = +contextsvg.attr("height") - context_margin.top - context_margin.bottom;
 
-var fordgauge = function(container, configuration) {
-	var that = {};
+var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
+
+rdx_margins = {top: 120, right: 20, bottom:0, left: 70},
+width = +redoxsvg.attr("width") - rdx_margins.left - rdx_margins.right,
+height = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom,
+height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
+
+var nrgsvg = d3.select("#nrgsvg").attr("width", 100).attr("height", 20);
+
+
+
+
+
+var xfocus = d3.scaleTime().range([0, width]),
+yfocus = d3.scaleLinear().range([height, 0]),
+yfocus1 = d3.scaleLinear().range([height, 0]);
+yfocus2 = d3.scaleLinear().range([height3, 0]);
+
+var xcontext = d3.scaleTime().range([0, width]),
+ycontext = d3.scaleLinear().range([height2, 0]);
+
+var xAxis = d3.axisBottom(xfocus);
+var xAxis2 = d3.axisTop(xcontext).tickArguments([d3.timeMonth]);
+var yAxis = d3.axisLeft(yfocus).tickSize(-width, 0, 0).tickFormat("");
+var yAxisRdx = d3.axisLeft(yfocus2).tickArguments([5, "s"]).tickSize(-width, 0, 0).tickPadding([-25]);
+
+var brush = d3.brushX()
+.extent([[0, 0], [width, height2]])
+.on("brush end", brushed);
+
+var zoom = d3.zoom()
+.scaleExtent([2, 300])
+.translateExtent([[0, 0], [width, height]])
+.extent([[0, 0], [width, height]])
+.on("zoom", zoomed);
+
+
+
+
+contextsvg.append("defs").append("clipPath")
+.attr("id", "ctxclip")
+.append("rect")
+.attr("id", "ctxcliprect")
+.attr("width", width)
+.attr("height", height2)
+.attr("rx", 2)
+.attr("ry",2);
+
+redoxsvg.append("defs").append("clipPath")
+.attr("id", "rdxclip")
+.append("rect")
+.attr("id", "rdxcliprect")
+.attr("width", width)
+.attr("height", height3 + 120);
+
+redoxsvg.append("defs").append("clipPath")
+.attr("id", "rdxdangerclip")
+.append("rect")
+.attr("id", "rdxcliprect")
+.attr("width", width)
+.attr("height", height3);
+// .attr("rx", 20)
+// .attr("ry",20);
+
+
+nrgsvg.append("defs").append("clipPath")
+.attr("id", "nrgcliprect")
+.append("rect")
+.attr("id", "nrgcliprect")
+.attr("width", 100)
+.attr("height", 20);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "greenbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "green");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "amberbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "orange");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "redbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "red");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undefbottom")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "greentop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "green");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "ambertop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "orange");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "redtop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "red");
+
+var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undeftop")
+.attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
+grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "white");
+
+
+
+var context = contextsvg.append("g")
+.attr("class", "contextarea")
+.attr("transform", "translate(" + context_margin.left + "," + 0 + ")");
+
+var redoxctx = redoxsvg.append("g")
+.attr("class", "redoxctx")
+.attr("transform", "translate(" + rdx_margins.left + "," + "0" + ")");
+
+var redoxfocus = redoxsvg.append("g")
+.attr("class", "redoxfocus")
+.attr("transform", "translate(" + rdx_margins.left + "," + rdx_margins.top  + ")");
+
+
+var RDXview_state = true;
+
+
+var jan2016 = new Date(2016, 0, 1);
+var apr2016 = new Date(2016, 3, 1);
+var threeMonthsAhead = new Date(Date.now() + 90*24*3600*1000);
+var threeweeksago = new Date(Date.now() + -21*24*3600*1000);
+var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
+var xl = threeweeksago, xr = oneweekahead;
+
+
+checkcookie();
+xcontext.domain([jan2016, threeMonthsAhead]);
+ycontext.domain([0, 1500]);
+xfocus.domain(xcontext.domain());
+yfocus.domain([0, 1500]);
+yfocus1.domain([1500, 0]);
+
+
+
+var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
+
+data3.forEach(function(d, i) {
+	d.TIME_KEY = +d.TEST_TIME;
+	d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
+	d.DEFENCE = +d.DEFENCE;d.DEFENCE_CDT = +d.DEFENCE_CDT;d.DEFENCE_INC = +d.DEFENCE_INC;
+	d.STRESS = +d.STRESS;d.STRESS_CDT = +d.STRESS_CDT;d.STRESS_INC = +d.STRESS_INC;
+	d.EnergyLevel = +d.EnergyLevel;
+	d.NOTES = d.NOTES;
 	
-	var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
-				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
-				minValue: 0,maxValue: 6,
-		minAngle: -90,maxAngle: 90,
-		transitionMs : 4000, majorTicks: 5,labelFormat: d3.format(',g'),labelInset: 10,
-		arcColorFn: d3.interpolateHsl(d3.rgb('#1F69F1'), d3.rgb('#A7BFEC'))
-	};
-	
-	var range = undefined;
-	var r = undefined;
-	var pointerHeadLength = undefined;
-	var value = 0;
-	
-	var svg = undefined;
-	var arc = undefined;
-	var scale = undefined;
-	var ticks = undefined;
-	var tickData = undefined;
-	var pointer = undefined;
+});
+
+yfocus2.domain([0 , d3.max(data3, function(d){return d.STRESS + 1;})]);
 
 
+redoxctx.append("rect").attr("class", "rdxbackgroundrect").attr("width", width).attr("height", height3 + 120);
+//redoxfocus.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height3 + ")").call(xAxis);
+nrgsvg.append("rect").attr("class", "nrgbackgroundrect").attr("width", 100).attr("height", 20);
+
+drawRedox(data3);
+drawRedoxButtons(data3);
+
+}); // end redox loader
+
+
+function drawRedox(data3) {
 	
-	function configure(configuration) {
-		var prop = undefined;
-		for ( prop in configuration ) {
-			config[prop] = configuration[prop];
+	context.append("rect").attr("class", "ctxlinerect").attr("width", width).attr("height", 20)
+		.attr("transform", "translate(0," + 20 + ")");
+	
+	context.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + 20 + ")").call(xAxis2);
+	
+	context.append("g").attr("class", "CTXGROUP")
+		.attr("transform", "translate(0," + 20 + ")")
+		.selectAll().data(data3).enter()
+		.append("circle").attr("class", "CTXhighlight").attr("id", "CTXhighlight").attr("r", 6)
+		.style("fill", "grey")
+		.style("stroke", "grey")
+		.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 10);
+	
+context.append("g")
+.attr("transform", "translate(0," + 20 + ")")
+.attr("class", "brush").call(brush) .call(brush.move, xfocus.range());
+context.select(".brush").append("rect").attr("class", "leftbookend").attr("width", xl).attr("height", 20);
+context.select(".brush").append("rect").attr("class", "rightbookend").attr("width", width).attr("height", 20);
+
+
+
+
+
+redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+.append("text").attr("class", "CTXlabel").attr("id", "CTXlabel")
+	//.style("fill", "none")
+	.style("font-family", "Helvetica Neue,Helvetica,Arial,sans-serif")
+	.style("font-size", 11)
+	.style("stroke", "black")
+	.style("stroke-width", 0.4)
+.attr("x", function(d) { return xfocus(d.TEST_TIME) - 20; })
+.attr("y", 40)
+.text(function (d) { return d3.timeFormat("%b %d")(d.TEST_TIME);});
+
+
+redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+.append("circle").attr("class", "STRESSCTX").attr("id", "STRESSCTX").attr("r", 20)
+.style("fill", function(d) { 
+	//if(d.STRESS_INC > 0) {
+		var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
+		var tenpercent = diff * amberzone;
+		
+			if (d.STRESS >= d.STRESS_CDT) { return "url(#redtop)";
+			} else { if(d.STRESS >= (d.STRESS_CDT - tenpercent)){ return "url(#ambertop)";
+				} else { return "url(#greentop)"; }
+			}
+		
+	//}else { return "#FBFBFB"; }
+	})
+.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70);
+
+
+
+redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
+.append("circle").attr("class", "DEFENCECTX").attr("id", "DEFENCECTX").attr("r", 20)
+	.style("fill", function(d) { 
+	//if(d.DEFENCE_INC > 0) {
+		var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
+		var tenpercent = diff * amberzone;
+		
+			if (d.DEFENCE <= d.DEFENCE_CDT) { return "url(#redbottom)";
+			} else { if(d.DEFENCE <= (d.DEFENCE_CDT + tenpercent)){ return "url(#amberbottom)";
+						} else { return "url(#greenbottom)"; }
+			}
+		
+	//} else { return "#FBFBFB"; }
+	})
+.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70)
+.on("click", function(d) {
+	
+	d3.selectAll(".verticallines").style("stroke", "#e6e6e6").style("stroke-width", "1px");
+	d3.selectAll(".CTXcircles").style("stroke", "#e6e6e6").style("stroke-width", "1px");
+	
+	d3.select("#vert" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "2px");
+	d3.select("#CTXcircle" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "3px");
+	updateanswerfields(d);
+		
+		
+	});
+
+
+
+
+
+redoxfocus.append("path").datum(data3).attr("class", "rdxdangerzone").attr("id", "rdxdangerzone").attr("d", dangerarea(height3));
+redoxfocus.append("path").datum(data3).attr("class", "rdxsafezone").attr("id", "rdxsafezone").attr("d", safearea);
+redoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxdefenceamberzone").attr("d", defenceamberarea);
+redoxfocus.append("path").datum(data3).attr("class", "rdxamberzone").attr("id", "rdxstressamberzone").attr("d", stressamberarea);
+redoxfocus.append("g").attr("class", "Rdxaxis Rdxaxis--y").call(yAxisRdx);
+// removing the zero tick from the y-axis
+redoxfocus.selectAll(".tick").each(function(d) {if(d===0) {this.remove();}});
+
+
+redoxctx.append("g")
+.attr("class", "CTXGROUP")
+.selectAll().data(data3).enter()
+.append("circle").attr("class", "CTXcircles")
+.attr("id", function(d) { return "CTXcircle" + d.TIME_KEY; }) 
+.attr("r", 21)
+.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 70);
+
+redoxfocus.append("g")
+.attr("transform", "translate(0," + -30 + ")")
+.selectAll('.verticallines').data(data3).enter()
+.append("line").attr("class", "verticallines")
+.attr("id", function(d) { return "vert" + d.TIME_KEY; }) 
+.attr("x1", function(d) { return xfocus(d.TEST_TIME);})
+.attr("y1", height3 + 30)
+.attr("x2", function(d) { return xfocus(d.TEST_TIME);})
+.attr("y2", 0);
+
+
+
+redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("height", height3).call(zoom);
+
+
+redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
+
+
+// stress(STRESS)
+redoxfocus.append("path").datum(data3).attr("class", "stressline").attr("id", "stressline").attr("d", stressline);
+redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id", "stressadjline").attr("d", stressadjline);
+redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+.append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
+.style("fill", function(d) { 
+	if(d.STRESS_INC > 0) {
+		var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
+		var tenpercent = diff * amberzone;
+		if (d.STRESS >= d.STRESS_CDT) { return "red";
+		} else {
+			if(d.STRESS >= (d.STRESS_CDT - tenpercent)){ return "orange";
+			} else { return "green"; }
 		}
-		
-		range = config.maxAngle - config.minAngle;
-		r = config.size / 2;
-		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
+	}else { return "#FBFBFB"; }
+	})
+.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); })
+//	.on("mouseover", function(d) {
+//		rdxtip.transition()
+//		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+//		.style("width", "auto").style("height", "auto")
+//		.attr("id", "rdxtip")
+//		.on("end", function(d){this.className='rdxtip'});;
+//	rdxtip .html(rdxnotes(d))
+//		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+//	})
+//	.on("mouseout", function(d) {       
+//		rdxtip.transition().delay(2000)
+//		.style("width", "0px").style("height", "0px")
+//		.on("end", function(d){rdxtip.html(""); this.className=''; });
+//	})
+.on("click", function(d) {
+	linktip
+	.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+	linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+		+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+		+"<button>Toggle</button></form> ") 
+	.style("left", "200px").style("top", "50px");
+	document.getElementById("fordtoggle").submit();
+});
 
-		// a linear scale that maps domain values to a percent from 0..1
-		scale = d3.scale.linear()
-			.range([0,1])
-			.domain([config.minValue, config.maxValue]);
-			
-		ticks = scale.ticks(config.majorTicks);
-		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
-		
-		arc = d3.svg.arc()
-			.innerRadius(r - config.ringWidth - config.ringInset)
-			.outerRadius(r - config.ringInset)
-			.startAngle(function(d, i) {
-				var ratio = d * i;
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				
-				//return deg2rad(config.minAngle + (ratio * range));
-			})
-			.endAngle(function(d, i) {
-				var ratio = d * (i+1);
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				//return deg2rad(config.minAngle + (ratio * range));
-			});
+
+//Defence(DEFENCE)
+redoxfocus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
+.append("circle").attr("class", "DEFENCE").attr("id", "DEFENCE").attr("r", 10)
+.style("fill", function(d) { 
+	if(d.DEFENCE_INC > 0) { 
+		var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
+		var tenpercent = diff * amberzone; 
+		if (d.DEFENCE <= d.DEFENCE_CDT) { return "red";
+		} else {
+			if(d.DEFENCE <= (d.DEFENCE_CDT + tenpercent)){ return "orange";
+			} else { return "green"; }
+		}
+	}else { return "#FBFBFB"; }
+}) 
+.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); })
+//	.on("mouseover", function(d) {
+//		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
+//			.style("width", "auto").style("height", "auto").attr("id", "rdxtip")
+//	.on("end", function(d){this.className='rdxtip'});;
+//		rdxtip .html(rdxnotes(d)).style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
+//	})
+//	.on("mouseout", function(d) {       
+//		rdxtip.transition().delay(2000).style("width", "0px").style("height", "0px")
+//		.on("end", function(d){rdxtip.html(""); this.className=''; });
+//	})
+.on("click", function(d) {
+	linktip.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
+	linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
+		+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
+		+"<button>Toggle</button></form> ") 
+	.style("left", "200px").style("top", "50px");
+	document.getElementById("fordtoggle").submit();
+});
+
+
+
+
+
+d3.select("#nrgsvg").append("rect").attr("class", "nrgforegroundrect");
+
+// default selection of last reading on page load
+updateanswerfields(data3[data3.length -1]);
+
+function updateanswerfields(d) {
+	
+	
+	// highlighting the selected data point
+	d3.select("#vert" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "2px");
+	d3.select("#CTXcircle" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "3px");
+	
+	if(d.AteToday === "Not Known") { 
+		d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-question-sign");
+	} 
+	if(d.AteToday === "yes") { 
+		d3.select("#EATENVALUE").attr("class","glyphicon glyphicon-ok");
 	}
-	that.configure = configure;
+	if(d.AteToday === "no") { 
+		d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-remove");
+	}
 	
-
+	if(d.TrainedToday === "Not Known") { 
+		d3.select("#TRAINEDVALUE").attr("class", "glyphicon glyphicon-question-sign");
+	} 
+	if(d.TrainedToday === "yes") { 
+		d3.select("#TRAINEDVALUE").attr("class","glyphicon glyphicon-ok");
+	}
+	if(d.TrainedToday === "no") { 
+		d3.select("#TRAINEDVALUE").attr("class", "glyphicon glyphicon-remove");
+	}
 	
-	function render(newValue) {
-		svg = d3.select(container)
-			.append('svg:svg')
-				.attr('class', 'gauge')
-				.attr('width', config.clipWidth)
-				.attr('height', config.clipHeight);
-		
-		//var centerTx = centerTranslation();
-		
-		var arcs = svg.append('g')
-				.attr('class', 'arc')
-				.attr('transform', 	function () {
-					return 'translate('+r +','+ r +')';
-				});
-		
-		arcs.selectAll('path')
-				.data(tickData)
-				.enter().append('path')
-				.attr('fill', function(d, i) {
-					return config.arcColorFn(d * i);
-				})
-				.attr('d', arc);
-		
-		var lg = svg.append('g')
-				.attr('class', 'label')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-		lg.selectAll('text')
-				.data(ticks)
-				.enter().append('text')
-				.attr('transform', function(d) {
-					var ratio = scale(d);
-					var newAngle = config.minAngle + (ratio * range);
-					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
-				})
-				.text(config.labelFormat);
+	//PRACTICEVALUE
+	//ExerciseGymYesterday
+	
+	d3.select("#HEADACHEVALUE").text(function() {return d.SymptomHeadacheToday});
+	d3.select("#JMACHEVALUE").text(function() {return d.SymptomJointorMuscleAcheToday});
+	d3.select("#PRACTICEVALUE").text(function() {return d.ExerciseTrainingYesterday});
+	d3.select("#GYMWEIGHTSVALUE").text(function() {return d.ExerciseGymYesterday});
+	
+	//var nrgfill
+	//if(d.EnergyLevel > 0) { nrgfill = (d.EnergyLevel * 100)/5;} else { nrgfill = 0;}
 
-		var lineData = [ [config.pointerWidth / 2, 0], 
-						[0, -pointerHeadLength],
-						[-(config.pointerWidth / 2), 0],
-						[0, config.pointerTailLength],
-						[config.pointerWidth / 2, 0] ];
-		
-		var pointerLine = d3.svg.line().interpolate('monotone');
-		
-		var pg1 = svg.append('g').data([lineData])
-				.attr('class', 'pointer')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-				
-		pointer1 = pg1.append('path')
-			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-			.attr('transform', 'rotate(' +config.minAngle +')')
-			.attr('fill', "blue");
-		
-		var pg2 = svg.append('g').data([lineData])
-		.attr('class', 'pointer2')
-		.attr('transform', function () {
-			return 'translate('+r +','+ r +')';
+	d3.select(".nrgforegroundrect").attr("width", function() {
+		return d.EnergyLevel > 0 ? (d.EnergyLevel * 100)/5 : 0;
+	}).attr("height", 20);
+	
+	if(d.MuscleSoreness > 0 && d.MuscleSoreness <= 1) {
+		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/happy.png"; })
+	}
+	if(d.MuscleSoreness > 1 && d.MuscleSoreness <= 2) {
+		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/smile.png"; })
+	}
+	if(d.MuscleSoreness > 2 && d.MuscleSoreness <= 3) {
+		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/neutral.png"; })
+	}
+	if(d.MuscleSoreness > 3 && d.MuscleSoreness <= 4) {
+		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/sad.png"; })
+	}
+	if(d.MuscleSoreness > 4 && d.MuscleSoreness <= 5) {
+		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/crying.png"; })
+	}
+	
+	var notesarray = d.ResultShow.split(';');
+	console.log(notesarray);
+	d3.selectAll(".resultsparas").remove();
+	
+	for (var i = 0; i < notesarray.length; i++){
+		d3.select("#RESULTSHOW").append("p").attr("class", "resultsparas").text(function() {
+			return notesarray[i];
 		});
-		
-		pointer2 = pg2.append('path')
-		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-		.attr('transform', 'rotate(' +config.minAngle +')');
 			
-		//update(newValue === undefined ? 0 : newValue);
-	}
-	that.render = render;
-	
-	function update(newValue, newValue2, newConfiguration) {
-		if ( newConfiguration  !== undefined) {
-			configure(newConfiguration);
-		}
-		var ratio1 = scale(newValue);
-		var newAngle = config.minAngle + (ratio1 * range);
-		var ratio2 = scale(newValue2);
-		var newAngle2 = config.minAngle + (ratio2 * range);
-		pointer1.transition()
-			.duration(config.transitionMs)
-			.ease('elastic')
-			.attr('transform', 'rotate(' +newAngle +')');
-		
-		pointer2.transition()
-		.duration(config.transitionMs)
-		//.ease('elastic')
-		.attr('transform', 'rotate(' +newAngle2 +')');
 	}
 	
-	that.update = update;
-
-	configure(configuration);
-	
-	return that;
-};
-
-var fortgauge = function(container, configuration) {
-	var that = {};
-	
-	var config = {size : 300, clipWidth	: 300,clipHeight: 300,ringInset: 20,ringWidth: 60,
-				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.9,
-				minValue: 0,maxValue: 6,
-		minAngle: -90,maxAngle: 90,
-		transitionMs : 4000, majorTicks: 5,labelFormat: d3.format(',g'),labelInset: 10,
-		arcColorFn: d3.interpolateHsl(d3.rgb('#E2B5F1'), d3.rgb('#BC11F3'))
-	};
-	
-	var range = undefined;
-	var r = undefined;
-	var pointerHeadLength = undefined;
-	var value = 0;
-	
-	var svg = undefined;
-	var arc = undefined;
-	var scale = undefined;
-	var ticks = undefined;
-	var tickData = undefined;
-	var pointer = undefined;
-
-
-	
-	function configure(configuration) {
-		var prop = undefined;
-		for ( prop in configuration ) {
-			config[prop] = configuration[prop];
-		}
-		
-		range = config.maxAngle - config.minAngle;
-		r = config.size / 2;
-		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
-
-		// a linear scale that maps domain values to a percent from 0..1
-		scale = d3.scale.linear()
-			.range([0,1])
-			.domain([config.minValue, config.maxValue]);
-			
-		ticks = scale.ticks(config.majorTicks);
-		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
-		
-		arc = d3.svg.arc()
-			.innerRadius(r - config.ringWidth - config.ringInset)
-			.outerRadius(r - config.ringInset)
-			.startAngle(function(d, i) {
-				var ratio = d * i;
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				
-				//return deg2rad(config.minAngle + (ratio * range));
-			})
-			.endAngle(function(d, i) {
-				var ratio = d * (i+1);
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				//return deg2rad(config.minAngle + (ratio * range));
-			});
-	}
-	that.configure = configure;
-	
-
-	
-	function render(newValue) {
-		svg = d3.select(container)
-			.append('svg:svg')
-				.attr('class', 'gauge')
-				.attr('width', config.clipWidth)
-				.attr('height', config.clipHeight);
-		
-		//var centerTx = centerTranslation();
-		
-		var arcs = svg.append('g')
-				.attr('class', 'arc')
-				.attr('transform', 	function () {
-					return 'translate('+r +','+ r +')';
-				});
-		
-		arcs.selectAll('path')
-				.data(tickData)
-				.enter().append('path')
-				.attr('fill', function(d, i) {
-					return config.arcColorFn(d * i);
-				})
-				.attr('d', arc);
-		
-		var lg = svg.append('g')
-				.attr('class', 'label')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-		lg.selectAll('text')
-				.data(ticks)
-				.enter().append('text')
-				.attr('transform', function(d) {
-					var ratio = scale(d);
-					var newAngle = config.minAngle + (ratio * range);
-					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
-				})
-				.text(config.labelFormat);
-
-		var lineData = [ [config.pointerWidth / 2, 0], 
-						[0, -pointerHeadLength],
-						[-(config.pointerWidth / 2), 0],
-						[0, config.pointerTailLength],
-						[config.pointerWidth / 2, 0] ];
-		
-		var pointerLine = d3.svg.line().interpolate('monotone');
-		
-		var pg1 = svg.append('g').data([lineData])
-				.attr('class', 'pointer')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-				
-		pointer1 = pg1.append('path')
-			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-			.attr('transform', 'rotate(' +config.minAngle +')')
-			.attr('fill', "purple");
-		
-		var pg2 = svg.append('g').data([lineData])
-		.attr('class', 'pointer2')
-		.attr('transform', function () {
-			return 'translate('+r +','+ r +')';
-		});
-		
-		pointer2 = pg2.append('path')
-		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-		.attr('transform', 'rotate(' +config.maxAngle +')');
-			
-		//update(newValue === undefined ? 0 : newValue);
-	}
-	that.render = render;
-	
-	function update(newValue, newValue2, newConfiguration) {
-		if ( newConfiguration  !== undefined) {
-			configure(newConfiguration);
-		}
-		var ratio1 = scale(newValue);
-		var newAngle = config.minAngle + (ratio1 * range);
-		var ratio2 = scale(newValue2);
-		var newAngle2 = config.minAngle + (ratio2 * range);
-		pointer1.transition()
-			.duration(config.transitionMs)
-			.ease('elastic')
-			.attr('transform', 'rotate(' +newAngle +')');
-		
-		pointer2.transition()
-		.duration(config.transitionMs)
-		//.ease('elastic')
-		.attr('transform', 'rotate(' +newAngle2 +')');
-	}
-	
-	that.update = update;
-
-	configure(configuration);
-	
-	return that;
-};
-
-var combinedgauge = function(container, configuration) {
-	var that = {};
-	
-	var config = {size : 400, clipWidth	: 400,clipHeight: 300,ringInset: 20,ringWidth: 60,
-				pointerWidth: 10, pointerTailLength: 5,pointerHeadLengthPercent: 0.8,
-				minValue: 0,maxValue: 4,
-		minAngle: -90,maxAngle: 90,
-		transitionMs : 4000, majorTicks: 12,labelFormat: d3.format(',g'),labelInset: 10,
-		arcColorFn: d3.interpolateHsl(d3.rgb('#A7BFEC'), d3.rgb('#C8A7EC'))
-	};
-	
-	var range = undefined;
-	var r = undefined;
-	var pointerHeadLength = undefined;
-	var pointerHeadLength2 = undefined;
-	var value = 0;
-	
-	var svg = undefined;
-	var arc = undefined;
-	var scale = undefined;
-	var ticks = undefined;
-	var tickData = undefined;
-	var pointer = undefined;
-
-
-	
-	function configure(configuration) {
-		var prop = undefined;
-		for ( prop in configuration ) {
-			config[prop] = configuration[prop];
-		}
-		
-		range = config.maxAngle - config.minAngle;
-		r = config.size / 2;
-		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
-		pointerHeadLength2 = Math.round(r * config.pointerHeadLengthPercent * 0.9);
-
-		// a linear scale that maps domain values to a percent from 0..1
-		scale = d3.scale.linear()
-			.range([0,1])
-			.domain([config.minValue, config.maxValue]);
-			
-		ticks = scale.ticks(config.majorTicks);
-		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
-		
-		arc = d3.svg.arc()
-			.innerRadius(r - config.ringWidth - config.ringInset)
-			.outerRadius(r - config.ringInset)
-			.startAngle(function(d, i) {
-				var ratio = d * i;
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				
-				//return deg2rad(config.minAngle + (ratio * range));
-			})
-			.endAngle(function(d, i) {
-				var ratio = d * (i+1);
-				return (config.minAngle + (ratio * range)) * Math.PI / 180;
-				//return deg2rad(config.minAngle + (ratio * range));
-			});
-	}
-	that.configure = configure;
-	
-
-	
-	function render(newValue) {
-		svg = d3.select(container)
-			.append('svg:svg')
-				.attr('class', 'gauge')
-				.attr('width', config.clipWidth)
-				.attr('height', config.clipHeight);
-		
-		//var centerTx = centerTranslation();
-		
-		var arcs = svg.append('g')
-				.attr('class', 'arc')
-				.attr('transform', 	function () {
-					return 'translate('+r +','+ r +')';
-				});
-		
-		arcs.selectAll('path')
-				.data(tickData)
-				.enter().append('path')
-				.attr('fill', function(d, i) {
-					return config.arcColorFn(d * i);
-				})
-				.attr('d', arc);
-		
-		var lg = svg.append('g')
-				.attr('class', 'label')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-		lg.selectAll('text')
-				.data(ticks)
-				.enter().append('text')
-				.attr('transform', function(d) {
-					var ratio = scale(d);
-					var newAngle = config.minAngle + (ratio * range);
-					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
-				})
-				.text(config.labelFormat);
-
-		var lineData = [ [config.pointerWidth / 2, 0], 
-						[0, -pointerHeadLength],
-						[-(config.pointerWidth / 2), 0],
-						[0, config.pointerTailLength],
-						[config.pointerWidth / 2, 0] ];
-		
-		var lineData2 = [ [config.pointerWidth / 2, 0], 
-			[0, -pointerHeadLength2],
-			[-(config.pointerWidth / 2), 0],
-			[0, config.pointerTailLength],
-			[config.pointerWidth / 2, 0] ];
-		
-		
-		var pointerLine = d3.svg.line().interpolate('monotone');
-		
-		var pg1 = svg.append('g').data([lineData2])
-				.attr('class', 'pointer')
-				.attr('transform', function () {
-					return 'translate('+r +','+ r +')';
-				});
-				
-		pointer1 = pg1.append('path')
-			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-			.attr('transform', 'rotate(' +config.minAngle +')')
-			.attr('fill', "blue");
-		
-		var pg2 = svg.append('g').data([lineData])
-		.attr('class', 'pointer2')
-		.attr('transform', function () {
-			return 'translate('+r +','+ r +')';
-		});
-		
-		pointer2 = pg2.append('path')
-		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-		.attr('transform', 'rotate(' +config.minAngle +')');
-		
-		var pg3 = svg.append('g').data([lineData2])
-		.attr('class', 'pointer3')
-		.attr('transform', function () {
-			return 'translate('+r +','+ r +')';
-		});
-		
-		pointer3 = pg3.append('path')
-		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-		.attr('transform', 'rotate(' +config.maxAngle +')')
-		.attr('fill', "purple");;
-		
-		var pg4 = svg.append('g').data([lineData])
-		.attr('class', 'pointer4')
-		.attr('transform', function () {
-			return 'translate('+r +','+ r +')';
-		});
-		
-		pointer4 = pg2.append('path')
-		.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
-		.attr('transform', 'rotate(' +config.maxAngle +')');
-			
-		//update(newValue === undefined ? 0 : newValue);
-	}
-	that.render = render;
-	
-	function update(newValue, newValue2, newValue3, newValue4, newConfiguration) {
-		if ( newConfiguration  !== undefined) {
-			configure(newConfiguration);
-		}
-		var ratio1 = scale(newValue);
-		var newAngle = config.minAngle + (ratio1 * range);
-		pointer1.transition()
-			.duration(config.transitionMs)
-			.ease('elastic')
-			.attr('transform', 'rotate(' +newAngle +')');
-		
-		var ratio2 = scale(newValue2);
-		var newAngle2 = config.minAngle + (ratio2 * range);
-		pointer2.transition()
-		.duration(config.transitionMs)
-		//.ease('elastic')
-		.attr('transform', 'rotate(' +newAngle2 +')');
-		
-		var ratio3 = scale(newValue3);
-		var newAngle3 = config.minAngle + (ratio3 * range);
-		pointer3.transition()
-		.duration(config.transitionMs)
-		.ease('elastic')
-		.attr('transform', 'rotate(' +newAngle3 +')');
-		
-		var ratio4 = scale(newValue4);
-		var newAngle4 = config.minAngle + (ratio4 * range);
-		pointer4.transition()
-		.duration(config.transitionMs)
-		//.ease('elastic')
-		.attr('transform', 'rotate(' +newAngle4 +')');
-	}
-	
-	that.update = update;
-
-	configure(configuration);
-	
-	return that;
-};
-
-
-
-
-// 	powerGauge1.render();
-// 	powerGauge1.update(Math.random() * 10);
-
-
-var redox = d3.csv('@routes.Application.getFullRedoxCSV()', function(error3, data) {
 	
 	
-	data.forEach(function(d) {
-		
-		d.playernumber = d.playernumber;
-		d.athlete = d.athlete;
-		d.TIME_KEY = parseDate(d.Blood_Test_Time);
-		d.FORD = +d.FORD;
-		d.FORT = +d.FORT;
-		
-		d.FORD_ADJ = +d.FORD_ADJ;
-		d.FORT_ADJ = +d.FORT_ADJ;
-		//console.log("got - " + d.FORD +" - " + d.FORT);
-		
-		console.log("last date is " + d.playername);
-		var powerGauge1 = fordgauge('#power-gauge-'+d.playernumber);
-		powerGauge1.render();
-		powerGauge1.update(d.FORD, d.FORD_ADJ);
-		
-		var powerGauge2 = fortgauge('#power-gauge-'+d.playernumber);
-		powerGauge2.render();
-		powerGauge2.update(d.FORT, d.FORT_ADJ);
-		
-		var powerGauge3 = combinedgauge('#power-gauge-'+d.playernumber);
-		powerGauge3.render();
-		powerGauge3.update(d.FORD, d.FORD_ADJ, d.FORT, d.FORT_ADJ);
-		
-
-		
+	d3.select("#ORRECOSSTEXT").attr("class", "ssparas").text(function() {
+		return "\"" + d.NOTES + ".\"";
+	});
+	
+	d3.select("#ORRECOSSNAME").attr("class", "ssparas").text(function() {
+		return "Sports Scientist";
 	});
 	
 	
+
 	
-	
-	
+}
+
+// sets the viewport to the last set in the cookie
+redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
+
+
+} // end drawRedox()
+
+
+function drawRedoxButtons(data3) {
+var RDXFOCUS_showhide_button = redoxsvg.append("g").attr("class", "RDXDATA_Button")
+.attr("transform", "translate("+ 12 + "," + 10 + ")");
+
+RDXFOCUS_showhide_button.append("text").attr("id", "rdxbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640")
+.text(function() {
+return RDXview_state? "hide" : "RDX";
 });
+
+var textWidth = RDXFOCUS_showhide_button.select("text").node().getBBox().width;
+			
+RDXFOCUS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
+.attr("width", textWidth + 20).attr("height", 20)
+.attr("class", "showhidebuttons").attr("id", "RDXDATA_Button") 
+.on("click", function(){
+
+//showhideGPS focus panel()
+RDXview_state = !RDXview_state;
+document.cookie="rdxviewstate="+ RDXview_state +";";
+d3.select(".showhidebuttons").style("stroke-width", RDXview_state ? 1 : 0);
+if(RDXview_state){
+	redoxsvg.attr("height", redoxpane_h);
+} else {
+	redoxsvg.attr("height", 120);
+}
+d3.selectAll("#rdxbutton").text(function(d) {return RDXview_state ? "hide" : "RDX";});        	
+});
+}
+
+
+
+
+
+
+function redrawRedox() {
+
+redoxfocus.selectAll("#defenceline").attr("d", defenceline);
+redoxfocus.selectAll("#defenceadjline").attr("d", defenceadjline);
+redoxfocus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); });
+redoxfocus.selectAll("#stressline").attr("d", stressline);
+redoxfocus.selectAll("#stressadjline").attr("d", stressadjline);
+redoxfocus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); });
+
+
+redoxfocus.selectAll("#rdxdangerzone").attr("d", dangerarea(height3));
+redoxfocus.selectAll("#rdxdefenceamberzone").attr("d", defenceamberarea);
+redoxfocus.selectAll("#rdxstressamberzone").attr("d", stressamberarea);
+redoxfocus.selectAll("#rdxsafezone").attr("d", safearea);
+
+redoxfocus.selectAll(".verticallines").attr("x1", function(d) { return xfocus(d.TEST_TIME);}).attr("x2", function(d) { return xfocus(d.TEST_TIME);});
+
+redoxctx.selectAll("#STRESSCTX").attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+redoxctx.selectAll("#DEFENCECTX").attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+redoxctx.selectAll(".CTXcircles").attr("cx", function(d) { return xfocus(d.TEST_TIME); });
+redoxctx.selectAll("#CTXlabel").attr("x", function(d) { return xfocus(d.TEST_TIME) - 20; });
+
+
+}  //end redrawRedox()
+
+
+
+
+
+
+function redrawChart() {
+
+datatip.transition().duration(200).style("opacity", 0);
+gametip.transition().duration(200).style("opacity", 0);
+
+redrawRedox();
+
+
+redoxfocus.select(".axis--x").call(xAxis);
+} // end redrawchart
+
+
+
+
+
+
+
+
+
+function brushed() {
+
+console.log("brushing");
+var s = d3.event.selection || xcontext.range();
+
+if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") {
+	console.log("returning");
+	document.cookie="xl="+ s[0] +";";
+	document.cookie="xr="+ s[1] +";";
+	return;
+}
+xfocus.domain(s.map(xcontext.invert, xcontext));
+
+redrawChart();
+
+// redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+// 		  .scale(width / (s[1] - s[0]))
+// 		  .translate(-s[0], 0));
+
+context.select(".leftbookend").attr("width", s[0]);
+context.select(".rightbookend").attr("x", s[1]);
+
+} //end brushed
+
+
+function zoomed() {
+console.log("zooming");
+if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") {return;}
+var t = d3.event.transform;
+
+xfocus.domain(t.rescaleX(xcontext).domain());
+var n = t.rescaleX(xcontext).domain();
+redrawChart();
+
+context.select(".brush").call(brush.move, xfocus.range().map(t.invertX, t));
+context.select(".leftbookend").attr("width", xcontext(n[0]));
+context.select(".rightbookend").attr("x", xcontext(n[1]));
+} // end zoomed
+
+
+
+
+d3.select(window).on('resize', resize);
+function resize() {
+// update width
+windowwidth = parseInt(d3.select('#main_chart').style('width'), 10);
+redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
+
+
+
+d3.select('#redoxsvg').attr("width", windowwidth).attr("height", redoxpane_h);
+
+width = +redoxsvg.attr("width") - gps_margin.left - gps_margin.right,
+height = +redoxsvg.attr("height") - gps_margin.top - gps_margin.bottom,
+height2 = +gpsdatasvg.attr("height") - context_margin.top - context_margin.bottom,
+height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
+
+ d3.select('#clip').attr("width", width).attr("height", height);
+ d3.select('#cliprect').attr("width", width).attr("height", height);
+ 
+
+xfocus.range([0, width]),
+yfocus.range([height, 0]);
+xcontext.range([0, width]),
+ycontext.range([height2, 0]);
+
+checkcookie();
+
+
+context.select(".axis--x").call(xAxis2);
+redrawChart();
+
+redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+		  .scale(width / (xr - xl))
+		  .translate(-xl, 0));
+
+
+} // end resize
+
+
+
+function checkcookie() {
+
+//RDXview_state
+if(document.cookie.indexOf("rdxviewstate") >= 0) {
+	
+	var cookiearray = document.cookie.split(';');
+	
+	for(var i=0; i<cookiearray.length; i++){
+        if(cookiearray[i].split('=')[0].trim() === "rdxviewstate"){
+        	
+    		var setting = cookiearray[i].split('=')[1].trim();
+    		if(setting === "true") {
+    			RDXview_state = true;
+    		} else {
+    			RDXview_state = false;
+    		}
+        }
+        
+     }
+	
+} else {
+	RDXview_state = true;
+}
+
+if(document.cookie.indexOf("xl") >= 0) {
+	var lhs,rhs;
+	var cookiearray = document.cookie.split(';');
+	
+	for(var i=0; i<cookiearray.length; i++){
+        if(cookiearray[i].split('=')[0].trim() === "xl"){
+        	
+        
+        	if(isNaN(cookiearray[i].split('=')[1].trim())){
+        		console.log("Nan");
+        		xl = threeweeksago;
+        	} else {
+        		xl = cookiearray[i].split('=')[1].trim();
+        		//console.log("not Nan");
+        	}
+        	
+        }
+        if(cookiearray[i].split('=')[0].trim() === "xr") {
+        	if(isNaN(cookiearray[i].split('=')[1].trim())){
+        		xr = oneweekahead;
+        	} else {
+        		xr = cookiearray[i].split('=')[1].trim();
+        	}
+      	  xr = cookiearray[i].split('=')[1].trim();
+        }
+     }
+	
+} else {
+	xl = threeweeksago;
+	xr = oneweekahead;
+}
+
+
+} // end checkcookie
+
+(function ($) {
+  $(document).ready(function(){
+
+    // hide .navbar first
+   //$(".navbar").hide();
+
+    // fade in .navbar
+    $(function () {
+        $(window).scroll(function () {
+
+                 // set distance user needs to scroll before we start fadeIn
+            if ($(this).scrollTop() > 10) {
+               // $('.navbar').fadeIn();
+                $('.navbar').fadeOut();
+            } else {
+                //$('.navbar').fadeOut();
+                $('.navbar').fadeIn();
+            }
+        });
+    });
+
+});
+  }(jQuery));
+	  
 </script>
-
-
     
 }

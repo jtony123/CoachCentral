@@ -18,11 +18,11 @@
 		<li><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
 		}
 		
-<!-- 		@if(active.equals("redox")){ -->
-<!-- 		<li class="active"><a href='@routes.Application.redox()'>Redox</a></li> -->
-<!-- 		} else { -->
-<!-- 		<li><a href='@routes.Application.redox()'>Redox</a></li> -->
-<!-- 		} -->
+		@if(active.equals("redox")){
+		<li class="active"><a href='@routes.Application.redox(1, "All")'>Redox</a></li>
+		} else {
+		<li><a href='@routes.Application.redox(1, "All")'>Redox</a></li>
+		}
 		
 		
 		</ul>

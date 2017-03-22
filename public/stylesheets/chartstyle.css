@@ -353,6 +353,7 @@ position: absolute;
 
 .handle { 
 	fill: red;
+	height: 20px;
  } 
 .leftbookend {
 	clip-path: url(#ctxclip);
@@ -369,11 +370,12 @@ position: absolute;
 	clip-path: url(#ctxclip);
 	fill: #FBFBFB;
 	fill-opacity: 0;
+	height: 20px;
 }
 .selection {
 	fill: lightgrey;
 	fill-opacity: 0.1;
-	
+	height: 20px;
 }
 .contextarea {
   fill: steelblue;
@@ -394,4 +396,8 @@ position: absolute;
 }
 .domain {
 stroke-width : 0px;
+}
+
+.brush {
+	height:20px;
 }

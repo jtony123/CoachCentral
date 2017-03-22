@@ -163,22 +163,94 @@ public class Application extends Controller {
     
 
     
+    
+    
     @Restrict({@Group({"coach"})})
-    public CompletionStage<Result> redox() {
+    public CompletionStage<Result> redox(int playernumber, String category) {
     	System.out.println("redox called");
-    	User user = User.findByEmail(session().get("connected"));
     	
-    	int playernumber = 4;
-    	String category = "All";
+    	
+    	//Player test = Player.findByNameOrAlias("quincyacy");
+    	
+    	//System.out.println("player alias found is " + test.playername);
+    	
+    	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
     	Player player;
-    	List<Player> players = Player.find.all();
+    	List<Player> players;
+    	
+    	if(categoryFound != null){
+    		//System.out.println("cat not null");
+    		players = user.getPlayersCategorisedWith(categoryFound);
+    		
+    		// check for empty category for this user
+    		if(players == null || players.isEmpty()){
+    		//empty category, return 'no players'
+    			//System.out.println("players is null, sending no players");
+    			player = Player.findByPlayername("no players");
+    			players.add(player);
+    		} else {
+    		// the category is not empty
+    			//System.out.println("players not null");
+    	    	if (playernumber == 0) {
+    	    		// to handle initial call
+    	    		//System.out.println("handle initial call, sending player 0");
+    	    		player = players.get(0);
+    	    	} else {
+    	    		player = Player.findByNumber(playernumber);
+    	    		//System.out.println("finding player by number");
+    	    		
+    	    		// check first if the player is null(out of range)
+    	    		if(player == null) {
+    	    			player = players.get(0);
+    	    		} else {
+    	    			// check if the player that the user had highlighted is in this category
+        	    		if (!player.categories.contains(categoryFound)){
+        	    			//System.out.println("player not in this category, sending player 0");
+        	    			player = players.get(0);
+        	    		}
+    	    		}
+    	    		
+    	    		 
+    	    	}
+    		}
+    		
+    	} else {
+    		//System.out.println("cat is null");
+    		players = user.getPlayersCategorisedWith(Category.findByName("All"));
+    		player = players.get(0);
+    		category = "All";
+    	}
+    	
+    	List<Category> categories = Category.find.all();
+    	//System.out.println("player count = " + players.size());
+    	int playerIndex = players.indexOf(player);
+    	//System.out.println("......");
     	
     	
     	
     	
-    	return CompletableFuture.completedFuture(ok(redox.render(user, "redox", players)));
+    	
+    	
+    	
+//    	User user = User.findByEmail(session().get("connected"));
+//    	
+//    	int playernumber = 4;
+//    	String category = "All";
+//    	Category categoryFound = Category.findByName(category);
+//    	Player player;
+//    	List<Player> players = Player.find.all();
+    	
+    	
+    	return CompletableFuture.completedFuture(ok(redox.render(user, "redox", player, playerIndex, players, category, categories)));
+    	
+    	
+    	//return CompletableFuture.completedFuture(ok(redox.render(user, "redox", players)));
     }
+    
+    
+    
+    
     
   public Result getFullRedoxCSV(){
     	
