@@ -24,15 +24,11 @@ public class RedoxUtilities {
 	static String fileExtension = ".csv";
 	// column order is important!
 	String defaultheader = "playername,"
-			+"NOTES,"
-			+"TrainedToday,AteToday,ExerciseGymYesterday,ExerciseTrainingYesterday,ExerciseGameYesterday,"
-			+"ExerciseNoneYesterday,ExerciseOtherYesterday,EnergyLevel,MuscleSoreness,SymptomFeverToday,"
-			+"SymptomFeverPreviously,SymptomSoreThroatToday,SymptomSoreThroatPreviously,SymptomHeadacheToday,"
-			+"SymptomHeadachePreviously,SymptomJointorMuscleAcheToday,SymptomJointorMuscleAchePreviously,"
-			+"SymptomDiarrheaToday,SymptomDiarrheaPreviously,SymptomOther,"
+			+"ResultsShow,NOTES,POTOUT,ACTION,"
+			+"TrainedToday,AteToday,ExerciseGym,ExerciseTraining,ExerciseGame,ExerciseRest,ExerciseOther,"
+			+"EnergyLevel,MuscleSoreness,"
+			+"Fever,SoreThroat,Headache,JointorMuscleAche,Diarrhea,Other,"
 			+"TEST_TIME,DEFENCE,DEFENCE_INC,DEFENCE_MEAN,DEFENCE_CDT,STRESS,STRESS_INC,STRESS_MEAN,STRESS_CDT";
-	
-	
 	
 	
 	
@@ -84,6 +80,125 @@ public class RedoxUtilities {
 		return filename + fileVersion + fileExtension;
 	}
 	
+	public Map<String, ArrayList<String>> getDemoRedoxData(String fileName){
+		
+		
+		Map<String, ArrayList<String>> playerdatabyname = new HashMap<String, ArrayList<String>>();
+		
+		BufferedReader fileReader = null;
+		String line = "";
+		//String newLine = "";
+		
+		try {
+			fileReader = new BufferedReader(new FileReader(fileName));
+
+			// this next line should contain the column headings
+			header = fileReader.readLine();
+
+			// split the line into an array
+			String[] headertokens = header.split(",");
+			for(int i = 0; i<headertokens.length; ++i){
+				headertokens[i] = headertokens[i].replaceAll(" ", "").trim();
+				
+			}
+
+			List<String> headerstrings = Arrays.asList(headertokens);
+			
+			// get the index of each of the required columns of data
+			int nameindex = headerstrings.indexOf("playername");
+			int testtime = headerstrings.indexOf("test_date");
+			int trainedtoday = headerstrings.indexOf("TrainedToday");
+			int defence = headerstrings.indexOf("FORD");
+			int stress = headerstrings.indexOf("FORT");
+			
+			// Read the file line by line
+
+			while ((line = fileReader.readLine()) != null) {
+				// replace all NA values with 0
+				line = line.replaceAll("NA", "0");
+				
+				// split the line into string tokens
+				String[] tokens = line.split(",");
+				
+				// check for blank lines
+				if(tokens.length > 1){
+					if(tokens.length > 22){
+					if( tokens[0].length() > 3){
+					
+					String playername = tokens[nameindex];
+					String timestring = tokens[testtime];
+					String fordstring = tokens[defence];
+					String fortstring = tokens[stress];
+					
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+					Date utctime = null;
+					try {
+						utctime = sdf.parse(timestring);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					Date actual = new Date(utctime.getTime());
+					// generate a unix timestamp from this date
+					Long starttimesecs = actual.getTime()/1000;
+	
+					// if the map already contains this player name as a key
+					if (playerdatabyname.containsKey(playername)) {
+						
+							String entry = playername + ",,";
+							for(int i = trainedtoday; i < defence; ++i){
+								entry += tokens[i] + ",";
+							}
+							
+							
+							entry+= starttimesecs + ","
+							+ fordstring + ",1,0,1.1,"
+							+ fortstring + ",1,0,2.5";
+							
+							playerdatabyname.get(playername).add(entry);
+							
+	
+	
+	
+					} else {
+						// new player encountered(not already in map)
+						// instantiate a new list of strings for this player
+						
+							String entry = playername + ",,";
+							for(int i = trainedtoday; i < defence; ++i){
+								entry += tokens[i] + ",";
+							}
+							
+							entry+= starttimesecs + ","
+							+ fordstring + ",1,0,1.1,"
+							+ fortstring + ",1,0,2.5";
+							
+							ArrayList<String> temp = new ArrayList<String>();
+							temp.add(entry);
+							
+							playerdatabyname.put(playername, temp);
+							
+	
+						
+					} // end check for blamk lines
+				
+				}}} // end if check for blank lines
+
+			} // end while loop reading files
+			
+			
+			
+			fileReader.close();
+		} catch (IOException e) {
+			// TODO return an error to the user
+			e.printStackTrace();
+		}
+		
+		return playerdatabyname;
+	}
+	
 	
 	public Map<String, ArrayList<String>> getRedoxData(String fileName){
 		
@@ -111,7 +226,7 @@ public class RedoxUtilities {
 			// get the index of each of the required columns of data
 			int nameindex = headerstrings.indexOf("playername");
 			int testtime = headerstrings.indexOf("test_date");
-			int trainedtoday = headerstrings.indexOf("TrainedToday");
+			int trainedtoday = headerstrings.indexOf("Trained Today");
 			int defence = headerstrings.indexOf("FORD");
 			int stress = headerstrings.indexOf("FORT");
 			
@@ -164,6 +279,7 @@ public class RedoxUtilities {
 							for(int i = trainedtoday; i < defence; ++i){
 								entry += tokens[i] + ",";
 							}
+							
 							
 							entry+= starttimesecs + ","
 							+ fordstring + ",1,0,1.1,"
@@ -314,7 +430,11 @@ public class RedoxUtilities {
 					if(tokens[i].equalsIgnoreCase("0") || tokens[i].equalsIgnoreCase("")){
 						datapoints[i] = 0.0;
 					}else {
-						datapoints[i] = Double.parseDouble(tokens[i]);
+						try{
+							datapoints[i] = Double.parseDouble(tokens[i]);
+						} catch (Exception e) {
+							datapoints[i] = 0.0;
+						}
 					}
 				}
 				

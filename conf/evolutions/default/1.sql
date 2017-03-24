@@ -89,6 +89,49 @@ create table questionnaire (
   constraint pk_questionnaire primary key (id)
 );
 
+create table rdx_alert_report (
+  id                            bigint auto_increment not null,
+  stress_status                 varchar(255),
+  defence_status                varchar(255),
+  result                        varchar(255),
+  potentialoutcomes             varchar(255),
+  actions                       varchar(255),
+  trainingloadadvice            varchar(1024),
+  dietaryadvice                 varchar(1024),
+  sleepadvice                   varchar(1024),
+  constraint pk_rdx_alert_report primary key (id)
+);
+
+create table redox (
+  id                            bigint auto_increment not null,
+  player_id                     bigint,
+  rdxalertreport_id             bigint,
+  date                          datetime(6),
+  eaten                         varchar(255),
+  exercised                     varchar(255),
+  fever                         varchar(255),
+  sorethroat                    varchar(255),
+  headache                      varchar(255),
+  jointmuscleache               varchar(255),
+  diarrhea                      varchar(255),
+  gymweights                    varchar(255),
+  practicetraining              varchar(255),
+  game                          varchar(255),
+  rest                          varchar(255),
+  other                         varchar(255),
+  energy                        double,
+  muscle_soreness               double,
+  orreco_scientist              varchar(255),
+  stress                        double,
+  defence                       double,
+  include_in_crit_diff          tinyint(1) default 0,
+  stress_threshold              double,
+  defence_threshold             double,
+  stress_status                 varchar(255),
+  defence_status                varchar(255),
+  constraint pk_redox primary key (id)
+);
+
 create table security_role (
   id                            bigint auto_increment not null,
   role_name                     varchar(255),
@@ -157,6 +200,12 @@ create index ix_question_question_category_question_category on question_questio
 alter table questionnaire add constraint fk_questionnaire_player_id foreign key (player_id) references player (id) on delete restrict on update restrict;
 create index ix_questionnaire_player_id on questionnaire (player_id);
 
+alter table redox add constraint fk_redox_player_id foreign key (player_id) references player (id) on delete restrict on update restrict;
+create index ix_redox_player_id on redox (player_id);
+
+alter table redox add constraint fk_redox_rdxalertreport_id foreign key (rdxalertreport_id) references rdx_alert_report (id) on delete restrict on update restrict;
+create index ix_redox_rdxalertreport_id on redox (rdxalertreport_id);
+
 alter table user_security_role add constraint fk_user_security_role_user foreign key (user_id) references user (id) on delete restrict on update restrict;
 create index ix_user_security_role_user on user_security_role (user_id);
 
@@ -208,6 +257,12 @@ drop index ix_question_question_category_question_category on question_question_
 alter table questionnaire drop foreign key fk_questionnaire_player_id;
 drop index ix_questionnaire_player_id on questionnaire;
 
+alter table redox drop foreign key fk_redox_player_id;
+drop index ix_redox_player_id on redox;
+
+alter table redox drop foreign key fk_redox_rdxalertreport_id;
+drop index ix_redox_rdxalertreport_id on redox;
+
 alter table user_security_role drop foreign key fk_user_security_role_user;
 drop index ix_user_security_role_user on user_security_role;
 
@@ -241,6 +296,10 @@ drop table if exists question_question_category;
 drop table if exists question_category;
 
 drop table if exists questionnaire;
+
+drop table if exists rdx_alert_report;
+
+drop table if exists redox;
 
 drop table if exists security_role;
 

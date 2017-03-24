@@ -182,6 +182,11 @@ var stressline = d3.line()
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.STRESS); });
 
+var stressline2 = d3.line()
+.curve(d3.curveMonotoneX)
+.x(function(d) { return xfocus(0); })
+.y(function(d) { return yfocus2(d.STRESS); });
+
 var stressadjline = d3.line()
 .curve(d3.curveMonotoneX)
 .defined(function(d,i) { return i != 0;})
@@ -202,6 +207,11 @@ var stressamberarea = d3.area()
 var defenceline = d3.line()
 .curve(d3.curveMonotoneX)
 .x(function(d) { return xfocus(d.TEST_TIME); })
+.y(function(d) { return yfocus2(d.DEFENCE); });
+
+var defenceline2 = d3.line()
+.curve(d3.curveMonotoneX)
+.x(function(d) { return xfocus(0); })
 .y(function(d) { return yfocus2(d.DEFENCE); });
 
 var defenceadjline = d3.line()

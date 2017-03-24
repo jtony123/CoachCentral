@@ -46,6 +46,9 @@ public class Player extends Model {
 	@Column(columnDefinition = "VARBINARY")
 	 public File file;
 	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
+	 public List<Redox> redox = new ArrayList<Redox>();
+	
 	 public String filename;
 	 
 	 public String redoxFilename;

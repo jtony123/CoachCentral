@@ -319,12 +319,30 @@
 					</div>
 					
 					<div class="orrecoss">
-						<div style="display: inline-block;"><img class="img-responsive"  id="ORRECOSSPIC" src='@routes.Assets.at("images/player-headshot.png")' alt=""/></div>
-					<div style="display: inline-block; width: 600px;"><i id="ORRECOSSTEXT"></i></div>
+						<div style="display: inline-block;">
+							<img class="img-responsive"  id="ORRECOSSPIC" src='@routes.Assets.at("images/player-headshot.png")' alt=""/>
+						</div>
+						<div style="display: inline-block;">
+							<i id="ORRECOSSTEXT"></i>
+						</div>
 					
-					<p id="ORRECOSSNAME"></p>
+						<div style="display: inline-block;">
+							<p id="ORRECOSSNAME" ></p>
+						</div>
 					</div>
-				
+				<div class="POTOUTCOMES" style="display: inline-block; width: 50%;">
+				POTENTIAL OUTCOMES
+					<ul id="POTOUTS" >
+					
+					</ul>
+					
+				</div>
+				<div class="ACTION" style="display: inline-block;">
+				ACTION
+					<ul id="ACTIONS">
+						
+					</ul>
+				</div>
 			
 			</div>
 		
@@ -359,7 +377,7 @@ height2 = +contextsvg.attr("height") - context_margin.top - context_margin.botto
 
 var redoxsvg = d3.select("#redoxsvg").attr("width", windowwidth).attr("height", redoxpane_h),
 
-rdx_margins = {top: 120, right: 20, bottom:0, left: 70},
+rdx_margins = {top: 120, right: 20, bottom:0, left: 20},
 width = +redoxsvg.attr("width") - rdx_margins.left - rdx_margins.right,
 height = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom,
 height3 = +redoxsvg.attr("height") - rdx_margins.top - rdx_margins.bottom;
@@ -507,16 +525,25 @@ yfocus1.domain([1500, 0]);
 var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
 
 data3.forEach(function(d, i) {
+	
+	 //replacing proxy characters for commas, because the commas corrupt the csv file formatting
+	 for(var y in d){
+		 d[y] = d[y].replace("§", ",");
+	 }
+	
 	d.TIME_KEY = +d.TEST_TIME;
-	d.TEST_TIME = new Date((+d.TEST_TIME)*1000);
+	d.TEST_TIME = new Date(+d.TEST_TIME);
 	d.DEFENCE = +d.DEFENCE;d.DEFENCE_CDT = +d.DEFENCE_CDT;d.DEFENCE_INC = +d.DEFENCE_INC;
 	d.STRESS = +d.STRESS;d.STRESS_CDT = +d.STRESS_CDT;d.STRESS_INC = +d.STRESS_INC;
 	d.EnergyLevel = +d.EnergyLevel;
 	d.NOTES = d.NOTES;
 	
+	
 });
 
 yfocus2.domain([0 , d3.max(data3, function(d){return d.STRESS + 1;})]);
+
+d3.select("#redoxanswersrow").attr("width", width);
 
 
 redoxctx.append("rect").attr("class", "rdxbackgroundrect").attr("width", width).attr("height", height3 + 120);
@@ -743,6 +770,8 @@ function updateanswerfields(d) {
 	d3.select("#vert" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "2px");
 	d3.select("#CTXcircle" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "3px");
 	
+	
+	
 	if(d.AteToday === "Not Known") { 
 		d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-question-sign");
 	} 
@@ -795,25 +824,36 @@ function updateanswerfields(d) {
 	}
 	
 	var notesarray = d.ResultShow.split(';');
-	console.log(notesarray);
 	d3.selectAll(".resultsparas").remove();
-	
 	for (var i = 0; i < notesarray.length; i++){
 		d3.select("#RESULTSHOW").append("p").attr("class", "resultsparas").text(function() {
 			return notesarray[i];
-		});
-			
+		});	
 	}
 	
 	
 	
-	d3.select("#ORRECOSSTEXT").attr("class", "ssparas").text(function() {
-		return "\"" + d.NOTES + ".\"";
-	});
+	d3.select("#ORRECOSSTEXT").attr("class", "ssparas").text(function() { return "\"" + d.NOTES + ".\"";});
 	
-	d3.select("#ORRECOSSNAME").attr("class", "ssparas").text(function() {
-		return "Sports Scientist";
-	});
+	d3.select("#ORRECOSSNAME").text(function() { return "Sports Scientist"; });
+	
+	var potoutsarray = d.POTOUT.split(';');
+	d3.selectAll(".POTOUTS").remove();
+	for (var i = 0; i < potoutsarray.length; i++){
+		d3.select("#POTOUTS").append("li").attr("class", "POTOUTS").text(function() {
+			return potoutsarray[i];
+		});
+			
+	}
+	
+	var actionsarray = d.ACTION.split(';');
+	d3.selectAll(".ACTIONS").remove();
+	for (var i = 0; i < actionsarray.length; i++){
+		d3.select("#ACTIONS").append("li").attr("class", "ACTIONS").text(function() {
+			return actionsarray[i];
+		});
+			
+	}
 	
 	
 
@@ -829,32 +869,38 @@ redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr 
 
 function drawRedoxButtons(data3) {
 var RDXFOCUS_showhide_button = redoxsvg.append("g").attr("class", "RDXDATA_Button")
-.attr("transform", "translate("+ 12 + "," + 10 + ")");
+.attr("transform", "translate("+50 + "," + 10 + ")");
 
 RDXFOCUS_showhide_button.append("text").attr("id", "rdxbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640")
-.text(function() {
-return RDXview_state? "hide" : "RDX";
-});
+	.text(function() {
+	return RDXview_state? "-" : "+";
+	});
+	
+//d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-remove");
 
 var textWidth = RDXFOCUS_showhide_button.select("text").node().getBBox().width;
 			
-RDXFOCUS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
-.attr("width", textWidth + 20).attr("height", 20)
-.attr("class", "showhidebuttons").attr("id", "RDXDATA_Button") 
-.on("click", function(){
+RDXFOCUS_showhide_button.append("rect").attr("rx", 4).attr("ry", 4)
+	.attr("width", textWidth + 15).attr("height", 18)
+	.attr("class", "showhidebuttons").attr("id", "RDXDATA_Button") 
+	.on("click", function(){
 
-//showhideGPS focus panel()
-RDXview_state = !RDXview_state;
-document.cookie="rdxviewstate="+ RDXview_state +";";
-d3.select(".showhidebuttons").style("stroke-width", RDXview_state ? 1 : 0);
-if(RDXview_state){
-	redoxsvg.attr("height", redoxpane_h);
-} else {
-	redoxsvg.attr("height", 120);
-}
-d3.selectAll("#rdxbutton").text(function(d) {return RDXview_state ? "hide" : "RDX";});        	
-});
-}
+	//showhideGPS focus panel()
+	RDXview_state = !RDXview_state;
+	document.cookie="rdxviewstate="+ RDXview_state +";";
+	//d3.select(".showhidebuttons").style("stroke-width", RDXview_state ? 2 : 1);
+	
+	if(RDXview_state){
+		redoxsvg.transition(d3.easeCubic).duration(1000).attr("height", redoxpane_h);
+	} else {
+		redoxsvg.transition(d3.easeCubic).duration(1000).attr("height", 120);
+	}
+	
+	d3.selectAll("#rdxbutton").text(function(d) {return RDXview_state ? "-" : "+";});        	
+	});
+
+
+} // end drawRedoxButtons
 
 
 
@@ -912,11 +958,11 @@ redoxfocus.select(".axis--x").call(xAxis);
 
 function brushed() {
 
-console.log("brushing");
+//console.log("brushing");
 var s = d3.event.selection || xcontext.range();
 
 if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") {
-	console.log("returning");
+	//console.log("returning");
 	document.cookie="xl="+ s[0] +";";
 	document.cookie="xr="+ s[1] +";";
 	return;
@@ -936,7 +982,7 @@ context.select(".rightbookend").attr("x", s[1]);
 
 
 function zoomed() {
-console.log("zooming");
+//console.log("zooming");
 if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") {return;}
 var t = d3.event.transform;
 

@@ -1,15 +1,22 @@
 package controllers;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -21,6 +28,7 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.Category;
 import models.Player;
+import models.Redox;
 import models.User;
 import play.Configuration;
 import play.data.DynamicForm;
@@ -376,9 +384,73 @@ public class Application extends Controller {
   public Result getRedoxCSV(Integer playernumber){
     	
     	System.out.println("getCSV called");
-   	 Player player = Player.findByNumber(playernumber);
-   	
-   	 return ok(new java.io.File(filepath +player.redoxFilename));
+//   	 Player player = Player.findByNumber(playernumber);
+//   	
+//   	 return ok(new java.io.File(filepath +player.redoxFilename));
+   	 
+ 	Player p = Player.findByNumber(playernumber);
+ 	List<Redox> rdx = Redox.findByPlayer(p);
+ 	Map<Long, String> timestamps = new TreeMap<Long, String>();
+ 	
+ 	for(Redox r : rdx) {
+ 		
+ 		Integer included = r.includeInCritDiff? 1: 0;
+ 		String aline = p.playername +","
+ 				+ r.rdxalertreport.result + ","
+ 				+ "notes," 
+ 				+ r.rdxalertreport.potentialoutcomes + ","
+ 				+ r.rdxalertreport.actions + ","
+ 				+"Not Known,"+"Not Known,"+"exergym,"+"exertrain,"+"exergame,"+"exerrest,"+"exerother,"
+ 				+r.energy.toString()+","+r.muscleSoreness.toString()+","
+ 				+"fevers,"+"sorethr,"+"headaches,"+"jmuscaches,"+"diarrheas,"+"others,"
+ 				+r.date.getTime()+","+r.defence.toString()+","+included.toString()+","+r.defenceThreshold.toString()+","+r.stress.toString()+","+included.toString()+","+r.stressThreshold.toString();
+ 		
+ 		
+ 		timestamps.put(r.date.getTime(), aline);
+ 	}
+ 	
+ 	
+ 	
+ 	String csvFileHeader = "playername,"
+			+"ResultShow,NOTES,POTOUT,ACTION,"
+			+"TrainedToday,AteToday,ExerciseGym,ExerciseTraining,ExerciseGame,ExerciseRest,ExerciseOther,"
+			+"EnergyLevel,MuscleSoreness,"
+			+"Fever,SoreThroat,Headache,JointorMuscleAche,Diarrhea,Other,"
+			+"TEST_TIME,DEFENCE,DEFENCE_INC,DEFENCE_CDT,STRESS,STRESS_INC,STRESS_CDT";
+ 	
+ 	
+ 	File file = new File("/tmp/tmpCSV.csv");
+ 	
+		if (!file.exists()) {
+			try {
+
+				file.createNewFile();
+			} catch (IOException e1) {
+				// TODO return an error message to the user
+				e1.printStackTrace();
+			}
+		}
+ 	
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+
+			out.println(csvFileHeader);
+			
+			for (Map.Entry<Long, String> entry : timestamps.entrySet()) {
+				 //System.out.println(entry.getKey() + ": " + entry.getValue());
+				  out.println(entry.getValue());
+				}
+
+
+		} catch (Exception e) {
+			// TODO return an error message to the user
+			e.printStackTrace();
+		} finally {
+			out.flush();
+			out.close();
+		}
+ 	return ok(new java.io.File(file.getAbsolutePath()));
     }
     
     
@@ -479,71 +551,115 @@ public class Application extends Controller {
     
    public CompletionStage<Result> uploadRedoxCSV() {
     	
-	   System.out.println("uploadRedoxCSV called");
-    	User user = User.findByEmail(session().get("connected"));
-    	List<User> allusers = User.find.all();
-    	
-    	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
-    	
-    	for(FilePart<Object> fp : files){
-    		
-            if (fp != null) {
-                
-                File file = (File) fp.getFile();
-                
-                RedoxUtilities rdxutil = new RedoxUtilities();
-                
-                //RedoxCSVLoader redoxcsvloader = new RedoxCSVLoader();  
-                Map<String, ArrayList<String>> playerdatabyname = rdxutil.getRedoxData(file.getAbsolutePath());
-                //Map<String, ArrayList<String>> playerdatabyname = redoxcsvloader.getRedoxData(file.getAbsolutePath());
+	   
+	System.out.println("uploadRedoxCSV called");
+   	User user = User.findByEmail(session().get("connected"));
+   	List<User> allusers = User.find.all();
+   	
+   	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
+   	
+   	for(FilePart<Object> fp : files){
+   		
+           if (fp != null) {
+               
+               File file = (File) fp.getFile();
+               
+               RedoxUtilities rdxutil = new RedoxUtilities();
+               Map<String, ArrayList<String>> playerdatabyname = rdxutil.getDemoRedoxData(file.getAbsolutePath());
+               
+       		Iterator it = playerdatabyname.entrySet().iterator();
+       		while (it.hasNext()) {
+       			Map.Entry pair = (Map.Entry) it.next();
+       			
+       			String[] tokens = null;
+       			
+       			for(String s : (List<String>) pair.getValue()){
+       				tokens = s.split(",");
+       			}
+       			
+       			
+       			Player player = Player.findByNameOrAlias((String) pair.getKey());
 
-        		//Map<String, ArrayList<String>> playerfiles = redoxcsvloader.getPlayerfilesbyname();
-        		Iterator it = playerdatabyname.entrySet().iterator();
-        		while (it.hasNext()) {
-        			Map.Entry pair = (Map.Entry) it.next();
-        			
-        			Player player = Player.findByNameOrAlias((String) pair.getKey());
-//        			System.out.println("player found "+player.playername);
-//        			for(String s : (List<String>) pair.getValue()){
-//        				System.out.println(s);
+       			if(player.playername.equalsIgnoreCase("no players")){
+       				player =  Player.findByNumber(0);
+       			} else {
+       				
+					Long timestamp = Long.parseLong(tokens[22]);
+					Date actual = new Date(timestamp * 1000);
+					// check if already have a test for this player at this time
+					Redox rdx = Redox.findByTimeKey(player, actual);//new Redox(player);
+					if(rdx == null){
+						System.out.println("rdx is null");
+						rdx = new Redox(player, actual);
+						rdx.setRedoxTestResult("","",
+	       						"","","","","",
+	       						"","","","","",
+	       						0.0, 0.0,
+	       						Double.parseDouble(tokens[27]), Double.parseDouble(tokens[23]), true);
+					}else{
+						System.out.println("existing rdx result");
+						rdx.setRedoxTestResult("","",
+	       						"","","","","",
+	       						"","","","","",
+	       						0.0, 0.0,
+	       						Double.parseDouble(tokens[27]), Double.parseDouble(tokens[23]), true);
+						
+					}
+           			player.save();
+       			}
+       		}
+   		
+           } else {
+           	System.out.println("fp is null");
+           }
+           
+   	}
+   	
+   	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+//	   System.out.println("uploadRedoxCSV called");
+//    	User user = User.findByEmail(session().get("connected"));
+//    	List<User> allusers = User.find.all();
+//    	
+//    	List<FilePart<Object>> files = request().body().asMultipartFormData().getFiles();
+//    	
+//    	for(FilePart<Object> fp : files){
+//    		
+//            if (fp != null) {
+//                
+//                File file = (File) fp.getFile();
+//                
+//                RedoxUtilities rdxutil = new RedoxUtilities();
+//                Map<String, ArrayList<String>> playerdatabyname = rdxutil.getRedoxData(file.getAbsolutePath());
+//                
+//        		Iterator it = playerdatabyname.entrySet().iterator();
+//        		while (it.hasNext()) {
+//        			Map.Entry pair = (Map.Entry) it.next();
+//        			
+//        			Player player = Player.findByNameOrAlias((String) pair.getKey());
+//
+//        			if(player.playername.equalsIgnoreCase("no players")){
+//        				System.out.println("dumping");
+//        				player =  Player.findByNumber(0);
+//        			} else {
+//        				System.out.println("not dumping");
+//            			if(player.redoxFilename == null){
+//            				player.redoxFilename = rdxutil.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
+//                		}
+//            			
+//            			rdxutil.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
+//            			rdxutil.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
+//                		
+//            			player.save();
 //        			}
-        			
-        			// dumping the file into 'no players' if no play by this name found
-        			if(player.playername.equalsIgnoreCase("no players")){
-        				System.out.println("dumping");
-        				player =  Player.findByNumber(0);
-        				//player.filename = null;
-        			} else {
-        				//player.filename = null;
-        				System.out.println("not dumping");
-            			if(player.redoxFilename == null){
-            				// generate default file with headers
-            				//CSVRedoxGenerator cSVRedoxGenerator = new CSVRedoxGenerator();
-                			//player.redoxFilename = cSVRedoxGenerator.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
-                			player.redoxFilename = rdxutil.createFile(filepath, player.playername +"_R_"+player.playernumber+"_");
-                			
-            			}
-            			
-            			rdxutil.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
-//            			CSVAppender cSVAppender = new CSVAppender();
-//            			cSVAppender.updateFile(filepath + player.redoxFilename, (List<String>) pair.getValue(), true);
-         			
-            			// using the toggleupdater to recalculate the averages
-//            			RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
-//                		redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
-            			rdxutil.toggleStateCSVFile(filepath + player.redoxFilename, "-1");
-                		
-            			player.save();
-        			}
-        		}
-    		
-            } else {
-            	System.out.println("fp is null");
-            }
-            
-    	}
-    	
-    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+//        		}
+//    		
+//            } else {
+//            	System.out.println("fp is null");
+//            }
+//            
+//    	}
+//    	
+//    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
     }
    
    
@@ -552,33 +668,24 @@ public class Application extends Controller {
     public CompletionStage<Result> updateRedoxToggleState(int playernumber, String category) {
     	
     	System.out.println("updateRedoxCSV called");
-    	//
-
+    	
     	DynamicForm form = Form.form().bindFromRequest();
     	String timekey = form.get("timekey");
-
-    	Player player = Player.findByNumber(playernumber);
-
-    	// update this players redox file
-    	if(player.redoxFilename != null){
-    		RedoxUtilities rdxutil = new RedoxUtilities();
-    		//RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
-        	
-    		//redoxCSVUpdater.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
-    		rdxutil.toggleStateCSVFile(filepath + player.redoxFilename, timekey);
-          }
     	
-    			
-    	//return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
-    	return CompletableFuture.completedFuture(redirect(routes.Application.dashboard(playernumber, category)));
+    	Date date = new Date(Long.parseLong(timekey));
+    	Player player = Player.findByNumber(playernumber);
+    	
+    	Redox rdx = Redox.findByTimeKey(player, date);
+    	rdx.toggleIncludedState();
+    	
+    	return CompletableFuture.completedFuture(redirect(routes.Application.redox(playernumber, category)));
     	
     }
     
    public CompletionStage<Result> updateRedoxNote(int playernumber, String category) {
     	
     	System.out.println("updateRedoxNote called");
-    	//
-
+    	
     	DynamicForm form = Form.form().bindFromRequest();
     	String timekey = form.get("timekey");
     	String note = form.get("note");
@@ -592,7 +699,6 @@ public class Application extends Controller {
     	// update this players redox file
     	if(player.redoxFilename != null){
     		RedoxCSVUpdater redoxCSVUpdater = new RedoxCSVUpdater();
-        	
     		redoxCSVUpdater.addNoteCSVFile(filepath + player.redoxFilename, timekey, note);
           }
     	
@@ -602,6 +708,8 @@ public class Application extends Controller {
     	
     	
     }
+   
+   
     
     public CompletionStage<Result> uploadGamedata() {
     	

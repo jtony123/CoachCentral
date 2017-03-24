@@ -7,7 +7,7 @@
 
 .leftcol {
 	background-color: #f7f7f7;
-	margin-left:85px;
+	margin-left:35px;
 /* 	padding-left:10px; */
 /* 	padding-right:10px; */
 }
@@ -180,8 +180,40 @@
 
 #ORRECOSSNAME {
 	display:inline-block;
-	position: absolute;
+	position: relative;
 	bottom: 0px;
 	right: 100px;
 	
 }
+
+.POTOUTCOMES {
+	height: 255px;
+	line-height: 40px;
+	color: #edd058;
+	text-align: left;
+	vertical-align: middle;
+	padding-left: 10px;
+	border-right: 2px solid lightgrey;
+}
+
+.POTOUTS {
+	color: grey;
+	height: 40px;
+	line-height: 40px;
+}
+
+.ACTION {
+	height: 255px;
+	line-height: 40px;
+	color: #edd058;
+	text-align: left;
+	vertical-align: middle;
+	padding-left: 10px;
+}
+
+.ACTIONS {
+	color: grey;
+	height: 40px;
+	line-height: 40px;
+}
+

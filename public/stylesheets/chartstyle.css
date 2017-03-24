@@ -132,6 +132,52 @@ position: absolute;
     fill-opacity: 0.3;
 }
 
+.rdxshowhidebutton {
+	
+	stroke : #F11BDF;
+	stroke-width : 1;
+	cursor: pointer;
+    fill: #919EB1;
+    fill-opacity: 0.3;
+}
+
+.dashdefenceline {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: blue;
+	fill: none;
+}
+
+
+.dashDEFENCE {
+	clip-path: url(#gpsclip);
+	stroke: blue;
+	opacity: 1;
+}
+
+.dashstressline {
+	clip-path: url(#gpsclip);
+	stroke-width: 1;
+	stroke: purple;
+	fill: none;
+}
+
+
+
+.ctxlinerect{
+	stroke: #fafafa;
+	stroke-width: 2px;
+	fill: #fbfbfb;
+/* 	rx: 20; */
+/* 	ry: 20; */
+}
+
+.dashSTRESS {
+	clip-path: url(#gpsclip);
+	stroke: purple;
+	opacity: 1;
+}
+
 .closedgpsrect {
 	stroke: #FAFAFA;
 	stroke-width: 2px;

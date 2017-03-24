@@ -9,6 +9,7 @@ import models.UserPermission;
 import play.Application;
 import models.Category;
 import models.Player;
+import models.RdxAlertReport;
 import play.GlobalSettings;
 
 public class Global extends GlobalSettings {
@@ -514,6 +515,112 @@ public class Global extends GlobalSettings {
         	Ebean.saveManyToManyAssociations(userGrainne, "players");
         	Ebean.saveManyToManyAssociations(userDemo, "players");
         	Ebean.saveManyToManyAssociations(userJeremy, "players");
+        	
+        }
+        
+        if (RdxAlertReport.find.findRowCount() < 9) {
+        	
+        	String sleep1 = "Aim for at least 8 hours sleep consistently every night"
+					+"Sleep in a cool§ noise free and blacked out room"
+					+"Switch off all electronic devices 2 hours before bedtime"
+					+"Spend at least 1 hour every day outside in natural daylight§ particularly in the mornings§ to increase melatonin and to regulate sleep quality and anti-oxidant defenses"
+					+"Avoid caffeine after 3 pm"
+					+"Optimise hydration during the day to avoid excessive drinking before bed and waking during the night"
+					+"If sleep is disrupted by games and travel schedule§ try to take a nap after training/practice";
+        	
+        	String diet1 = "Review protein requirements to reflect training load;"
+        				+ "Increase dietary intake of anti-oxidants found in fruit and vegetables to aid recovery;"
+        				+ "Minimum of 5 serves required§ but aim for 7-10 serves per day;"
+        				+ "Take tart cherry or a berry smoothie to help optimise recovery and reduce oxidative stress;" 
+        				+ "Consider probiotics"; 
+        	
+        	String diet2 = "Review diet to reflect training load and injury/illness status";
+        			
+        	//1
+        	RdxAlertReport RG = new RdxAlertReport();
+        	RG.setAlert("RED", "GREEN", 
+        			"Outside of critical threshold;Physiological and psychological stresses are high and increased oxidative stress is indicated", 
+        			"Illness (present or pending);Increased risk of injury and non-functional overreaching;Higher probability of underperforming", 
+        			"Review training load;View diet and sleep advice", 
+        			"Review training load", 
+        			diet1,
+        			sleep1);
+        	//2
+        	RdxAlertReport RR = new RdxAlertReport();
+        	RR.setAlert("RED", "RED", 
+        			"Poor profile. Physiological and psychological stresses are high§ underlying defenses are low and increased oxidative stress is indicated", 
+        			"Illness (present or pending);Increased risk of injury and non-functional overreaching;Higher probability of underperforming", 
+        			"Review training load;View diet and sleep advice", 
+        			"Review training load", 
+        			diet1,
+        			sleep1);
+        	//3
+        	RdxAlertReport GR = new RdxAlertReport();
+        	GR.setAlert("GREEN", "RED", 
+        			"Outside of critical threshold. Underlying defenses are low and a reduced anti-oxidant capacity is indicated", 
+        			"Athlete may be in a detrained state§ a rehabilitation phase or recovering from illness", 
+        			"Check injury/illness status;Check sleep quality;Review training load;Review diet to reflect training load and injury/illness status", 
+        			"Review training load", 
+        			"Review diet to reflect training load and injury/illness status",
+        			sleep1);
+        	//4
+        	RdxAlertReport GG = new RdxAlertReport();
+        	GG.setAlert("GREEN", "GREEN", 
+        			"Good profile. No action required", 
+        			"", 
+        			"", 
+        			"", 
+        			"",
+        			"");
+        	//5
+           	RdxAlertReport RA = new RdxAlertReport();
+        	RA.setAlert("RED", "AMBER", 
+        			"Outside of critical threshold;Physiological and psychological stresses are high§ underlying defenses are low and increased oxidative stress is indicated", 
+        			"Illness (present or pending);Increased risk of injury and non-functional overreaching;Higher probability of underperforming", 
+        			"Review training load;View diet and sleep advice", 
+        			"Review training load", 
+        			diet1,
+        			sleep1);
+        	//6
+           	RdxAlertReport AG = new RdxAlertReport();
+        	AG.setAlert("AMBER", "GREEN", 
+        			"Close to critical threshold;Athlete may be in a period of heavy training and game load", 
+        			"",
+        			"", 
+        			"", 
+        			"",
+        			"");
+        	
+        	//7
+           	RdxAlertReport AA = new RdxAlertReport();
+        	AA.setAlert("AMBER", "AMBER", 
+        			"Close to critical threshold;Athlete may be in a period of heavy training and game load;Close observation required. Athlete may become overreached if extended", 
+        			"",
+        			"", 
+        			"", 
+        			"",
+        			"");
+        	
+           	//8
+           	RdxAlertReport AR = new RdxAlertReport();
+        	AR.setAlert("AMBER", "RED", 
+        			"Outside critical threshold. Monitor closely;Athlete may become overreached if extended", 
+        			"",
+        			"", 
+        			"", 
+        			"",
+        			"");
+        	
+           	//9
+           	RdxAlertReport GA = new RdxAlertReport();
+        	GA.setAlert("GREEN", "AMBER", 
+        			"Close to critical threshold. Observation required", 
+        			"",
+        			"", 
+        			"", 
+        			"",
+        			"");
+        			
         	
         }
     }
