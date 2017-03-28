@@ -44,7 +44,7 @@
 
 .ansheadings {
 	height: 40px;
-	line-height: 40px;
+	line-height: 20px;
 	padding-left:10px;
 	padding-right:10px;
 	color: grey;
@@ -106,7 +106,7 @@
 
 
 #SYMPTOMS, #EXERCISE {
-	height:140px;
+	height:155px;
 }
 
 .glyphicon-question-sign {

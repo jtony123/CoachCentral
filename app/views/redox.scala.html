@@ -254,13 +254,26 @@
 					<div class="ansheadings"  id="SYMPTOMS">
 						SYMPTOMS
 						<div>
+							<div class="anssubheadings" id="FEVER">
+								Fever
+							</div>
+							<div class="anssubheadingsright"  id="FEVERVALUE">
+							</div>
+						</div>
+						<div>
+							<div class="anssubheadings" id="COLDSORE">
+								Cold/Sore Throat
+							</div>
+							<div class="anssubheadingsright"  id="COLDSOREVALUE">
+							</div>
+						</div>
+						<div>
 							<div class="anssubheadings" id="HEADACHE">
 								Headache
 							</div>
 							<div class="anssubheadingsright"  id="HEADACHEVALUE">
 							</div>
 						</div>
-					
 						<div>
 							<div class="anssubheadings" id="JMACHE">
 								Joint/Muscle Ache
@@ -268,28 +281,33 @@
 							<div class="anssubheadingsright" id="JMACHEVALUE">
 							</div>
 						</div>
+						<div>
+							<div class="anssubheadings" id="DIARRHEA">
+								Diarrhea/Sickness
+							</div>
+							<div class="anssubheadingsright" id="DIARRHEAVALUE">
+							</div>
+						</div>
+						<div>
+							<div class="anssubheadings" id="OTHER">
+								Other
+							</div>
+							<div class="anssubheadingsright" id="OTHERVALUE">
+							</div>
+						</div>
 					</div>
 				</div>
 				
 				<div>
 					<div class="ansheadings"  id="EXERCISE">
-						EXERCISE
+						Previous Day Activity
 						<div>
-							<div class="anssubheadings" id="PRACTICE">
-								Practice
-							</div>
-							<div class="anssubheadingsright"  id="PRACTICEVALUE">
-							</div>
-						</div>
-					
-						<div>
-							<div class="anssubheadings" id="GYMWEIGHTS">
-								GYM Weights
-							</div>
-							<div class="anssubheadingsright" id="GYMWEIGHTSVALUE">
+							
+							<div class="anssubheadingsright"  id="ACTIVITIESVALUE">
 							</div>
 						</div>
 					</div>
+						
 				</div>
 					<div class="ansheadings">
 						<div id="ENERGY">
@@ -349,9 +367,10 @@
 		</div>
 	</div>
 </div>
+
+
+</div>
 </div><!-- end  outer container-->
-
-
 
 
 
@@ -537,7 +556,6 @@ data3.forEach(function(d, i) {
 	d.STRESS = +d.STRESS;d.STRESS_CDT = +d.STRESS_CDT;d.STRESS_INC = +d.STRESS_INC;
 	d.EnergyLevel = +d.EnergyLevel;
 	d.NOTES = d.NOTES;
-	
 	
 });
 
@@ -770,8 +788,11 @@ function updateanswerfields(d) {
 	d3.select("#vert" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "2px");
 	d3.select("#CTXcircle" + d.TIME_KEY).style("stroke", "white").style("stroke-width", "3px");
 	
+	// reset the fields first
+	d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-question-sign");
+	d3.select("#TRAINEDVALUE").attr("class", "glyphicon glyphicon-question-sign");
 	
-	
+	console.log("ate "+d.AteToday);
 	if(d.AteToday === "Not Known") { 
 		d3.select("#EATENVALUE").attr("class", "glyphicon glyphicon-question-sign");
 	} 
@@ -794,11 +815,16 @@ function updateanswerfields(d) {
 	
 	//PRACTICEVALUE
 	//ExerciseGymYesterday
+	d3.select("#FEVERVALUE").text(function() { return d.Fever});
+	d3.select("#COLDSOREVALUE").text(function() { return d.SoreThroat});
+	d3.select("#HEADACHEVALUE").text(function() {return d.Headache});
+	d3.select("#JMACHEVALUE").text(function() {return d.JointorMuscleAche});
+	d3.select("#DIARRHEAVALUE").text(function() {return d.Diarrhea});
 	
-	d3.select("#HEADACHEVALUE").text(function() {return d.SymptomHeadacheToday});
-	d3.select("#JMACHEVALUE").text(function() {return d.SymptomJointorMuscleAcheToday});
-	d3.select("#PRACTICEVALUE").text(function() {return d.ExerciseTrainingYesterday});
-	d3.select("#GYMWEIGHTSVALUE").text(function() {return d.ExerciseGymYesterday});
+	
+	
+	d3.select("#ACTIVITIESVALUE").text(function() {return d.ExerciseOther});
+	
 	
 	//var nrgfill
 	//if(d.EnergyLevel > 0) { nrgfill = (d.EnergyLevel * 100)/5;} else { nrgfill = 0;}
@@ -947,9 +973,6 @@ redrawRedox();
 
 redoxfocus.select(".axis--x").call(xAxis);
 } // end redrawchart
-
-
-
 
 
 

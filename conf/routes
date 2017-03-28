@@ -12,6 +12,7 @@ GET		/logout						controllers.AccessControl.logout()
 
 GET     /dashboard/:category       	controllers.Application.dashboard(playernumber: Integer, category :String)
 GET     /redox/:category     		controllers.Application.redox(playernumber: Integer, category :String)
+POST    /saveRedox/:category     	controllers.Application.saveRedox(playernumber: Integer, category :String)
 GET		/getFullRedoxCSV			controllers.Application.getFullRedoxCSV()
 
 GET		/record/:category			controllers.Application.record(playernumber: Integer, category :String)

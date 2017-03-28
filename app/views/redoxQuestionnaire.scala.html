@@ -1,0 +1,595 @@
+@import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
+@import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
+@import tags._
+@(user : models.User, active: String, player: models.Player, playerIndex: Integer, players: List[models.Player], category:String, categories: List[models.Category])
+
+
+@main(title = "CoachCentral") {
+    
+      <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
+    @navigationbar(user: models.User, active: String)
+    
+        <style> 
+        
+                <style> 
+#player_icon {
+  position: relative;
+  perspective: 1000;
+}
+#player_icon_card {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  
+   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
+    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
+    animation-name: player_icon_flip;
+    animation-duration: 12s;
+     animation-delay: 2s;
+/*      animation-direction: alternate; */
+    animation-iteration-count: 2;
+  
+}
+@@-webkit-keyframes player_icon_flip {
+	10% { transform: rotateY(180deg);}
+	20% { transform: rotateY(0deg);}
+	60% { transform: rotateY(0deg);}
+	70% { transform: rotateY(180deg);}
+	80% { transform: rotateY(0deg);}
+}
+#player_icon:hover #player_icon_card {
+-webkit-animation: none;
+  transform: rotateY(180deg);
+  box-shadow: -5px 5px 5px #aaa;
+}
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  box-sizing: border-box;
+  color: red;
+  text-align: center;
+  background-color: #aaa;
+}
+</style>
+
+<div class="container-fluid" id="groupings_toggle_buttons">
+	<div>
+	@for(c <- categories) {
+		@if(c.name.equals(category)){
+		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
+		} else {
+		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
+   		}
+	}
+	</div>
+</div>
+
+<div class="row" id ="player_carousel">
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
+	  
+	  <div class="btn-group btn-group-justified">
+	  
+	   @if(players.size() > 5){
+	   
+	   <a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+						<div >
+					
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							<<
+						</div>
+					</a>
+	   }
+	   
+	  
+	  @if(players.size() > 5){
+	  
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
+	  		
+	  }
+	  
+	  @if(players.size() > 3){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
+	  }
+	  
+	  @if(players.size() > 1){
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
+	  }
+	
+	  </div>
+	  </div>
+	  
+	  
+	  
+	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
+	  	<div id="player_icon_card">
+	  		<div class="front face">
+	  		
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
+						}
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+					</a>
+				</h4>
+			</div> <!-- end front face -->
+			
+			<div class="back face">
+				<h4 style="margin-bottom: 5px; margin-top:5px;">
+	  			
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
+						
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:50px;height:50px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:50px;height:50px;"/>
+						}
+						
+						<table style="text-align:left; font-family:arial; font-size:15px;">
+							<tr>
+								<td>Position</td><td>@player.position</td>
+							</tr>
+							<tr>
+								<td>DoB</td><td>@player.dob</td>
+							</tr>
+							<tr>
+								<td>Height</td><td>@player.height</td>
+							</tr>
+							<tr>
+								<td>Weight</td><td>@player.weight</td>
+							</tr>
+						</table>
+						
+						
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+						
+						
+						
+<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
+<!-- 						alerts go here<br> -->
+<!-- 						alert 1<br> -->
+<!-- 						alert 2<br> -->
+<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
+<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
+        				
+        				
+						
+					</a>
+				</h4>
+			</div><!-- end back face -->
+			</div>
+	  </div>
+	  
+	  
+	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
+	 
+	 	<div class="btn-group btn-group-justified">
+	 		
+	 @if(players.size() > 2){
+	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 4){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 6){
+	 		<a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+					
+			<div class="text-nowrap" style="text-align: center;">
+				>>
+				
+			</div>		
+			</a>
+	 }
+	 	</div>
+	 	
+	  </div>
+	  
+	  
+</div><!-- end div player carousel -->
+
+<!-- the panel below the pagination carousel -->
+	
+<div class="chart" class="container-fluid" id="main_chart"  style="border:1px solid #cecece; border-radius: 20px;
+																	margin:20px;
+																	background-color: white;
+																	box-shadow: 0px 0px 10px grey;">
+	<div class="chart_upper" class="row" id="chart_upper" >
+	
+	</div>
+	<div class="chart_centre" class="row" id="chart_centre">
+	
+	</div>
+	<div class="chart_lower" class="row" id="chart_lower">
+		
+	<div class="row" id ="redoxanswersrow">
+	
+</div>
+
+
+<div>
+<form id='rdxquestionnaire' action='@routes.Application.saveRedox(player.playernumber, category)' method='POST'>
+			
+	<div class="EATENQ" id="EATENQ">
+		<label class="radio-inline">
+		      <p>Have you eaten this morning?</p>
+		    </label>
+		    <label class="radio-inline">
+		      <input type="radio" name="eaten" value="yes">YES
+		    </label>
+		    <label class="radio-inline">
+		      <input type="radio" name="eaten" value="no">NO
+		    </label>
+	  	
+	</div>
+	
+	<div class="EXERCISEQ" id="EXERCISEQ">
+		
+		<label class="radio-inline">
+	      <p>Have you exercised today?</p>
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="exercise" value="yes">YES
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="exercise" value="no">NO
+	    </label>
+	  	
+	</div>
+	<br>
+	<div class="SYMPTOMSQ" id="SYMPTOMSQ">
+	Have you had any of these symptoms today or in the last week?
+		
+			
+			<div>
+				<label class="checkbox-inline">
+			      <p>Fever</p>
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="fevertoday">Today
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="feverlastweek">In the last week
+			    </label>
+		    </div>
+		    
+		    <div>
+				<label class="checkbox-inline">
+			      <p>Cold/Sore Throat</p>
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="coldtoday">Today
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="coldlastweek">In the last week
+			    </label>
+		    </div>
+		    
+		    <div>
+				<label class="checkbox-inline">
+			      <p>Headache</p>
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="headachetoday">Today
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="headachelastweek">In the last week
+			    </label>
+		    </div>
+		    
+		    <div>
+				<label class="checkbox-inline">
+			      <p>Joint/Muscle Ache</p>
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="muscachetoday">Today
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="muscachelastweek">In the last week
+			    </label>
+		    </div>
+		    
+		    <div>
+				<label class="checkbox-inline">
+			      <p>Diarrhea/Sickness</p>
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="sicktoday">Today
+			    </label>
+			    <label class="checkbox-inline">
+			      <input type="checkbox" name="sicklastweek">In the last week
+			    </label>
+		    </div>
+	</div>
+	
+	
+	<br>
+	<div class="EXERCISESQ" id="EXERCISESQ">
+	What exercise did you do yesterday?
+		<div>
+			    <input type="hidden" name="playerno" value="@player.playernumber">
+			    <input type="hidden" name="nrglevel" id="nrgform" value='0'>
+			    <input type="hidden" name="musclevel" id="muscform" value='0'>
+			    
+			      <input type="checkbox" name="gym" id="gymcheck">Gym/Weights
+			    
+			    
+			      <input type="checkbox" name="practice">Practice/Training
+			    
+			    
+			      <input type="checkbox" name="game">Game
+			    
+			      <input type="checkbox" name="rest">Rest/None
+			   
+			      <input type="text" name="otherexercises">Other
+			    
+		    </div>
+		   </div> 
+		    
+		    
+	<div>
+		<svg id="slidersvg"></svg>
+	</div>
+	
+	<div class="ILLNESSQ" id="ILLNESSQ">
+		
+		<label class="radio-inline">
+	      <p>Reported illness in the last week?</p>
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="illness" value="yes">YES
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="illness" value="no">NO
+	    </label>
+	  	
+	</div>
+	
+		<div class="INJURYQ" id="INJURYQ">
+		
+		<label class="radio-inline">
+	      <p>Reported injury in the last week?</p>
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="injury" value="yes">YES
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="injury" value="no">NO
+	    </label>
+	  	
+	</div>
+		    
+	<input type="text" name="notes" placeholder="enter additional notes here">
+	<br>
+	<input type="number" step="0.01" min="0" max="5" name="stress" placeholder="stress reading">
+	<br>
+	<input type="number" step="0.01" min="0" max="5" name="defence" placeholder="defence reading">
+		 <br>   
+	<button>Save</button>
+		    
+	</form>
+</div>
+	
+
+</div>
+</div><!-- end  outer container-->
+        
+ <script>
+ var slidersvg = d3.select("#slidersvg").attr("width", 400).attr("height", 500),
+ slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
+ slide_h = +slidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
+
+ var xnrgslide = d3.scaleLinear()
+ .domain([4, 0])
+ .range([0, 300])
+ .clamp(true);
+
+ var yslidecolor = d3.scaleLinear()
+ .domain([0,1,3, 5])
+ .range(["red", "orange", "lightgreen", "green"])
+ .clamp(true);
+
+ var nrgslider = slidersvg.append("g")
+ .attr("class", "nrgslider")
+ .attr("transform", "translate(" + slider_margin.left + "," + 100 + ")");
+
+ nrgslider.append("text").attr("transform", "translate(-40,-30)").text("Rate your energy levels");
+
+ nrgslider.append("line")
+ .attr("class", "nrgtrack")
+ .attr("y1", xnrgslide.range()[0])
+ .attr("y2", xnrgslide.range()[1])
+ .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+ .attr("class", "nrgtrack-inset")
+ .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+ .attr("class", "nrgtrack-overlay")
+ .call(d3.drag()
+     .on("start.interrupt", function() { nrgslider.interrupt(); })
+     .on("start drag", function() { 
+     	//d3.select(".track-inset").style("stroke", yslidecolor());
+     	nrgtrackcolor(xnrgslide.invert(d3.event.y)); })
+     .on("end", function() {
+     	console.log(xnrgslide.invert(d3.event.y));
+     	d3.select('#nrgform').attr("value", function(){
+     		return xnrgslide.invert(d3.event.y);
+     	});
+     }));
+     
+   var nrgtextarray = ["high", "Good", "OK", "Low", "Very low", ""];
+     
+   nrgslider.insert("g", ".nrgtrack-overlay")
+ .attr("class", "ticks")
+ .attr("transform", "translate(50," + 0 + ")")
+ .selectAll("text")
+ .data(xnrgslide.ticks(5))
+ .enter().append("text")
+ .attr("y", xnrgslide)
+ .attr("text-anchor", "right")
+ .text(function(d, i) { 
+ 	return nrgtextarray[i];
+ 	});
+
+
+ var nrghandle = nrgslider.insert("circle", ".nrgtrack-overlay")
+ .attr("class", "nrgsliderhandle")
+ .attr("r", 30);
+
+
+ function nrgtrackcolor(c) {
+ 	nrghandle.attr("cy", xnrgslide(c));
+ 	d3.select(".nrgtrack-inset").style("stroke", yslidecolor(c));
+ 	}
+ 	
+
+
+
+
+
+
+ var muscslider = slidersvg.append("g")
+ .attr("class", "muscslider")
+ .attr("transform", "translate(" + (slider_margin.left + 200) + "," + 100 + ")");
+
+ muscslider.append("text").attr("transform", "translate(-40,-30)").text("Rate your muscle soreness");
+
+ var xmuscslide = d3.scaleLinear()
+ .domain([4, 0])
+ .range([0, 300])
+ .clamp(true);
+
+ muscslider.append("line")
+ .attr("class", "musctrack")
+ .attr("y1", xmuscslide.range()[0])
+ .attr("y2", xmuscslide.range()[1])
+ .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+ .attr("class", "musctrack-inset")
+ .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+ .attr("class", "musctrack-overlay")
+ .call(d3.drag()
+     .on("start.interrupt", function() { muscslider.interrupt(); })
+     .on("start drag", function() { 
+     	//d3.select(".track-inset").style("stroke", yslidecolor());
+     	musctrackcolor(xmuscslide.invert(d3.event.y)); })
+     .on("end", function() {
+     	console.log(xmuscslide.invert(d3.event.y));
+     	d3.select('#muscform').attr("value", function(){
+     		return xmuscslide.invert(d3.event.y);
+     	});
+     })
+     );
+     
+   var musctextarray = ["Feel great", "Not sore", "Average", "Sore", "Very sore", ""];
+     
+   muscslider.insert("g", ".musctrack-overlay")
+ .attr("class", "ticks")
+ .attr("transform", "translate(50," + 0 + ")")
+ .selectAll("text")
+ .data(xmuscslide.ticks(5))
+ .enter().append("text")
+ .attr("y", xmuscslide)
+ .attr("text-anchor", "right")
+ .text(function(d, i) { 
+ 	return musctextarray[i];
+ 	});
+
+
+ var muschandle = muscslider.insert("circle", ".musctrack-overlay")
+ .attr("class", "muscsliderhandle")
+ .attr("r", 30);
+
+ function musctrackcolor(c) {
+ 	muschandle.attr("cy", xnrgslide(c));
+ 	d3.select(".musctrack-inset").style("stroke", yslidecolor(c));
+ 	}
+
+ //at page load, shows how the slider moves and returns to starting point
+ nrgslider.transition()
+ .duration(750)
+ .tween("hue", function() {
+   var i = d3.interpolate(0, 3);
+   return function(t) { nrgtrackcolor(i(t)); };
+ })
+ .on("end", function(){
+
+ 	nrgslider.transition()
+ 	.duration(750)
+ 	.tween("hue", function() {
+ 	  var i = d3.interpolate(3, 0);
+
+ 	  return function(t) { nrgtrackcolor(i(t)); };
+ 	})
+ 	.on("end", function(){
+
+ 	muscslider.transition()
+ 	.duration(750)
+ 	.tween("hue", function() {
+ 	  var i = d3.interpolate(4, 0);
+
+ 	  return function(t) { musctrackcolor(i(t)); };
+ 	})});
+ 	
+ });
+
+ //at page load, shows how the slider moves and returns to starting point
+ muscslider.transition()
+ .duration(750)
+ .tween("hue", function() {
+   var i = d3.interpolate(0, 4);
+   return function(t) { musctrackcolor(i(t)); };
+ });
+
+
+ (function ($) {
+	  $(document).ready(function(){
+
+	    // hide .navbar first
+	   //$(".navbar").hide();
+
+	    // fade in .navbar
+	    $(function () {
+	        $(window).scroll(function () {
+
+	                 // set distance user needs to scroll before we start fadeIn
+	            if ($(this).scrollTop() > 10) {
+	               // $('.navbar').fadeIn();
+	                $('.navbar').fadeOut();
+	            } else {
+	                //$('.navbar').fadeOut();
+	                $('.navbar').fadeIn();
+	            }
+	        });
+	    });
+
+	});
+	  }(jQuery));
+ 
+ </script>
+        
+        
+}

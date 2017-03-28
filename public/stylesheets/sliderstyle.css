@@ -1,0 +1,65 @@
+.ticks {
+  font: 10px sans-serif;
+/*   transform : translateX(20px); */
+}
+
+.nrgtrack,
+.nrgtrack-inset,
+.nrgtrack-overlay {
+  stroke-linecap: round;
+}
+
+.nrgtrack {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 30px;
+}
+
+.nrgtrack-inset {
+  stroke: #ddd;
+  stroke-width: 18px;
+}
+
+.nrgtrack-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  cursor: crosshair;
+}
+
+.nrgsliderhandle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
+
+.musctrack,
+.musctrack-inset,
+.musctrack-overlay {
+  stroke-linecap: round;
+}
+
+.musctrack {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 30px;
+}
+
+.musctrack-inset {
+  stroke: #ddd;
+  stroke-width: 18px;
+}
+
+.musctrack-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  cursor: crosshair;
+}
+
+.muscsliderhandle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}

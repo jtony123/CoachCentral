@@ -55,6 +55,7 @@ import views.html.dashboard;
 import views.html.index;
 import views.html.Admin.users;
 import views.html.redox;
+import views.html.redoxQuestionnaire;
 
 public class Application extends Controller {
 	
@@ -285,7 +286,7 @@ public class Application extends Controller {
     	//System.out.println("player count = " + players.size());
     	int playerIndex = players.indexOf(player);
     	
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	return CompletableFuture.completedFuture(ok(redoxQuestionnaire.render(user, "redoxQ", player, playerIndex, players, category, categories)));
     	
     }
     
@@ -400,9 +401,10 @@ public class Application extends Controller {
  				+ "notes," 
  				+ r.rdxalertreport.potentialoutcomes + ","
  				+ r.rdxalertreport.actions + ","
- 				+"Not Known,"+"Not Known,"+"exergym,"+"exertrain,"+"exergame,"+"exerrest,"+"exerother,"
+ 				+r.exercised+","+r.eaten+","
+ 				+"exergym,"+"exertrain,"+"exergame,"+"exerrest,"+r.other+","
  				+r.energy.toString()+","+r.muscleSoreness.toString()+","
- 				+"fevers,"+"sorethr,"+"headaches,"+"jmuscaches,"+"diarrheas,"+"others,"
+ 				+r.fever+","+r.sorethroat+","+r.headache+","+r.jointmuscleache+","+r.diarrhea+","+"others,"
  				+r.date.getTime()+","+r.defence.toString()+","+included.toString()+","+r.defenceThreshold.toString()+","+r.stress.toString()+","+included.toString()+","+r.stressThreshold.toString();
  		
  		
@@ -663,6 +665,126 @@ public class Application extends Controller {
     }
    
    
+   public CompletionStage<Result> saveRedox(int playernumber, String category) {
+   	
+   	System.out.println("saveRedox called");
+   	
+   	DynamicForm form = Form.form().bindFromRequest();
+   	
+   	DynamicForm requestData = formFactory.form().bindFromRequest();
+   	
+   	Map<String, String> mydata = requestData.data();
+   	
+   	System.out.println(mydata);
+   	
+   	Player player = Player.findByNumber(playernumber);
+   	
+   	String fever = "";
+   	if(mydata.get("fevertoday") != null) {
+   		fever += mydata.get("fevertoday").equalsIgnoreCase("on") ? "Today;": "";
+   	}
+   	
+   	if(mydata.get("feverlastweek") != null) {
+   		fever += mydata.get("feverlastweek").equalsIgnoreCase("on") ? "In the last week;": "";
+   	}
+   	
+   	String coldsorethroat = "";
+   	if(mydata.get("coldtoday") != null) {
+   		coldsorethroat += mydata.get("coldtoday").equalsIgnoreCase("on") ? "Today;": "";
+   	}
+   	
+   	if(mydata.get("coldlastweek") != null) {
+   		coldsorethroat += mydata.get("coldlastweek").equalsIgnoreCase("on") ? "In the last week;": "";
+   	}
+   	
+   	String headache = "";
+   	if(mydata.get("headachetoday") != null) {
+   		headache += mydata.get("headachetoday").equalsIgnoreCase("on") ? "Today;": "";
+   	}
+   	
+   	if(mydata.get("headachelastweek") != null) {
+   		headache += mydata.get("headachelastweek").equalsIgnoreCase("on") ? "In the last week;": "";
+   	}
+   	
+   	String jointmuscleache = "";
+   	if(mydata.get("muscachetoday") != null) {
+   		jointmuscleache += mydata.get("muscachetoday").equalsIgnoreCase("on") ? "Today;": "";
+   	}
+   	
+   	if(mydata.get("muscachelastweek") != null) {
+   		jointmuscleache += mydata.get("muscachelastweek").equalsIgnoreCase("on") ? "In the last week;": "";
+   	}
+   	
+   	String diarrhea = "";
+   	if(mydata.get("sicktoday") != null) {
+   		diarrhea += mydata.get("sicktoday").equalsIgnoreCase("on") ? "Today;": "";
+   	}
+   	
+   	if(mydata.get("sicklastweek") != null) {
+   		diarrhea += mydata.get("sicklastweek").equalsIgnoreCase("on") ? "In the last week;": "";
+   	}
+   	
+   	String other = "";
+   	if(mydata.get("gym") != null) {
+   		other += mydata.get("gym").equalsIgnoreCase("on") ? "Gym weights;": "";
+   	}
+   	
+	if(mydata.get("practice") != null) {
+   		other += mydata.get("practice").equalsIgnoreCase("on") ? "Practice;": "";
+   	}
+	
+	if(mydata.get("game") != null) {
+   		other += mydata.get("game").equalsIgnoreCase("on") ? "Game;": "";
+   	}
+	
+	if(mydata.get("rest") != null) {
+   		other += mydata.get("rest").equalsIgnoreCase("on") ? "Rest;": "";
+   	}
+
+	if(mydata.get("otherexercises") != null || mydata.get("otherexercises") != "") {
+   		other += mydata.get("otherexercises") +";";
+   	}
+	
+	Double nrg = Double.parseDouble(mydata.get("nrglevel"));
+	Double musc = Double.parseDouble(mydata.get("musclevel"));
+	
+	Double stress = 0.0;
+	if(mydata.get("stress") != null){
+		stress = Double.parseDouble(mydata.get("stress"));
+	}
+	
+	Double defence = 0.0;
+	if(mydata.get("defence") != null){
+		defence = Double.parseDouble(mydata.get("defence"));
+	}
+	
+   	
+   	
+   	
+   	Redox rdx = new Redox(player, new Date());
+   	rdx.setRedoxTestResult(mydata.get("eaten"), 
+   			mydata.get("exercise"), 
+   			fever, //fever, 
+   			coldsorethroat,//sorethroat, 
+   			headache,//headache, 
+   			jointmuscleache,//jointmuscleache, 
+   			diarrhea,//diarrhea, 
+   			"",//gymweights, 
+   			"",//practicetraining, 
+   			"",//game, 
+   			"",//rest, 
+   			other,//other, 
+   			nrg,//energy, 
+   			musc,//muscleSoreness, 
+   			stress,//stress, 
+   			defence,//defence, 
+   			true);//includeInCritDiff);
+   	
+   	
+   	
+   	return CompletableFuture.completedFuture(redirect(routes.Application.redox(playernumber, category)));
+   	
+   }
    
     
     public CompletionStage<Result> updateRedoxToggleState(int playernumber, String category) {
