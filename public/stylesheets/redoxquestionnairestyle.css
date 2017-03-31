@@ -1,0 +1,56 @@
+.progresspill {
+/* 	display: contents; */
+	font-size: 20px;
+	rx: 10px;
+	ry: 10px;
+}
+
+.mypill {
+	
+	background-color: lightgrey;
+}
+
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+    background-color: red;
+}
+
+.radio-inline {
+	vertical-align: baseline;
+	display: inline-block;
+	width: 75px;
+}
+.txt {
+	width: 300px;
+}
+
+.floatingboxleft {
+	font-size: 18px;
+	display: inline-block;
+	vertical-align: top;
+    width: 45%;
+    height: 275px;
+    margin: 10px;
+    border: 3px solid #73AD21;
+}
+
+.floatingboxright {
+	display: inline-block;
+	vertical-align: top;
+    width: 45%;
+    height: 275px;
+    margin: 10px;
+    border: 3px solid #73AD21;
+}
+
+.EATENQ, EXERCISEQ {
+
+	vertical-align: middle;
+	margin-top: 20px;
+}
+
+.NEXTBUTTON {
+	font-size: 18px;
+	margin-top: 10%;
+	margin-left: 10%;
+	cursor: pointer;
+}

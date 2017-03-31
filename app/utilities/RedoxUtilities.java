@@ -83,6 +83,7 @@ public class RedoxUtilities {
 	public Map<String, ArrayList<String>> getDemoRedoxData(String fileName){
 		
 		
+		
 		Map<String, ArrayList<String>> playerdatabyname = new HashMap<String, ArrayList<String>>();
 		
 		BufferedReader fileReader = null;
@@ -91,7 +92,7 @@ public class RedoxUtilities {
 		
 		try {
 			fileReader = new BufferedReader(new FileReader(fileName));
-
+			
 			// this next line should contain the column headings
 			header = fileReader.readLine();
 
@@ -107,7 +108,7 @@ public class RedoxUtilities {
 			// get the index of each of the required columns of data
 			int nameindex = headerstrings.indexOf("playername");
 			int testtime = headerstrings.indexOf("test_date");
-			int trainedtoday = headerstrings.indexOf("TrainedToday");
+			int eatentoday = headerstrings.indexOf("Eaten");
 			int defence = headerstrings.indexOf("FORD");
 			int stress = headerstrings.indexOf("FORT");
 			
@@ -116,13 +117,13 @@ public class RedoxUtilities {
 			while ((line = fileReader.readLine()) != null) {
 				// replace all NA values with 0
 				line = line.replaceAll("NA", "0");
-				
+
 				// split the line into string tokens
 				String[] tokens = line.split(",");
 				
 				// check for blank lines
 				if(tokens.length > 1){
-					if(tokens.length > 22){
+					if(tokens.length > 17){
 					if( tokens[0].length() > 3){
 					
 					String playername = tokens[nameindex];
@@ -130,7 +131,9 @@ public class RedoxUtilities {
 					String fordstring = tokens[defence];
 					String fortstring = tokens[stress];
 					
-					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+					//System.out.println("timestring is "+timestring);
+					
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm");
 					sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 					Date utctime = null;
 					try {
@@ -141,14 +144,15 @@ public class RedoxUtilities {
 					}
 					
 					Date actual = new Date(utctime.getTime());
+					//System.out.println("date read is "+actual);
 					// generate a unix timestamp from this date
-					Long starttimesecs = actual.getTime()/1000;
+					Long starttimesecs = actual.getTime();
 	
 					// if the map already contains this player name as a key
 					if (playerdatabyname.containsKey(playername)) {
 						
 							String entry = playername + ",,";
-							for(int i = trainedtoday; i < defence; ++i){
+							for(int i = eatentoday; i < defence; ++i){
 								entry += tokens[i] + ",";
 							}
 							
@@ -165,9 +169,9 @@ public class RedoxUtilities {
 					} else {
 						// new player encountered(not already in map)
 						// instantiate a new list of strings for this player
-						
+
 							String entry = playername + ",,";
-							for(int i = trainedtoday; i < defence; ++i){
+							for(int i = eatentoday; i < defence; ++i){
 								entry += tokens[i] + ",";
 							}
 							

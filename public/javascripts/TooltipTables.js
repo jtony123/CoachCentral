@@ -1,13 +1,31 @@
+var rdxtooltip = d3.select("body").append("div")   
+.attr("class", "rdxtooltip")               
+.style("opacity", 0)
+.style("z-index", 999999);
+
+var stresstooltip = d3.select("body").append("div")   
+.attr("class", "stresstooltip")               
+.style("opacity", 0)
+.style("z-index", 999999);
+
+
+
+
+
 var acutetooltip = d3.select("body").append("div")   
 	.attr("class", "acutetooltip")               
 	.style("opacity", 0)
 	.style("z-index", 999999);
+
+
 var rdxtip = d3.select("body").append("div")   
 	.attr("class", "rdxtip")
 	.attr("id", "rdxtip")
 	.style("font", "8px")
 	.style("opacity", 1)
 	.style("z-index", 999999);
+
+
 var rdxnotes = function(d){
 	
 	var notesarray = d.NOTES.split(':');

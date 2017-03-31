@@ -6,31 +6,49 @@
 
 
 
+
+div.rdxtooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 100px;                  
+  height: 20px;                 
+  padding: 2px;             
+  font: 12px sans-serif;     
+   border: 1px; 
+   border-style: solid;      
+  pointer-events: none;         
+}
+
+
+
+
+
 .defenceline {
-	clip-path: url(#rdxclip);
+	clip-path: url(#rdxdangerclip);
 	stroke-width: 1;
 	stroke: blue;
 	fill: none;
 }
 .defenceadjline {
-	clip-path: url(#rdxclip);
+	clip-path: url(#rdxdangerclip);
 	stroke-width: 1;
 	stroke: blue;
 	stroke-dasharray: 10 5;
 	fill: none;
 }
 .DEFENCE {
+	clip-path: url(#rdxdangerclip);
 	stroke: blue;
 	opacity: 1;
 }
 .stressline {
-	clip-path: url(#rdxclip);
+	clip-path: url(#rdxdangerclip);
 	stroke-width: 1;
 	stroke: purple;
 	fill: none;
 }
 .stressadjline {
-	clip-path: url(#rdxclip);
+	clip-path: url(#rdxdangerclip);
 	stroke-width: 1;
 	stroke: purple;
 	stroke-dasharray: 10 5;
@@ -46,6 +64,7 @@
 }
 
 .STRESS {
+	clip-path: url(#rdxdangerclip);
 	stroke: purple;
 	opacity: 1;
 }
@@ -117,6 +136,17 @@
 .CTXcircles {
 	fill: none;
 	stroke: #e6e6e6;
+}
+
+.CTXweeklycircles {
+	fill: #f4f2f1;
+	stroke: lightgrey;
+	stroke-width : 2px;
+	
+}
+
+.UPtriangles {
+	fill: none;
 }
 
 #rdxbutton {

@@ -43,6 +43,8 @@ public class Redox extends Model {
     
     public String diarrhea;
     
+    public String exercises;
+    
     //
     public String gymweights;
     
@@ -56,13 +58,21 @@ public class Redox extends Model {
     
     
     
+    public String illness;
+    
+    public String injured;
+    
+    public String additionalNotes;
+    
+    
+    
     public Double energy;
     
     public Double muscleSoreness;
     
+    public String sportscientistComment = "";
     
-    
-    public String orrecoScientist;
+    public String orrecoScientist = "";
     
     public Double stress;
     
@@ -96,13 +106,33 @@ public class Redox extends Model {
     	this.date = date;
     }
     
+    public void addComment(String comment, String commentBy) {
+    	
+    	
+    	if(this.sportscientistComment == null) {
+    		this.sportscientistComment = comment+";";
+    	} else {
+    		this.sportscientistComment += comment+";";
+    	}
+    	
+    	if (this.orrecoScientist == null) {
+    		this.orrecoScientist = commentBy+";";
+    	} else {
+    		this.orrecoScientist += commentBy+";";
+    	}
+    	
+    	this.save();
+    }
+    
     
     
     public void setRedoxTestResult(String eaten, String exercised, 
     	    String fever,String sorethroat,String headache, String jointmuscleache, String diarrhea,
+    	    String exercises,
     	    String gymweights, String practicetraining, String game, String rest, String other,
     		Double energy, Double muscleSoreness,
-    		Double stress, Double defence, Boolean includeInCritDiff) {
+    		Double stress, Double defence, Boolean includeInCritDiff,
+    		String ill, String injured, String addnotes) {
     	this.eaten = eaten;
     	this.exercised = exercised;
     	this.fever = fever;
@@ -110,6 +140,8 @@ public class Redox extends Model {
     	this.headache = headache;
     	this.jointmuscleache = jointmuscleache;
     	this.diarrhea = diarrhea;
+    	
+    	this.exercises = exercises;
     	
     	this.gymweights = gymweights;
     	this.practicetraining = practicetraining;
@@ -123,6 +155,10 @@ public class Redox extends Model {
     	this.stress = stress;
     	this.defence = defence;
     	this.includeInCritDiff = includeInCritDiff;
+    	
+    	this.illness = ill;
+    	this.injured = injured;
+    	this.additionalNotes = addnotes;
     	
     	this.save();
     	calculateThreshold();
@@ -232,6 +268,11 @@ public class Redox extends Model {
     	calculateThreshold();
     	determineStatus();
     	this.save();
+    }
+    
+    public static Redox findById(Long id){
+    	Finder<Long, Redox> finder = new Finder<>(Redox.class);
+    	return finder.byId(id);
     }
     
     

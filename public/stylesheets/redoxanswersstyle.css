@@ -47,11 +47,13 @@
 	line-height: 20px;
 	padding-left:10px;
 	padding-right:10px;
+	padding-bottom:10px;
 	color: grey;
 	border-bottom: 2px solid lightgrey;
 	text-align: left;
 	vertical-align: middle;
 }
+
 
 .anssubheadings {
 	display:inline-block;
@@ -62,23 +64,28 @@
 	display: inline-block;
 	float: right;
 }
+.testauto {
+	height: 0px;
+}
 
 
 
 
-#EATEN, #TRAINED, #ENERGY, #MUSCLE_SORENESS {
+
+
+#EATEN, #TRAINED, #ENERGY, #MUSCLE_SORENESS, #ILL, #INJURED {
 	display:inline-block;
 	height: 40px;
 	line-height: 40px;
 	
 }
 
-#EATENVALUE, #TRAINEDVALUE, #MUSCSOREVALUE {
+#EATENVALUE, #TRAINEDVALUE, #MUSCSOREVALUE, #ILLVALUE, #INJUREDVALUE  {
 	display:inline-block;
  	float:right;
 	height: 40px;
 	line-height: 40px;
-	padding-right:20px;
+/* 	padding-right:20px; */
 	font-size: 24px;
 }
 
@@ -92,7 +99,7 @@
 }
 
 #MUSCSOREVALUE {
-	display:in-line-block; 
+	display:inline-block; 
 	float:right;
 	margin: 5px auto; 
 	height:30px;
@@ -106,7 +113,7 @@
 
 
 #SYMPTOMS, #EXERCISE {
-	height:155px;
+	height: auto;
 }
 
 .glyphicon-question-sign {
@@ -114,11 +121,11 @@
 }
 
 .glyphicon-ok {
-	color: green;
+	color: red;
 }
 
 .glyphicon-remove {
-	color: red;
+	color: green;
 }
 
 #nrgcliprect {
@@ -215,5 +222,26 @@
 	color: grey;
 	height: 40px;
 	line-height: 40px;
+}
+
+.table {
+	display: table;
+  border-collapse: separate;
+  border-spacing: 10px;
+}
+
+
+.advicerow {
+	padding: 50px;
+	display: table-row;
+}
+
+.advice {
+	background-color: #faf5e3;
+	
+    border: 2px solid gray;
+    margin: 0px;
+    border-radius: 10px;
+    display: table-cell;
 }
 

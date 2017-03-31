@@ -220,24 +220,32 @@
 																	margin:20px;
 																	background-color: white;
 																	box-shadow: 0px 0px 10px grey;">
-	<div class="chart_upper" class="row" id="chart_upper" >
-	
-	</div>
-	<div class="chart_centre" class="row" id="chart_centre">
-	
-	</div>
-	<div class="chart_lower" class="row" id="chart_lower">
+
+
+
 		
-	<div class="row" id ="redoxanswersrow">
-	
-</div>
 
 
-<div>
+
 <form id='rdxquestionnaire' action='@routes.Application.saveRedox(player.playernumber, category)' method='POST'>
-			
-	<div class="EATENQ" id="EATENQ">
-		<label class="radio-inline">
+	
+
+<div class="container" style="padding-top:50px;">
+  <ul class="nav nav-pills nav-justified mypill">
+    <li class="active progresspill" id="eatentrainedpill"><a data-toggle="pill" href="#eatentrained">Eaten/Trained</a></li>
+    <li class="progresspill" id="symptomspill"><a data-toggle="pill" href="#symptoms">Symptoms</a></li>
+    <li class="progresspill" id="exercisespill"><a data-toggle="pill" href="#exercises">Exercise</a></li>
+    <li class="progresspill" id="energymusclesorepill"><a data-toggle="pill" href="#energymusclesore">Energy/Muscle Soreness</a></li>
+  	<li class="progresspill" id="testerpill"><a data-toggle="pill" href="#testresult">Test Results</a></li>
+  </ul>
+  
+  <div class="tab-content">
+    
+    <div id="eatentrained" class="tab-pane fade in active">
+    <br>
+    <div class="floatingboxleft">
+    <div class="EATENQ" id="EATENQ">
+		<label class="radio-inline txt">
 		      <p>Have you eaten this morning?</p>
 		    </label>
 		    <label class="radio-inline">
@@ -248,10 +256,10 @@
 		    </label>
 	  	
 	</div>
-	
+	<br><br><br>
 	<div class="EXERCISEQ" id="EXERCISEQ">
 		
-		<label class="radio-inline">
+		<label class="radio-inline txt">
 	      <p>Have you exercised today?</p>
 	    </label>
 	    <label class="radio-inline">
@@ -262,80 +270,90 @@
 	    </label>
 	  	
 	</div>
-	<br>
-	<div class="SYMPTOMSQ" id="SYMPTOMSQ">
-	Have you had any of these symptoms today or in the last week?
-		
-			
-			<div>
-				<label class="checkbox-inline">
-			      <p>Fever</p>
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="fevertoday">Today
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="feverlastweek">In the last week
-			    </label>
-		    </div>
-		    
-		    <div>
-				<label class="checkbox-inline">
-			      <p>Cold/Sore Throat</p>
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="coldtoday">Today
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="coldlastweek">In the last week
-			    </label>
-		    </div>
-		    
-		    <div>
-				<label class="checkbox-inline">
-			      <p>Headache</p>
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="headachetoday">Today
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="headachelastweek">In the last week
-			    </label>
-		    </div>
-		    
-		    <div>
-				<label class="checkbox-inline">
-			      <p>Joint/Muscle Ache</p>
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="muscachetoday">Today
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="muscachelastweek">In the last week
-			    </label>
-		    </div>
-		    
-		    <div>
-				<label class="checkbox-inline">
-			      <p>Diarrhea/Sickness</p>
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="sicktoday">Today
-			    </label>
-			    <label class="checkbox-inline">
-			      <input type="checkbox" name="sicklastweek">In the last week
-			    </label>
-		    </div>
 	</div>
+	<div class="floatingboxright">
 	
-	
-	<br>
-	<div class="EXERCISESQ" id="EXERCISESQ">
-	What exercise did you do yesterday?
-		<div>
-			    <input type="hidden" name="playerno" value="@player.playernumber">
-			    <input type="hidden" name="nrglevel" id="nrgform" value='0'>
-			    <input type="hidden" name="musclevel" id="muscform" value='0'>
+	<div class="NEXTBUTTON">
+		<a onclick="updateTab('symptomspill')" data-toggle="pill" href="#symptoms" style="cursor:pointer;">Next >></a>
+	</div>
+      
+    </div>
+    </div>
+    <div id="symptoms" class="tab-pane fade">
+		<br>
+      
+	      	<div class="SYMPTOMSQ" id="SYMPTOMSQ">
+			Have you had any of these symptoms today or in the last week?
+			
+				
+				<div>
+					<label class="checkbox-inline">
+				      <p>Fever</p>
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="fevertoday">Today
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="feverlastweek">In the last week
+				    </label>
+			    </div>
+			    
+			    <div>
+					<label class="checkbox-inline">
+				      <p>Cold/Sore Throat</p>
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="coldtoday">Today
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="coldlastweek">In the last week
+				    </label>
+			    </div>
+			    
+			    <div>
+					<label class="checkbox-inline">
+				      <p>Headache</p>
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="headachetoday">Today
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="headachelastweek">In the last week
+				    </label>
+			    </div>
+			    
+			    <div>
+					<label class="checkbox-inline">
+				      <p>Joint/Muscle Ache</p>
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="muscachetoday">Today
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="muscachelastweek">In the last week
+				    </label>
+			    </div>
+			    
+			    <div>
+					<label class="checkbox-inline">
+				      <p>Diarrhea/Sickness</p>
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="sicktoday">Today
+				    </label>
+				    <label class="checkbox-inline">
+				      <input type="checkbox" name="sicklastweek">In the last week
+				    </label>
+			    </div>
+		</div>
+      <a onclick="updateTab('exercisespill')" data-toggle="pill" href="#exercises">Next</a>
+    </div>
+    <div id="exercises" class="tab-pane fade">
+<br>
+      	<div class="EXERCISESQ" id="EXERCISESQ">
+		What exercise did you do yesterday?
+			<div>
+
 			    
 			      <input type="checkbox" name="gym" id="gymcheck">Gym/Weights
 			    
@@ -350,13 +368,20 @@
 			      <input type="text" name="otherexercises">Other
 			    
 		    </div>
-		   </div> 
-		    
-		    
-	<div>
+		</div> 
+    	<a onclick="updateTab('energymusclesorepill')" data-toggle="pill" href="#energymusclesore">Next</a>
+    </div>
+    <div id="energymusclesore" class="tab-pane fade">
+<br>
+      	<div>
 		<svg id="slidersvg"></svg>
-	</div>
-	
+		</div>
+      <a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult">Next</a>
+    </div>
+    
+    <div id="testresult" class="tab-pane fade">
+<br>
+      	
 	<div class="ILLNESSQ" id="ILLNESSQ">
 		
 		<label class="radio-inline">
@@ -371,7 +396,7 @@
 	  	
 	</div>
 	
-		<div class="INJURYQ" id="INJURYQ">
+	<div class="INJURYQ" id="INJURYQ">
 		
 		<label class="radio-inline">
 	      <p>Reported injury in the last week?</p>
@@ -390,17 +415,43 @@
 	<input type="number" step="0.01" min="0" max="5" name="stress" placeholder="stress reading">
 	<br>
 	<input type="number" step="0.01" min="0" max="5" name="defence" placeholder="defence reading">
-		 <br>   
+	<br>   
+	<input type="hidden" name="playerno" value="@player.playernumber">
+    <input type="hidden" name="nrglevel" id="nrgform" value='0'>
+    <input type="hidden" name="musclevel" id="muscform" value='0'>
 	<button>Save</button>
-		    
-	</form>
-</div>
-	
 
+    </div>
+  </div>
+  </form>
 </div>
+</div>
+
+
+
+	
+</div>
+
+
+
+
+
+
+
+
+
 </div><!-- end  outer container-->
         
  <script>
+ 
+ 
+ function updateTab(str) {
+	 //d3.selectAll(".progresspill").classed("active", false);
+	 d3.select("#"+str).classed("active", true);
+	}
+ 
+	
+	
  var slidersvg = d3.select("#slidersvg").attr("width", 400).attr("height", 500),
  slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
  slide_h = +slidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
@@ -565,29 +616,29 @@
  });
 
 
- (function ($) {
-	  $(document).ready(function(){
+//  (function ($) {
+// 	  $(document).ready(function(){
 
-	    // hide .navbar first
-	   //$(".navbar").hide();
+// 	    // hide .navbar first
+// 	   //$(".navbar").hide();
 
-	    // fade in .navbar
-	    $(function () {
-	        $(window).scroll(function () {
+// 	    // fade in .navbar
+// 	    $(function () {
+// 	        $(window).scroll(function () {
 
-	                 // set distance user needs to scroll before we start fadeIn
-	            if ($(this).scrollTop() > 10) {
-	               // $('.navbar').fadeIn();
-	                $('.navbar').fadeOut();
-	            } else {
-	                //$('.navbar').fadeOut();
-	                $('.navbar').fadeIn();
-	            }
-	        });
-	    });
+// 	                 // set distance user needs to scroll before we start fadeIn
+// 	            if ($(this).scrollTop() > 10) {
+// 	               // $('.navbar').fadeIn();
+// 	                $('.navbar').fadeOut();
+// 	            } else {
+// 	                //$('.navbar').fadeOut();
+// 	                $('.navbar').fadeIn();
+// 	            }
+// 	        });
+// 	    });
 
-	});
-	  }(jQuery));
+// 	});
+// 	  }(jQuery));
  
  </script>
         

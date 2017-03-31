@@ -1,22 +1,41 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import com.avaje.ebean.Ebean;
 
 import models.SecurityRole;
 import models.User;
 import models.UserPermission;
 import play.Application;
+import play.Configuration;
 import models.Category;
 import models.Player;
 import models.RdxAlertReport;
 import play.GlobalSettings;
+import play.libs.concurrent.HttpExecutionContext;
 
 public class Global extends GlobalSettings {
+	
+//	@Inject 
+//	private  Configuration configuration;
+//	String filepath;
+//	
+//    private final HttpExecutionContext ec;
+//
+//    @Inject
+//    public Global(final HttpExecutionContext ec, Configuration configuration)
+//    {
+//        this.ec = ec;
+//        this.configuration = configuration;
+//        filepath = configuration.getString("filepath");
+//    }
 
     @Override
-    public void onStart(Application application)
-    {
+    public void onStart(Application application) {
+  
+    	
     	
     	System.out.println("onStart called");
     	
@@ -130,6 +149,22 @@ public class Global extends GlobalSettings {
             Ebean.saveManyToManyAssociations(user4,
                     "permissions");
             
+            User user5 = new User();
+            user5.email = "una.newell@orreco.com";
+            user5.userName = "Una Newell";
+            user5.setPassword("una$0rrec0");
+            user5.roles = new ArrayList<SecurityRole>();
+            user5.roles.add(SecurityRole.findByName("coach"));
+            user5.roles.add(SecurityRole.findByName("redoxadmin"));
+            user5.permissions = new ArrayList<UserPermission>();
+            user5.permissions.add(UserPermission.findByValue("view"));
+
+            user5.save();
+            Ebean.saveManyToManyAssociations(user5,
+                    "roles");
+            Ebean.saveManyToManyAssociations(user5,
+                    "permissions");
+            
             
         }
         
@@ -168,6 +203,7 @@ public class Global extends GlobalSettings {
         	User userDemo = User.findByEmail("demo@orreco.com");
         	User userJeremy = User.findByEmail("jeremyholsopple@gmail.com");
         	User userPaul = User.findByEmail("paul.colgan@orreco.com");
+        	User userUna = User.findByEmail("una.newell@orreco.com");
         	
         	System.out.println("adding default demo Players");
         	
@@ -183,10 +219,12 @@ public class Global extends GlobalSettings {
 	       	player1.weight = "220lbs";
 	       	player1.position = "Guard";
 	       	player1.categories.add(Category.findByName("Guards"));
+	       	player1.setPlayerPhoto();
 	       	userAnthony.players.add(player1);
 	       	userGrainne.players.add(player1);
 	       	userDemo.players.add(player1);
 	       	userPaul.players.add(player1);
+	       	userUna.players.add(player1);
 	       	player1.save();
         	
     	Player player2 = new Player("Mosi Ruines", 2, null, userAnthony);
@@ -195,10 +233,12 @@ public class Global extends GlobalSettings {
 		   	player2.weight = "215lbs";
 		   	player2.position = "Center";
 		   	player2.categories.add(Category.findByName("Centers"));
+		   	player2.setPlayerPhoto();
 		   	userAnthony.players.add(player2);
 		   	userGrainne.players.add(player2);
 		   	userDemo.players.add(player2);
 		   	userPaul.players.add(player2);
+		   	userUna.players.add(player2);
 		   	player2.save();
         	
         	
@@ -208,10 +248,12 @@ public class Global extends GlobalSettings {
 	       	player3.weight = "240lbs";
 	       	player3.position = "Forward";
 	       	player3.categories.add(Category.findByName("Forwards"));
+	       	player3.setPlayerPhoto();
 	       	userAnthony.players.add(player3);
 	       	userGrainne.players.add(player3);
 	       	userDemo.players.add(player3);
 	       	userPaul.players.add(player3);
+	       	userUna.players.add(player3);
 	       	player3.save();
         	
         	Player player4 = new Player("Finn Browne", 4, null, userAnthony);
@@ -220,10 +262,12 @@ public class Global extends GlobalSettings {
         	player4.weight = "240lbs";
         	player4.position = "Forward";
         	player4.categories.add(Category.findByName("Forwards"));
+        	player4.setPlayerPhoto();
         	userAnthony.players.add(player4);
         	userGrainne.players.add(player4);
         	userDemo.players.add(player4);
         	userPaul.players.add(player4);
+        	userUna.players.add(player4);
         	player4.save();
         	
         	Player player5 = new Player("Harry Anderstown", 5, null, userAnthony);
@@ -232,10 +276,12 @@ public class Global extends GlobalSettings {
         	player5.weight = "228lbs";
         	player5.position = "Forward";
         	player5.categories.add(Category.findByName("Forwards"));
+        	player5.setPlayerPhoto();
         	userAnthony.players.add(player5);
         	userGrainne.players.add(player5);
         	userDemo.players.add(player5);
         	userPaul.players.add(player5);
+        	userUna.players.add(player5);
         	player5.save();
         	
         	Player player6 = new Player("Jack McGowan", 6, null, userAnthony);
@@ -244,6 +290,7 @@ public class Global extends GlobalSettings {
         	player6.weight = "185lbs";
         	player6.position = "Guard";
         	player6.categories.add(Category.findByName("Guards"));
+        	player6.setPlayerPhoto();
         	userAnthony.players.add(player6);
         	userGrainne.players.add(player6);
         	userDemo.players.add(player6);
@@ -256,6 +303,7 @@ public class Global extends GlobalSettings {
         	player7.weight = "225lbs";
         	player7.position = "Foward";
         	player7.categories.add(Category.findByName("Forwards"));
+        	//player7.setPlayerPhoto();
         	userAnthony.players.add(player7);
         	userGrainne.players.add(player7);
         	userDemo.players.add(player7);
@@ -268,6 +316,7 @@ public class Global extends GlobalSettings {
         	player8.weight = "250lbs";
         	player8.position = "Center";
         	player8.categories.add(Category.findByName("Centers"));
+        	player8.setPlayerPhoto();
         	userAnthony.players.add(player8);
         	userGrainne.players.add(player8);
         	userDemo.players.add(player8);
@@ -280,6 +329,7 @@ public class Global extends GlobalSettings {
         	player9.weight = "225lbs";
         	player9.position = "Guard";
         	player9.categories.add(Category.findByName("Centers"));
+        	player9.setPlayerPhoto();
         	userAnthony.players.add(player9);
         	userGrainne.players.add(player9);
         	userDemo.players.add(player9);
@@ -292,6 +342,7 @@ public class Global extends GlobalSettings {
         	player10.weight = "195lbs";
         	player10.position = "Guard";
         	player10.categories.add(Category.findByName("Guards"));
+        	player10.setPlayerPhoto();
         	userAnthony.players.add(player10);
         	userGrainne.players.add(player10);
         	userDemo.players.add(player10);
@@ -301,231 +352,232 @@ public class Global extends GlobalSettings {
         	
         	// **** Mavs data
         	
-        	Player player11 = new Player("Quincy Acy", 11, null, userAnthony);
-        	player11.dob = "October 6, 1990";
-        	player11.height = "6'7";
-        	player11.weight = "240lbs";
-        	player11.position = "Forward";
-        	player11.categories.add(Category.findByName("Forwards"));
-        	userAnthony.players.add(player11);
-        	userGrainne.players.add(player11);
-        	player11.save();
-        	
-        	Player player12 = new Player("Justin Anderson", 12, null, userAnthony);
-        	player12.dob = "November 19, 1993";
-        	player12.height = "6'6";
-        	player12.weight = "228lbs";
-        	player12.position = "Forward";
-        	player12.categories.add(Category.findByName("Forwards"));
-        	userAnthony.players.add(player12);
-        	userGrainne.players.add(player12);
-        	player12.save();
-        	
-        	Player player13 = new Player("JJ Barea", 13, null, userGrainne);
-        	player13.dob = "June 26, 1984";
-        	player13.height = "6'0";
-        	player13.weight = "185lbs";
-        	player13.position = "Guard";
-        	player13.categories.add(Category.findByName("Guards"));
-        	player13.addAlias("J.J. Barea");
-        	userAnthony.players.add(player13);
-        	userGrainne.players.add(player13);
-        	userJeremy.players.add(player13);
-        	player13.save();
-        	
-        	Player player14 = new Player("Harrison Barnes", 14, null, userAnthony);
-             player14.dob = "May 30, 1992";
-        	player14.height = "6'8";
-        	player14.weight = "225lbs";
-        	player14.position = "Foward";
-        	player14.categories.add(Category.findByName("Forwards"));
-        	userAnthony.players.add(player14);
-        	userGrainne.players.add(player14);
-        	userJeremy.players.add(player14);
-        	player14.save();
-        	
-        	Player player15 = new Player("Andrew Bogut", 15, null, userAnthony);
-             player15.dob = "November 28, 1984";
-        	player15.height = "7'0";
-        	player15.weight = "260lbs";
-        	player15.position = "Center";
-        	player15.categories.add(Category.findByName("Centers"));
-        	userAnthony.players.add(player15);
-        	userGrainne.players.add(player15);
-        	player15.save();
-        	
-        	Player player16 = new Player("Nico Brussino", 16, null, userAnthony);
-             player16.dob = "March 02, 1993";
-        	player16.height = "6'7";
-        	player16.weight = "215lbs";
-        	player16.position = "Guard";
-        	player16.categories.add(Category.findByName("Centers"));
-        	player16.addAlias("Nicolas Brussino");
-        	userAnthony.players.add(player16);
-        	userGrainne.players.add(player16);
-        	userJeremy.players.add(player16);
-        	player16.save();
-        	
-        	Player player17 = new Player("Seth Curry", 17, null, userAnthony);
-             player17.dob = "August 23, 1990";
-        	player17.height = "6'2";
-        	player17.weight = "185lbs";
-        	player17.position = "Guard";
-        	player17.categories.add(Category.findByName("Guards"));
-        	userAnthony.players.add(player17);
-        	userGrainne.players.add(player17);
-        	userJeremy.players.add(player17);
-        	player17.save();
-        	
-        	Player player18 = new Player("Jonathan Gibson", 18, null, userAnthony);
-             player18.dob = "November 08, 1987";
-        	player18.height = "6'2";
-        	player18.weight = "185lbs";
-        	player18.position = "Guard";
-        	player18.categories.add(Category.findByName("Guards"));
-        	userAnthony.players.add(player18);
-        	userGrainne.players.add(player18);
-        	userJeremy.players.add(player18);
-        	player18.save();
-        	
-        	Player player19 = new Player("AJ Hammons", 19, null, userAnthony);
-             player19.dob = "August 27, 1992";
-        	player19.height = "7'0";
-        	player19.weight = "260lbs";
-        	player19.position = "Center";
-        	player19.categories.add(Category.findByName("Centers"));
-        	player19.addAlias("A.J. Hammons");
-        	userAnthony.players.add(player19);
-        	userGrainne.players.add(player19);
-        	userJeremy.players.add(player19);
-        	player19.save();
-        	
-        	
-        	
-        	
-        	
-        	Player player20 = new Player("Devin Harris", 20, null, userAnthony);
-             player20.dob = "February 27, 1983";
-        	player20.height = "6'3";
-        	player20.weight = "185lbs";
-        	player20.position = "Guard";
-        	player20.categories.add(Category.findByName("Guards"));
-        	userAnthony.players.add(player20);
-        	userGrainne.players.add(player20);
-        	userJeremy.players.add(player20);
-        	player20.save();
-        	
-        	
-        	
-        	
-        	Player player21 = new Player("Wes Matthews", 21, null, userAnthony);
-             player21.dob = "October 14, 1986";
-        	player21.height = "6'5";
-        	player21.weight = "220lbs";
-        	player21.position = "Guard";
-        	player21.categories.add(Category.findByName("Guards"));
-        	player21.addAlias("Wesley Matthews");
-        	userAnthony.players.add(player21);
-        	userGrainne.players.add(player21);
-        	userJeremy.players.add(player21);
-        	player21.save();
-        	
-        	
-        	
-        	Player player22 = new Player("Salah Mejri", 22, null, userAnthony);
-             player22.dob = "June 15, 1986";
-        	player22.height = "7'2";
-        	player22.weight = "245lbs";
-        	player22.position = "Center";
-        	player14.categories.add(Category.findByName("Centers"));
-        	userAnthony.players.add(player22);
-        	userGrainne.players.add(player22);
-        	userJeremy.players.add(player22);
-        	player22.save();
-        	
-        	Player player23 = new Player("Dirk Nowitzki", 23, null, userAnthony);
-             player23.dob = "June 19, 1978";
-        	player23.height = "7'0";
-        	player23.weight = "245lbs";
-        	player23.position = "Centre";
-        	player23.categories.add(Category.findByName("Centers"));
-        	userAnthony.players.add(player23);
-        	userGrainne.players.add(player23);
-        	userJeremy.players.add(player23);
-        	player23.save();
-        	
-        	Player player24 = new Player("Dwight Powell", 24, null, userAnthony);
-             player24.dob = "July 20, 1991";
-        	player24.height = "6'11";
-        	player24.weight = "240lbs";
-        	player24.position = "Forward";
-        	player24.categories.add(Category.findByName("Forwards"));
-        	userAnthony.players.add(player24);
-        	userGrainne.players.add(player24);
-        	userJeremy.players.add(player24);
-        	player24.save();
-        
-    	Player player25 = new Player("Dorian Finney-Smith", 25, null, userAnthony);
-             player25.dob = "October 03, 1991";
-        	player25.height = "6'8";
-        	player25.weight = "220lbs";
-        	player25.position = "Forward";
-        	player25.categories.add(Category.findByName("Forwards"));
-        	player25.addAlias("Dorian Finney Smith");
-        	userAnthony.players.add(player25);
-        	userGrainne.players.add(player25);
-        	userJeremy.players.add(player25);
-        	player25.save();
-        	
-        Player player26 = new Player("Deron Williams", 26, null, userAnthony);
-	        player26.dob = "June 26, 1984";
-	        player26.height = "6'3";
-	        player26.weight = "195lbs";
-	        player26.position = "Guard";
-	        player26.categories.add(Category.findByName("Guards"));
-	       	userAnthony.players.add(player26);
-	       	userGrainne.players.add(player26);
-	       	player26.save();
-	       	
-	    Player player27 = new Player("Pierre Jackson", 27, null, userAnthony);
-		    player27.dob = "August 29, 1991";
-		    player27.height = "5'10";
-		    player27.weight = "180lbs";
-		    player27.position = "Guard";
-		    player27.categories.add(Category.findByName("Guards"));
-	       	userAnthony.players.add(player27);
-	       	userGrainne.players.add(player27);
-	       	userJeremy.players.add(player27);
-	       	player27.save();
-	       	
-	    Player player28 = new Player("Nerlens Noel", 28, null, userAnthony);
-	    player28.dob = "April 10, 1994";
-	    player28.height = "6'11";
-	    player28.weight = "228lbs";
-	    player28.position = "Guard";
-	    player28.categories.add(Category.findByName("Forwards"));
-	       	userAnthony.players.add(player28);
-	       	userGrainne.players.add(player28);
-	       	userJeremy.players.add(player28);
-	       	player28.save();
-	       	
-	      
+//        	Player player11 = new Player("Quincy Acy", 11, null, userAnthony);
+//        	player11.dob = "October 6, 1990";
+//        	player11.height = "6'7";
+//        	player11.weight = "240lbs";
+//        	player11.position = "Forward";
+//        	player11.categories.add(Category.findByName("Forwards"));
+//        	userAnthony.players.add(player11);
+//        	userGrainne.players.add(player11);
+//        	player11.save();
+//        	
+//        	Player player12 = new Player("Justin Anderson", 12, null, userAnthony);
+//        	player12.dob = "November 19, 1993";
+//        	player12.height = "6'6";
+//        	player12.weight = "228lbs";
+//        	player12.position = "Forward";
+//        	player12.categories.add(Category.findByName("Forwards"));
+//        	userAnthony.players.add(player12);
+//        	userGrainne.players.add(player12);
+//        	player12.save();
+//        	
+//        	Player player13 = new Player("JJ Barea", 13, null, userGrainne);
+//        	player13.dob = "June 26, 1984";
+//        	player13.height = "6'0";
+//        	player13.weight = "185lbs";
+//        	player13.position = "Guard";
+//        	player13.categories.add(Category.findByName("Guards"));
+//        	player13.addAlias("J.J. Barea");
+//        	userAnthony.players.add(player13);
+//        	userGrainne.players.add(player13);
+//        	userJeremy.players.add(player13);
+//        	player13.save();
+//        	
+//        	Player player14 = new Player("Harrison Barnes", 14, null, userAnthony);
+//             player14.dob = "May 30, 1992";
+//        	player14.height = "6'8";
+//        	player14.weight = "225lbs";
+//        	player14.position = "Foward";
+//        	player14.categories.add(Category.findByName("Forwards"));
+//        	userAnthony.players.add(player14);
+//        	userGrainne.players.add(player14);
+//        	userJeremy.players.add(player14);
+//        	player14.save();
+//        	
+//        	Player player15 = new Player("Andrew Bogut", 15, null, userAnthony);
+//             player15.dob = "November 28, 1984";
+//        	player15.height = "7'0";
+//        	player15.weight = "260lbs";
+//        	player15.position = "Center";
+//        	player15.categories.add(Category.findByName("Centers"));
+//        	userAnthony.players.add(player15);
+//        	userGrainne.players.add(player15);
+//        	player15.save();
+//        	
+//        	Player player16 = new Player("Nico Brussino", 16, null, userAnthony);
+//             player16.dob = "March 02, 1993";
+//        	player16.height = "6'7";
+//        	player16.weight = "215lbs";
+//        	player16.position = "Guard";
+//        	player16.categories.add(Category.findByName("Centers"));
+//        	player16.addAlias("Nicolas Brussino");
+//        	userAnthony.players.add(player16);
+//        	userGrainne.players.add(player16);
+//        	userJeremy.players.add(player16);
+//        	player16.save();
+//        	
+//        	Player player17 = new Player("Seth Curry", 17, null, userAnthony);
+//             player17.dob = "August 23, 1990";
+//        	player17.height = "6'2";
+//        	player17.weight = "185lbs";
+//        	player17.position = "Guard";
+//        	player17.categories.add(Category.findByName("Guards"));
+//        	userAnthony.players.add(player17);
+//        	userGrainne.players.add(player17);
+//        	userJeremy.players.add(player17);
+//        	player17.save();
+//        	
+//        	Player player18 = new Player("Jonathan Gibson", 18, null, userAnthony);
+//             player18.dob = "November 08, 1987";
+//        	player18.height = "6'2";
+//        	player18.weight = "185lbs";
+//        	player18.position = "Guard";
+//        	player18.categories.add(Category.findByName("Guards"));
+//        	userAnthony.players.add(player18);
+//        	userGrainne.players.add(player18);
+//        	userJeremy.players.add(player18);
+//        	player18.save();
+//        	
+//        	Player player19 = new Player("AJ Hammons", 19, null, userAnthony);
+//             player19.dob = "August 27, 1992";
+//        	player19.height = "7'0";
+//        	player19.weight = "260lbs";
+//        	player19.position = "Center";
+//        	player19.categories.add(Category.findByName("Centers"));
+//        	player19.addAlias("A.J. Hammons");
+//        	userAnthony.players.add(player19);
+//        	userGrainne.players.add(player19);
+//        	userJeremy.players.add(player19);
+//        	player19.save();
+//        	
+//        	
+//        	
+//        	
+//        	
+//        	Player player20 = new Player("Devin Harris", 20, null, userAnthony);
+//             player20.dob = "February 27, 1983";
+//        	player20.height = "6'3";
+//        	player20.weight = "185lbs";
+//        	player20.position = "Guard";
+//        	player20.categories.add(Category.findByName("Guards"));
+//        	userAnthony.players.add(player20);
+//        	userGrainne.players.add(player20);
+//        	userJeremy.players.add(player20);
+//        	player20.save();
+//        	
+//        	
+//        	
+//        	
+//        	Player player21 = new Player("Wes Matthews", 21, null, userAnthony);
+//             player21.dob = "October 14, 1986";
+//        	player21.height = "6'5";
+//        	player21.weight = "220lbs";
+//        	player21.position = "Guard";
+//        	player21.categories.add(Category.findByName("Guards"));
+//        	player21.addAlias("Wesley Matthews");
+//        	userAnthony.players.add(player21);
+//        	userGrainne.players.add(player21);
+//        	userJeremy.players.add(player21);
+//        	player21.save();
+//        	
+//        	
+//        	
+//        	Player player22 = new Player("Salah Mejri", 22, null, userAnthony);
+//             player22.dob = "June 15, 1986";
+//        	player22.height = "7'2";
+//        	player22.weight = "245lbs";
+//        	player22.position = "Center";
+//        	player14.categories.add(Category.findByName("Centers"));
+//        	userAnthony.players.add(player22);
+//        	userGrainne.players.add(player22);
+//        	userJeremy.players.add(player22);
+//        	player22.save();
+//        	
+//        	Player player23 = new Player("Dirk Nowitzki", 23, null, userAnthony);
+//             player23.dob = "June 19, 1978";
+//        	player23.height = "7'0";
+//        	player23.weight = "245lbs";
+//        	player23.position = "Centre";
+//        	player23.categories.add(Category.findByName("Centers"));
+//        	userAnthony.players.add(player23);
+//        	userGrainne.players.add(player23);
+//        	userJeremy.players.add(player23);
+//        	player23.save();
+//        	
+//        	Player player24 = new Player("Dwight Powell", 24, null, userAnthony);
+//             player24.dob = "July 20, 1991";
+//        	player24.height = "6'11";
+//        	player24.weight = "240lbs";
+//        	player24.position = "Forward";
+//        	player24.categories.add(Category.findByName("Forwards"));
+//        	userAnthony.players.add(player24);
+//        	userGrainne.players.add(player24);
+//        	userJeremy.players.add(player24);
+//        	player24.save();
+//        
+//    	Player player25 = new Player("Dorian Finney-Smith", 25, null, userAnthony);
+//             player25.dob = "October 03, 1991";
+//        	player25.height = "6'8";
+//        	player25.weight = "220lbs";
+//        	player25.position = "Forward";
+//        	player25.categories.add(Category.findByName("Forwards"));
+//        	player25.addAlias("Dorian Finney Smith");
+//        	userAnthony.players.add(player25);
+//        	userGrainne.players.add(player25);
+//        	userJeremy.players.add(player25);
+//        	player25.save();
+//        	
+//        Player player26 = new Player("Deron Williams", 26, null, userAnthony);
+//	        player26.dob = "June 26, 1984";
+//	        player26.height = "6'3";
+//	        player26.weight = "195lbs";
+//	        player26.position = "Guard";
+//	        player26.categories.add(Category.findByName("Guards"));
+//	       	userAnthony.players.add(player26);
+//	       	userGrainne.players.add(player26);
+//	       	player26.save();
+//	       	
+//	    Player player27 = new Player("Pierre Jackson", 27, null, userAnthony);
+//		    player27.dob = "August 29, 1991";
+//		    player27.height = "5'10";
+//		    player27.weight = "180lbs";
+//		    player27.position = "Guard";
+//		    player27.categories.add(Category.findByName("Guards"));
+//	       	userAnthony.players.add(player27);
+//	       	userGrainne.players.add(player27);
+//	       	userJeremy.players.add(player27);
+//	       	player27.save();
+//	       	
+//	    Player player28 = new Player("Nerlens Noel", 28, null, userAnthony);
+//	    player28.dob = "April 10, 1994";
+//	    player28.height = "6'11";
+//	    player28.weight = "228lbs";
+//	    player28.position = "Guard";
+//	    player28.categories.add(Category.findByName("Forwards"));
+//	       	userAnthony.players.add(player28);
+//	       	userGrainne.players.add(player28);
+//	       	userJeremy.players.add(player28);
+//	       	player28.save();
+//	       	
+//	      
         	
         	Ebean.saveManyToManyAssociations(userAnthony, "players");
         	Ebean.saveManyToManyAssociations(userGrainne, "players");
         	Ebean.saveManyToManyAssociations(userDemo, "players");
         	Ebean.saveManyToManyAssociations(userJeremy, "players");
+        	Ebean.saveManyToManyAssociations(userUna, "players");
         	
         }
         
         if (RdxAlertReport.find.findRowCount() < 9) {
         	
-        	String sleep1 = "Aim for at least 8 hours sleep consistently every night"
-					+"Sleep in a cool§ noise free and blacked out room"
-					+"Switch off all electronic devices 2 hours before bedtime"
-					+"Spend at least 1 hour every day outside in natural daylight§ particularly in the mornings§ to increase melatonin and to regulate sleep quality and anti-oxidant defenses"
-					+"Avoid caffeine after 3 pm"
-					+"Optimise hydration during the day to avoid excessive drinking before bed and waking during the night"
+        	String sleep1 = "Aim for at least 8 hours sleep consistently every night;"
+					+"Sleep in a cool§ noise free and blacked out room;"
+					+"Switch off all electronic devices 2 hours before bedtime;"
+					+"Spend at least 1 hour every day outside in natural daylight§ particularly in the mornings§ to increase melatonin and to regulate sleep quality and anti-oxidant defenses;"
+					+"Avoid caffeine after 3pm;"
+					+"Optimise hydration during the day to avoid excessive drinking before bed and waking during the night;"
 					+"If sleep is disrupted by games and travel schedule§ try to take a nap after training/practice";
         	
         	String diet1 = "Review protein requirements to reflect training load;"

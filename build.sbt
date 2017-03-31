@@ -1,6 +1,6 @@
 name := """CoachCentralDev"""
 
-version := "1.0.11"
+version := "1.0.16"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
@@ -32,3 +32,6 @@ javaOptions ++= Seq(
 
 
 fork in run := false
+
+import com.typesafe.sbt.packager.MappingsHelper._
+    mappings in Universal ++= directory(baseDirectory.value / "data")

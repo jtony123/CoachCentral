@@ -1,6 +1,10 @@
 package models;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import javax.persistence.*;
 
@@ -12,6 +16,9 @@ import com.avaje.ebean.FetchConfig;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.Model.Finder;
 import com.avaje.ebeaninternal.server.type.ScalarTypeJsonMap.Blob;
+
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
 
 @Entity
 public class Player extends Model {
@@ -130,6 +137,41 @@ public class Player extends Model {
 //		this.save();
 //		return this;
 //	}
+	
+	public void setPlayerPhoto(){
+		
+		File afile = new java.io.File("data/demodataimages/"+this.playername+".png");
+	    //FilePart<File> filename = afile;
+	    
+	    if (afile != null) {
+	    	System.out.println("filename not null");
+	        String fileName = afile.getName();
+	        
+	        System.out.println("size = "+afile.length());
+	        if(afile.length() > 0){
+	        	 this.playerPhotofilename = fileName;
+		            this.playerPhoto = new byte[(int)afile.length()];
+		            
+		            InputStream inStream = null;
+		            try {
+		                inStream = new BufferedInputStream(new FileInputStream(afile));
+		                inStream.read(this.playerPhoto);
+		            } catch (IOException e) {
+		                e.printStackTrace();
+		            } finally {
+		                if (inStream != null) {
+		                    try {
+		                        inStream.close();
+		                    } catch (IOException e) {
+		                        e.printStackTrace();
+		                    }
+		                }
+		            }
+	        }
+	    }
+	    this.save();
+	}
+
 	
 	public static Player findByNumber(Integer playernumber){
 		

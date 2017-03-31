@@ -382,6 +382,10 @@ public class Application extends Controller {
    	 return ok(new java.io.File(filepath +player.filename));
     }
     
+    
+
+    
+    
   public Result getRedoxCSV(Integer playernumber){
     	
     	System.out.println("getCSV called");
@@ -397,14 +401,23 @@ public class Application extends Controller {
  		
  		Integer included = r.includeInCritDiff? 1: 0;
  		String aline = p.playername +","
+ 				+ r.id +","
  				+ r.rdxalertreport.result + ","
- 				+ "notes," 
+ 				+ r.sportscientistComment+","
+ 				+ r.orrecoScientist+","
  				+ r.rdxalertreport.potentialoutcomes + ","
  				+ r.rdxalertreport.actions + ","
+ 				
+ 				+ r.rdxalertreport.sleepadvice + ","
+ 				+ r.rdxalertreport.trainingloadadvice + ","
+ 				+ r.rdxalertreport.dietaryadvice + ","
+ 				
  				+r.exercised+","+r.eaten+","
+ 				+r.exercises+","
  				+"exergym,"+"exertrain,"+"exergame,"+"exerrest,"+r.other+","
  				+r.energy.toString()+","+r.muscleSoreness.toString()+","
- 				+r.fever+","+r.sorethroat+","+r.headache+","+r.jointmuscleache+","+r.diarrhea+","+"others,"
+ 				+r.fever+","+r.sorethroat+","+r.headache+","+r.jointmuscleache+","+r.diarrhea+","+","
+ 				+r.illness+","+r.injured+","+r.additionalNotes+","
  				+r.date.getTime()+","+r.defence.toString()+","+included.toString()+","+r.defenceThreshold.toString()+","+r.stress.toString()+","+included.toString()+","+r.stressThreshold.toString();
  		
  		
@@ -413,13 +426,49 @@ public class Application extends Controller {
  	
  	
  	
- 	String csvFileHeader = "playername,"
-			+"ResultShow,NOTES,POTOUT,ACTION,"
-			+"TrainedToday,AteToday,ExerciseGym,ExerciseTraining,ExerciseGame,ExerciseRest,ExerciseOther,"
+ 	String csvFileHeader = "playername,id,"
+			+"ResultShow,NOTES,SS,POTOUT,ACTION,"
+ 			+"Sleepadvice,TrainingLoadAdvice,DietAdvice,"
+			+"TrainedToday,AteToday,Exercises,ExerciseGym,ExerciseTraining,ExerciseGame,ExerciseRest,ExerciseOther,"
 			+"EnergyLevel,MuscleSoreness,"
 			+"Fever,SoreThroat,Headache,JointorMuscleAche,Diarrhea,Other,"
+			+"Ill,Injured,testernotes,"
 			+"TEST_TIME,DEFENCE,DEFENCE_INC,DEFENCE_CDT,STRESS,STRESS_INC,STRESS_CDT";
  	
+ 	
+ 	File playerfile = new File("data/attachments/"+p.playername+"_Rdx.csv");
+ 	
+		if (!playerfile.exists()) {
+			try {
+
+				playerfile.createNewFile();
+			} catch (IOException e1) {
+				// TODO return an error message to the user
+				e1.printStackTrace();
+			}
+		}
+ 	
+		PrintWriter out1 = null;
+		try {
+			out1 = new PrintWriter(new BufferedWriter(new FileWriter(playerfile)));
+
+			out1.println(csvFileHeader);
+			
+			for (Map.Entry<Long, String> entry : timestamps.entrySet()) {
+				 //System.out.println(entry.getKey() + ": " + entry.getValue());
+				  out1.println(entry.getValue());
+				}
+
+
+		} catch (Exception e) {
+			// TODO return an error message to the user
+			e.printStackTrace();
+		} finally {
+			out1.flush();
+			out1.close();
+		}
+		
+		
  	
  	File file = new File("/tmp/tmpCSV.csv");
  	
@@ -571,13 +620,22 @@ public class Application extends Controller {
                
        		Iterator it = playerdatabyname.entrySet().iterator();
        		while (it.hasNext()) {
+       			
+       			
        			Map.Entry pair = (Map.Entry) it.next();
+       			
        			
        			String[] tokens = null;
        			
        			for(String s : (List<String>) pair.getValue()){
+       				
        				tokens = s.split(",");
        			}
+       			
+       			for(int i=0;i<tokens.length;++i){
+       				System.out.println(i +" : " + tokens[i]);
+       			}
+       			
        			
        			
        			Player player = Player.findByNameOrAlias((String) pair.getKey());
@@ -586,26 +644,64 @@ public class Application extends Controller {
        				player =  Player.findByNumber(0);
        			} else {
        				
-					Long timestamp = Long.parseLong(tokens[22]);
-					Date actual = new Date(timestamp * 1000);
+					Long timestamp = Long.parseLong(tokens[15]);
+					Date actual = new Date(timestamp);
+					System.out.println("actual date is "+actual);
 					// check if already have a test for this player at this time
 					Redox rdx = Redox.findByTimeKey(player, actual);//new Redox(player);
 					if(rdx == null){
 						System.out.println("rdx is null");
 						rdx = new Redox(player, actual);
-						rdx.setRedoxTestResult("","",
-	       						"","","","","",
-	       						"","","","","",
-	       						0.0, 0.0,
-	       						Double.parseDouble(tokens[27]), Double.parseDouble(tokens[23]), true);
+						rdx.setRedoxTestResult(tokens[2],//eaten,
+								tokens[3],//exercised, 
+								tokens[4],//fever, 
+								tokens[5],//sorethroat, 
+								tokens[6],//headache, 
+								tokens[7],//jointmuscleache, 
+								tokens[8],//diarrhea, 
+								tokens[9],//exercises
+								"",//gymweights, 
+								"",//practicetraining, 
+								"",//game, 
+								"",//rest, 
+								"",//other, 
+								// remember to add illness, injury here
+								Double.parseDouble(tokens[13]),//energy, 
+								Double.parseDouble(tokens[14]),//muscleSoreness, 
+								Double.parseDouble(tokens[20]),//stress, 
+								Double.parseDouble(tokens[16]),//defence, 
+								true,
+								tokens[10],//illness
+								tokens[11],//injured
+								tokens[12]//addnotes
+										);
+								rdx.addComment("", "");
 					}else{
 						System.out.println("existing rdx result");
-						rdx.setRedoxTestResult("","",
-	       						"","","","","",
-	       						"","","","","",
-	       						0.0, 0.0,
-	       						Double.parseDouble(tokens[27]), Double.parseDouble(tokens[23]), true);
-						
+						rdx.setRedoxTestResult(tokens[2],//eaten,
+								tokens[3],//exercised, 
+								tokens[4],//fever, 
+								tokens[5],//sorethroat, 
+								tokens[6],//headache, 
+								tokens[7],//jointmuscleache, 
+								tokens[8],//diarrhea,
+								tokens[9],//exercises
+								"",//gymweights, 
+								"",//practicetraining, 
+								"",//game, 
+								"",//rest, 
+								"",//other, 
+								// remember to add illness, injury here
+								Double.parseDouble(tokens[13]),//energy, 
+								Double.parseDouble(tokens[14]),//muscleSoreness, 
+								Double.parseDouble(tokens[20]),//stress, 
+								Double.parseDouble(tokens[16]),//defence, 
+								true,
+								tokens[10],//illness
+								tokens[11],//injured
+								tokens[12]//addnotes
+										);
+						rdx.addComment("", "");
 					}
            			player.save();
        			}
@@ -724,39 +820,51 @@ public class Application extends Controller {
    		diarrhea += mydata.get("sicklastweek").equalsIgnoreCase("on") ? "In the last week;": "";
    	}
    	
-   	String other = "";
+   	String exercises = "";
    	if(mydata.get("gym") != null) {
-   		other += mydata.get("gym").equalsIgnoreCase("on") ? "Gym weights;": "";
+   		exercises += mydata.get("gym").equalsIgnoreCase("on") ? "Gym weights;": "";
    	}
    	
 	if(mydata.get("practice") != null) {
-   		other += mydata.get("practice").equalsIgnoreCase("on") ? "Practice;": "";
+		exercises += mydata.get("practice").equalsIgnoreCase("on") ? "Practice;": "";
    	}
 	
 	if(mydata.get("game") != null) {
-   		other += mydata.get("game").equalsIgnoreCase("on") ? "Game;": "";
+		exercises += mydata.get("game").equalsIgnoreCase("on") ? "Game;": "";
    	}
 	
 	if(mydata.get("rest") != null) {
-   		other += mydata.get("rest").equalsIgnoreCase("on") ? "Rest;": "";
+		exercises += mydata.get("rest").equalsIgnoreCase("on") ? "Rest;": "";
    	}
 
 	if(mydata.get("otherexercises") != null || mydata.get("otherexercises") != "") {
-   		other += mydata.get("otherexercises") +";";
+		exercises += mydata.get("otherexercises") +";";
    	}
+	
+	
 	
 	Double nrg = Double.parseDouble(mydata.get("nrglevel"));
 	Double musc = Double.parseDouble(mydata.get("musclevel"));
 	
 	Double stress = 0.0;
 	if(mydata.get("stress") != null){
-		stress = Double.parseDouble(mydata.get("stress"));
+		if(!mydata.get("stress").isEmpty()){
+			stress = Double.parseDouble(mydata.get("stress"));
+		}
+		
 	}
 	
 	Double defence = 0.0;
 	if(mydata.get("defence") != null){
-		defence = Double.parseDouble(mydata.get("defence"));
+		if(!mydata.get("defence").isEmpty()){
+			defence = Double.parseDouble(mydata.get("defence"));
+		}
 	}
+	
+	String addnotes = "";
+	if(mydata.get("notes") != null || mydata.get("notes") != "") {
+		addnotes += mydata.get("notes") +";";
+   	}
 	
    	
    	
@@ -769,22 +877,72 @@ public class Application extends Controller {
    			headache,//headache, 
    			jointmuscleache,//jointmuscleache, 
    			diarrhea,//diarrhea, 
+   			exercises,
    			"",//gymweights, 
    			"",//practicetraining, 
    			"",//game, 
    			"",//rest, 
-   			other,//other, 
+   			"",//other, 
    			nrg,//energy, 
    			musc,//muscleSoreness, 
    			stress,//stress, 
    			defence,//defence, 
-   			true);//includeInCritDiff);
+   			true,
+   			mydata.get("illness"),
+   			mydata.get("injury"),
+   			addnotes
+   			);//includeInCritDiff);
    	
    	
    	
    	return CompletableFuture.completedFuture(redirect(routes.Application.redox(playernumber, category)));
    	
    }
+   
+   
+   
+   
+   public CompletionStage<Result> saveComment(int playernumber, String category){
+	   System.out.println("saveComment called");
+	   
+	   	DynamicForm form = Form.form().bindFromRequest();
+	   	
+	   	DynamicForm requestData = formFactory.form().bindFromRequest();
+	   	
+	   	Map<String, String> mydata = requestData.data();
+	   	
+	   	System.out.println(mydata);
+	   	
+	   	Player player = Player.findByNumber(playernumber);
+	   	
+	   	String rdxid = "";
+	   	if(mydata.get("rdxid") != null) {
+	   		rdxid += mydata.get("rdxid");
+	   	}
+	   	
+	   	String comment = "";
+		if(mydata.get("comment") != null) {
+			comment += mydata.get("comment");
+	   	}
+		
+	   	String commentBy = "";
+		if(mydata.get("ssname") != null) {
+			commentBy += mydata.get("ssname");
+	   	}
+	   	
+	   	Long rid = Long.parseLong(rdxid);
+	   	Redox rdx = Redox.findById(rid);
+	   	rdx.addComment(comment, commentBy);
+	   	
+	   	
+	   	
+   	
+   	return CompletableFuture.completedFuture(redirect(routes.Application.redox(playernumber, category)));
+   }
+   
+   
+   
+   
    
     
     public CompletionStage<Result> updateRedoxToggleState(int playernumber, String category) {
