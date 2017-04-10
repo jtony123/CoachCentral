@@ -9,9 +9,9 @@
       <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
     @navigationbar(user: models.User, active: String)
     
-        <style> 
         
-                <style> 
+<style> 
+
 #player_icon {
   position: relative;
   perspective: 1000;
@@ -19,29 +19,9 @@
 #player_icon_card {
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  
-   -webkit-animation-name: player_icon_flip; /* Chrome, Safari, Opera */
-    -webkit-animation-duration: 2s; /* Chrome, Safari, Opera */
-    animation-name: player_icon_flip;
-    animation-duration: 12s;
-     animation-delay: 2s;
-/*      animation-direction: alternate; */
-    animation-iteration-count: 2;
   
 }
-@@-webkit-keyframes player_icon_flip {
-	10% { transform: rotateY(180deg);}
-	20% { transform: rotateY(0deg);}
-	60% { transform: rotateY(0deg);}
-	70% { transform: rotateY(180deg);}
-	80% { transform: rotateY(0deg);}
-}
-#player_icon:hover #player_icon_card {
--webkit-animation: none;
-  transform: rotateY(180deg);
-  box-shadow: -5px 5px 5px #aaa;
-}
+
 .face {
   position: absolute;
   width: 100%;
@@ -50,7 +30,6 @@
 }
 .face.back {
   display: block;
-  transform: rotateY(180deg);
   box-sizing: border-box;
   color: red;
   text-align: center;
@@ -58,161 +37,9 @@
 }
 </style>
 
-<div class="container-fluid" id="groupings_toggle_buttons">
-	<div>
-	@for(c <- categories) {
-		@if(c.name.equals(category)){
-		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
-		} else {
-		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
-   		}
-	}
-	</div>
-</div>
 
-<div class="row" id ="player_carousel">
-	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
-	  
-	  <div class="btn-group btn-group-justified">
-	  
-	   @if(players.size() > 5){
-	   
-	   <a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
-						<div >
-					
-						</div>
-						<div class="text-nowrap" style="text-align: center;">
-							<<
-						</div>
-					</a>
-	   }
-	   
-	  
-	  @if(players.size() > 5){
-	  
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 3), players.size())), category, active)
-	  		
-	  }
-	  
-	  @if(players.size() > 3){
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 2), players.size())), category, active)
-	  }
-	  
-	  @if(players.size() > 1){
-	  		@player_icon(players.get(Math.floorMod((playerIndex - 1), players.size())), category, active)
-	  }
-	
-	  </div>
-	  </div>
-	  
-	  
-	  
-	  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="player_icon">
-	  	<div id="player_icon_card">
-	  		<div class="front face">
-	  		
-	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
-	  			
-					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
-						<div>
-						
-						@if(player.playerPhoto != null){
-							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
-						} else {
-							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
-						}
-						
-						</div>
-						<div class="text-nowrap" style="text-align: center;">
-							@player.playername
-						</div>
-					</a>
-				</h4>
-			</div> <!-- end front face -->
-			
-			<div class="back face">
-				<h4 style="margin-bottom: 5px; margin-top:5px;">
-	  			
-					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
-						
-						<div>
-						
-						@if(player.playerPhoto != null){
-							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:50px;height:50px"/>
-						} else {
-							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:50px;height:50px;"/>
-						}
-						
-						<table style="text-align:left; font-family:arial; font-size:15px;">
-							<tr>
-								<td>Position</td><td>@player.position</td>
-							</tr>
-							<tr>
-								<td>DoB</td><td>@player.dob</td>
-							</tr>
-							<tr>
-								<td>Height</td><td>@player.height</td>
-							</tr>
-							<tr>
-								<td>Weight</td><td>@player.weight</td>
-							</tr>
-						</table>
-						
-						
-						</div>
-						<div class="text-nowrap" style="text-align: center;">
-							@player.playername
-						</div>
-						
-						
-						
-<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
-<!-- 						alerts go here<br> -->
-<!-- 						alert 1<br> -->
-<!-- 						alert 2<br> -->
-<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
-<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
-        				
-        				
-						
-					</a>
-				</h4>
-			</div><!-- end back face -->
-			</div>
-	  </div>
-	  
-	  
-	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center"></p>
-	 
-	 	<div class="btn-group btn-group-justified">
-	 		
-	 @if(players.size() > 2){
-	 	@player_icon(players.get(Math.floorMod((playerIndex + 1), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 4){
-	  	@player_icon(players.get(Math.floorMod((playerIndex + 2), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 6){
-	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
-	 }
-	 
-	  @if(players.size() > 6){
-	 		<a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
-					
-			<div class="text-nowrap" style="text-align: center;">
-				>>
-				
-			</div>		
-			</a>
-	 }
-	 	</div>
-	 	
-	  </div>
-	  
-	  
-</div><!-- end div player carousel -->
+
+
 
 <!-- the panel below the pagination carousel -->
 	
@@ -222,19 +49,40 @@
 																	box-shadow: 0px 0px 10px grey;">
 
 
+<div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
+	  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="player_icon">
 
+	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
+					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+						<div>
+						
+						@if(player.playerPhoto != null){
+							<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:150px"/>
+						} else {
+							<img class="img-responsive" src='@routes.Assets.at("images/player-headshot.png")' alt="" style="margin: 0 auto; max-width:150px;height:150px;"/>
+						}
+						</div>
+						<div class="text-nowrap" style="text-align: center;">
+							@player.playername
+						</div>
+					</a>
+				</h4>
+	  </div>
+	  
+	
+</div><!-- end div player carousel row-->
 		
 
 
-
+<div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
 <form id='rdxquestionnaire' action='@routes.Application.saveRedox(player.playernumber, category)' method='POST'>
 	
 
-<div class="container" style="padding-top:50px;">
-  <ul class="nav nav-pills nav-justified mypill">
+
+  <ul class="nav nav-pills nav-justified mypill" style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
     <li class="active progresspill" id="eatentrainedpill"><a data-toggle="pill" href="#eatentrained">Eaten/Trained</a></li>
     <li class="progresspill" id="symptomspill"><a data-toggle="pill" href="#symptoms">Symptoms</a></li>
-    <li class="progresspill" id="exercisespill"><a data-toggle="pill" href="#exercises">Exercise</a></li>
+<!--     <li class="progresspill" id="exercisespill"><a data-toggle="pill" href="#exercises">Exercise</a></li> -->
     <li class="progresspill" id="energymusclesorepill"><a data-toggle="pill" href="#energymusclesore">Energy/Muscle Soreness</a></li>
   	<li class="progresspill" id="testerpill"><a data-toggle="pill" href="#testresult">Test Results</a></li>
   </ul>
@@ -243,182 +91,349 @@
     
     <div id="eatentrained" class="tab-pane fade in active">
     <br>
-    <div class="floatingboxleft">
-    <div class="EATENQ" id="EATENQ">
-		<label class="radio-inline txt">
-		      <p>Have you eaten this morning?</p>
-		    </label>
-		    <label class="radio-inline">
-		      <input type="radio" name="eaten" value="yes">YES
-		    </label>
-		    <label class="radio-inline">
-		      <input type="radio" name="eaten" value="no">NO
-		    </label>
-	  	
-	</div>
-	<br><br><br>
-	<div class="EXERCISEQ" id="EXERCISEQ">
+    <div>
+	    <div class="row">
+	    
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+			      <p>Have you eaten this morning?</p>
+			    </label>
+			    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+			      <input type="radio" name="eaten" value="yes">YES
+			    </label>
+			    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+			      <input type="radio" name="eaten" value="no">NO
+			    </label>
+			    <label class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+
+			    </label>
+		  	
+		</div>
 		
-		<label class="radio-inline txt">
-	      <p>Have you exercised today?</p>
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="exercise" value="yes">YES
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="exercise" value="no">NO
-	    </label>
-	  	
-	</div>
-	</div>
-	<div class="floatingboxright">
-	
-	<div class="NEXTBUTTON">
-		<a onclick="updateTab('symptomspill')" data-toggle="pill" href="#symptoms" style="cursor:pointer;">Next >></a>
-	</div>
-      
-    </div>
-    </div>
-    <div id="symptoms" class="tab-pane fade">
-		<br>
-      
-	      	<div class="SYMPTOMSQ" id="SYMPTOMSQ">
-			Have you had any of these symptoms today or in the last week?
+		<br><br>
+		
+		<div class="row">
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+		      <p>Have you exercised today?</p>
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input class="myradio" type="radio" name="exercise" value="yes">YES
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input type="radio" name="exercise" value="no">NO
+		    </label>
+		    <label class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+			</label>
+		</div>
+		
+		<br><br>
+		
+     	<div class="row">
+	     	<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+				What exercise did you do yesterday?
+			</label>
 			
+				<div class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+					    	<input type="checkbox" name="gym" id="gymcheck">
+					    </div>
+					    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+					    	<label for="gymcheck">Gym/Weights</label>
+					    </div>
+				  	</div>
+			    </div>	
+			    
+			    <div class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+				    <div class="row">
+				    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+				      		<input type="checkbox" name="practice" id="practicecheck">
+				      	</div>
+				      	<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+				      		<label for="practicecheck">Practice/Training</label>
+				      	</div>
+				    </div>
+			    </div>
+			    
+			    <div class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+			    
+			    	<div class="row">
+				    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+			      			<input type="checkbox" name="game" id="gamecheck">
+			      		</div>
+			      		<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			      			<label for="gamecheck">Game</label>
+			      		</div>
+			    	</div>
+			    </div>
+			    
+			    
+			    <div class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+			    	<div class="row">
+				    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+				    		<input type="checkbox" name="rest" id="restcheck">
+			      		</div>
+			      		<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			      			<label for="restcheck">Rest/None</label>
+			      		</div>
+			   		</div>
+			   </div>
+			   
+			   
+			   
+		   </div>
+		   
+		 <div class="row">
+		 		<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			   </label>
+			   
+			   <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+			      	<input type="text" name="otherexercises" style="display:table-cell; width:100%" placeholder="list any other exercises here">
+			    </label>
+		</div>
+	<br><br>
+	<div class="row">
+		<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+		</label>
+		<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+<!-- 			<a onclick="updateTab('symptomspill')" data-toggle="pill" href="#symptoms" style="pointer-events: none; cursor: default;"><< Back</a> -->
+		</label>
+		<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+			<a onclick="updateTab('symptomspill')" data-toggle="pill" href="#symptoms" style="float: right;">Next >></a>
+		</label>
+		<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+		</label>
+	</div>
+	</div> <!-- end floatingboxleft -->
+    </div> <!-- end eatentrained -->
+    
+    
+    
+    
+<div id="symptoms" class="tab-pane fade">
+    
+		<br>
+      <div>
+	      	<div class="row">
+		      	<label class="col-xs-12 col-sm-12 col-md-12 col-lg-12 txt">
+					Have you had any of these symptoms today or in the last week?
+				</label>
+			</div>
+			<br><br>
+			<div class="row">
 				
-				<div>
-					<label class="checkbox-inline">
-				      <p>Fever</p>
+					<label class="col-xs-4 col-sm-4 col-md-4 col-lg-4 txt">
+				      Fever
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
 				      <input type="checkbox" name="fevertoday">Today
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				      <input type="checkbox" name="feverlastweek">In the last week
 				    </label>
-			    </div>
+				    <label class="col-xs-0 col-sm-0 col-md-0 col-lg-0">
+					</label>
 			    
-			    <div>
-					<label class="checkbox-inline">
-				      <p>Cold/Sore Throat</p>
+			</div>
+			
+			<div class="row">
+				
+					<label class="col-xs-4 col-sm-4 col-md-4 col-lg-4 txt">
+				      Cold/Sore Throat
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
 				      <input type="checkbox" name="coldtoday">Today
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				      <input type="checkbox" name="coldlastweek">In the last week
 				    </label>
-			    </div>
+				    <label class="col-xs-0 col-sm-0 col-md-0 col-lg-0">
+					</label>
 			    
-			    <div>
-					<label class="checkbox-inline">
-				      <p>Headache</p>
+			</div>
+			
+			<div class="row">
+				
+					<label class="col-xs-4 col-sm-4 col-md-4 col-lg-4 txt">
+				      Headache
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
 				      <input type="checkbox" name="headachetoday">Today
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				      <input type="checkbox" name="headachelastweek">In the last week
 				    </label>
-			    </div>
+				    <label class="col-xs-0 col-sm-0 col-md-0 col-lg-0">
+					</label>
 			    
-			    <div>
-					<label class="checkbox-inline">
-				      <p>Joint/Muscle Ache</p>
+			</div>
+			
+			<div class="row">
+				
+					<label class="col-xs-4 col-sm-4 col-md-4 col-lg-4 txt">
+				      Joint/Muscle Ache
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
 				      <input type="checkbox" name="muscachetoday">Today
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				      <input type="checkbox" name="muscachelastweek">In the last week
 				    </label>
-			    </div>
+				    <label class="col-xs-0 col-sm-0 col-md-0 col-lg-0">
+					</label>
 			    
-			    <div>
-					<label class="checkbox-inline">
-				      <p>Diarrhea/Sickness</p>
+			</div>
+			
+			<div class="row">
+				
+					<label class="col-xs-4 col-sm-4 col-md-4 col-lg-4 txt">
+				      Diarrhea/Sickness
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
 				      <input type="checkbox" name="sicktoday">Today
 				    </label>
-				    <label class="checkbox-inline">
+				    <label class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				      <input type="checkbox" name="sicklastweek">In the last week
 				    </label>
-			    </div>
-		</div>
-      <a onclick="updateTab('exercisespill')" data-toggle="pill" href="#exercises">Next</a>
+				    <label class="col-xs-0 col-sm-0 col-md-0 col-lg-0">
+					</label>
+			    
+			</div>
+			
+				<br><br>
+			<div class="row">
+				<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+				</label>
+				<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+					<a onclick="updateTab('eatentrainedpill')" data-toggle="pill" href="#eatentrained"><< Back</a>
+				</label>
+				<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+					<a onclick="updateTab('energymusclesorepill')" data-toggle="pill" href="#energymusclesore" style="float: right;">Next >></a>
+				</label>
+				<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+				</label>
+			</div>
+		
     </div>
-    <div id="exercises" class="tab-pane fade">
-<br>
-      	<div class="EXERCISESQ" id="EXERCISESQ">
-		What exercise did you do yesterday?
-			<div>
-
-			    
-			      <input type="checkbox" name="gym" id="gymcheck">Gym/Weights
-			    
-			    
-			      <input type="checkbox" name="practice">Practice/Training
-			    
-			    
-			      <input type="checkbox" name="game">Game
-			    
-			      <input type="checkbox" name="rest">Rest/None
-			   
-			      <input type="text" name="otherexercises">Other
-			    
-		    </div>
-		</div> 
-    	<a onclick="updateTab('energymusclesorepill')" data-toggle="pill" href="#energymusclesore">Next</a>
     </div>
+        
+    
+ 
     <div id="energymusclesore" class="tab-pane fade">
-<br>
-      	<div>
-		<svg id="slidersvg"></svg>
+	<br>
+      	<div class="row">
+      	
+	      	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+				<svg id="nrgslidersvg"></svg>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+				<svg id="muscslidersvg"></svg>
+			</div>
 		</div>
-      <a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult">Next</a>
+		<br><br><br>
+		
+			<div class="row">
+				<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+				</label>
+				<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+					<a onclick="updateTab('symptomspill')" data-toggle="pill" href="#symptoms"><< Back</a>
+				</label>
+				<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+					<a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult" style="float: right;">Next >></a>
+				</label>
+				<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+				</label>
+			</div>
+		
     </div>
+    
+    
     
     <div id="testresult" class="tab-pane fade">
 <br>
       	
-	<div class="ILLNESSQ" id="ILLNESSQ">
+      	<div class="row">
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+		      Reported illness in the last week?
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input class="myradio" type="radio" name="illness" value="yes">YES
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input type="radio" name="illness" value="no">NO
+		    </label>
+		    <label class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+			</label>
+		</div>
 		
-		<label class="radio-inline">
-	      <p>Reported illness in the last week?</p>
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="illness" value="yes">YES
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="illness" value="no">NO
-	    </label>
-	  	
-	</div>
-	
-	<div class="INJURYQ" id="INJURYQ">
+		<br><br>
 		
-		<label class="radio-inline">
-	      <p>Reported injury in the last week?</p>
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="injury" value="yes">YES
-	    </label>
-	    <label class="radio-inline">
-	      <input type="radio" name="injury" value="no">NO
-	    </label>
-	  	
-	</div>
-		    
-	<input type="text" name="notes" placeholder="enter additional notes here">
-	<br>
-	<input type="number" step="0.01" min="0" max="5" name="stress" placeholder="stress reading">
-	<br>
-	<input type="number" step="0.01" min="0" max="5" name="defence" placeholder="defence reading">
+		<div class="row">
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+		      Reported injury in the last week?
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input class="myradio" type="radio" name="injury" value="yes">YES
+		    </label>
+		    <label class="col-xs-6 col-sm-2 col-md-2 col-lg-2">
+		      <input type="radio" name="injury" value="no">NO
+		    </label>
+		    <label class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+			</label>
+		</div>
+		
+		<br><br>
+      	
+      	<div class="row">
+		 		<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			   </label>
+			   
+			   <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+			      	<input type="text" name="notes" style="display:table-cell; width:100%" placeholder="enter additional notes here">
+			    </label>
+		</div>
+		
+		<br><br>
+		
+		<div class="row">
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+		      FORT Result
+		    </label>
+		    <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="stress" placeholder="stress reading">
+		    </label>
+		</div>
+   
+   <br><br>
+   
+   		<div class="row">
+			<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4 txt">
+		      FORD Result
+		    </label>
+		    <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="defence" placeholder="defence reading">
+		    </label>
+		</div>
+		  
 	<br>   
-	<input type="hidden" name="playerno" value="@player.playernumber">
+	
+		<div class="row">
+			<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+				<input type="hidden" name="playerno" value="@player.playernumber">
     <input type="hidden" name="nrglevel" id="nrgform" value='0'>
     <input type="hidden" name="musclevel" id="muscform" value='0'>
+			</label>
+			<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+				<a onclick="updateTab('energymusclesorepill')" data-toggle="pill" href="#energymusclesore"><< Back</a>
+			</label>
+			<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
+				<a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult" style="float: right;">Next >></a>
+			</label>
+			<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+			</label>
+		</div>
+			
+			
+
 	<button>Save</button>
 
     </div>
@@ -452,12 +467,12 @@
  
 	
 	
- var slidersvg = d3.select("#slidersvg").attr("width", 400).attr("height", 500),
+ var nrgslidersvg = d3.select("#nrgslidersvg").attr("width", 450).attr("height", 200),
  slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
- slide_h = +slidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
+ slide_h = +nrgslidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
 
  var xnrgslide = d3.scaleLinear()
- .domain([4, 0])
+ .domain([0, 4])
  .range([0, 300])
  .clamp(true);
 
@@ -466,16 +481,16 @@
  .range(["red", "orange", "lightgreen", "green"])
  .clamp(true);
 
- var nrgslider = slidersvg.append("g")
+ var nrgslider = nrgslidersvg.append("g")
  .attr("class", "nrgslider")
  .attr("transform", "translate(" + slider_margin.left + "," + 100 + ")");
 
- nrgslider.append("text").attr("transform", "translate(-40,-30)").text("Rate your energy levels");
+ nrgslider.append("text").attr("class", "slidertext").attr("transform", "translate(20,-50)").text("Rate your energy levels");
 
  nrgslider.append("line")
  .attr("class", "nrgtrack")
- .attr("y1", xnrgslide.range()[0])
- .attr("y2", xnrgslide.range()[1])
+ .attr("x1", xnrgslide.range()[1])
+ .attr("x2", xnrgslide.range()[0])
  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
  .attr("class", "nrgtrack-inset")
  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
@@ -484,23 +499,24 @@
      .on("start.interrupt", function() { nrgslider.interrupt(); })
      .on("start drag", function() { 
      	//d3.select(".track-inset").style("stroke", yslidecolor());
-     	nrgtrackcolor(xnrgslide.invert(d3.event.y)); })
+     	nrgtrackcolor(xnrgslide.invert(d3.event.x)); })
      .on("end", function() {
-     	console.log(xnrgslide.invert(d3.event.y));
+     	console.log(xnrgslide.invert(d3.event.x));
      	d3.select('#nrgform').attr("value", function(){
-     		return xnrgslide.invert(d3.event.y);
+     		return xnrgslide.invert(d3.event.x);
      	});
      }));
      
-   var nrgtextarray = ["high", "Good", "OK", "Low", "Very low", ""];
+   //var nrgtextarray = ["high", "Good", "OK", "Low", "Very low", ""];
+   var nrgtextarray = ["Very low", "Low", "OK", "Good", "High", ""];
      
    nrgslider.insert("g", ".nrgtrack-overlay")
  .attr("class", "ticks")
- .attr("transform", "translate(50," + 0 + ")")
+ .attr("transform", "translate(0," + 50 + ")")
  .selectAll("text")
  .data(xnrgslide.ticks(5))
  .enter().append("text")
- .attr("y", xnrgslide)
+ .attr("x", xnrgslide)
  .attr("text-anchor", "right")
  .text(function(d, i) { 
  	return nrgtextarray[i];
@@ -513,31 +529,33 @@
 
 
  function nrgtrackcolor(c) {
- 	nrghandle.attr("cy", xnrgslide(c));
+ 	nrghandle.attr("cx", xnrgslide(c));
  	d3.select(".nrgtrack-inset").style("stroke", yslidecolor(c));
  	}
  	
 
 
 
+ var muscslidersvg = d3.select("#muscslidersvg").attr("width", 450).attr("height", 200),
+ slider_margin = {top: 20, right: 20, bottom: 30, left: 70},
+ slide_h = +muscslidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
 
 
-
- var muscslider = slidersvg.append("g")
+ var muscslider = muscslidersvg.append("g")
  .attr("class", "muscslider")
- .attr("transform", "translate(" + (slider_margin.left + 200) + "," + 100 + ")");
+ .attr("transform", "translate(" + (slider_margin.left) + "," + 100 + ")");
 
- muscslider.append("text").attr("transform", "translate(-40,-30)").text("Rate your muscle soreness");
+ muscslider.append("text").attr("class", "slidertext").attr("transform", "translate(20,-50)").text("Rate your muscle soreness");
 
  var xmuscslide = d3.scaleLinear()
- .domain([4, 0])
+ .domain([0, 4])
  .range([0, 300])
  .clamp(true);
 
  muscslider.append("line")
  .attr("class", "musctrack")
- .attr("y1", xmuscslide.range()[0])
- .attr("y2", xmuscslide.range()[1])
+ .attr("x1", xmuscslide.range()[1])
+ .attr("x2", xmuscslide.range()[0])
  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
  .attr("class", "musctrack-inset")
  .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
@@ -546,24 +564,25 @@
      .on("start.interrupt", function() { muscslider.interrupt(); })
      .on("start drag", function() { 
      	//d3.select(".track-inset").style("stroke", yslidecolor());
-     	musctrackcolor(xmuscslide.invert(d3.event.y)); })
+     	musctrackcolor(xmuscslide.invert(d3.event.x)); })
      .on("end", function() {
-     	console.log(xmuscslide.invert(d3.event.y));
+     	console.log(xmuscslide.invert(d3.event.x));
      	d3.select('#muscform').attr("value", function(){
-     		return xmuscslide.invert(d3.event.y);
+     		return xmuscslide.invert(d3.event.x);
      	});
      })
      );
      
-   var musctextarray = ["Feel great", "Not sore", "Average", "Sore", "Very sore", ""];
+   //var musctextarray = ["Feel great", "Not sore", "Average", "Sore", "Very sore", ""];
+   var musctextarray = ["Very sore", "Sore", "Average", "Not sore", "Feel great", ""];
      
    muscslider.insert("g", ".musctrack-overlay")
  .attr("class", "ticks")
- .attr("transform", "translate(50," + 0 + ")")
+ .attr("transform", "translate(0," + 50 + ")")
  .selectAll("text")
  .data(xmuscslide.ticks(5))
  .enter().append("text")
- .attr("y", xmuscslide)
+ .attr("x", xmuscslide)
  .attr("text-anchor", "right")
  .text(function(d, i) { 
  	return musctextarray[i];
@@ -575,7 +594,7 @@
  .attr("r", 30);
 
  function musctrackcolor(c) {
- 	muschandle.attr("cy", xnrgslide(c));
+ 	muschandle.attr("cx", xnrgslide(c));
  	d3.select(".musctrack-inset").style("stroke", yslidecolor(c));
  	}
 

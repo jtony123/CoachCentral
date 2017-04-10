@@ -277,16 +277,21 @@ public class Application extends Controller {
     	Category categoryFound = Category.findByName(category);
     	List<Player> players = user.getPlayersCategorisedWith(categoryFound);
     	
+    	
+    	
     	Player player = Player.findByNumber(playernumber);
     	if(player == null) {
     		player = Player.find.byId((long) 1);
     	}
     	
+    	List<Player> players1 = new ArrayList<Player>();
+    	players1.add(player);
+    	
     	List<Category> categories = Category.find.all();
     	//System.out.println("player count = " + players.size());
     	int playerIndex = players.indexOf(player);
     	
-    	return CompletableFuture.completedFuture(ok(redoxQuestionnaire.render(user, "redoxQ", player, playerIndex, players, category, categories)));
+    	return CompletableFuture.completedFuture(ok(redoxQuestionnaire.render(user, "redoxQ", player, playerIndex, players1, category, categories)));
     	
     }
     
@@ -388,10 +393,7 @@ public class Application extends Controller {
     
   public Result getRedoxCSV(Integer playernumber){
     	
-    	System.out.println("getCSV called");
-//   	 Player player = Player.findByNumber(playernumber);
-//   	
-//   	 return ok(new java.io.File(filepath +player.redoxFilename));
+    	System.out.println("getRedoxCSV called");
    	 
  	Player p = Player.findByNumber(playernumber);
  	List<Redox> rdx = Redox.findByPlayer(p);
@@ -863,7 +865,8 @@ public class Application extends Controller {
 	
 	String addnotes = "";
 	if(mydata.get("notes") != null || mydata.get("notes") != "") {
-		addnotes += mydata.get("notes") +";";
+		String cleanString = mydata.get("notes").replace(",", "§");
+		addnotes += cleanString +";";
    	}
 	
    	
@@ -922,7 +925,8 @@ public class Application extends Controller {
 	   	
 	   	String comment = "";
 		if(mydata.get("comment") != null) {
-			comment += mydata.get("comment");
+			String cleanComment = mydata.get("comment").replace(",", "§");
+			comment += cleanComment;
 	   	}
 		
 	   	String commentBy = "";

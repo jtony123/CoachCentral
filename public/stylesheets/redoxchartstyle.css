@@ -1,7 +1,7 @@
 #rdxcliprect {
 
-	rx: 20;
-	ry: 20;
+	rx: 15;
+	ry: 15;
 }
 
 
@@ -17,6 +17,22 @@ div.rdxtooltip {
    border: 1px; 
    border-style: solid;      
   pointer-events: none;         
+}
+
+
+div.rdxsleeptip {   
+  position: absolute;           
+  text-align: center;           
+  width: 30%;                  
+/*   height: 20px;                  */
+  padding: 2px;             
+  font: 14px sans-serif;     
+   border: 1px; 
+   border-style: solid;    
+   border-radius: 5px;  
+  pointer-events: none;  
+  box-shadow: 0px 0px 10px grey; 
+        
 }
 
 
@@ -96,8 +112,8 @@ div.rdxtooltip {
 	stroke: #ddd7d4;
 	stroke-width: 1px;
 	fill: #f4f2f1;
-	rx: 20;
-	ry: 20;
+	rx: 15;
+	ry: 15;
 	
 }
 

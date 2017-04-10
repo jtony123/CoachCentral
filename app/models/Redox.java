@@ -3,6 +3,7 @@ package models;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -43,6 +44,7 @@ public class Redox extends Model {
     
     public String diarrhea;
     
+    @Column(columnDefinition = "varchar(1024)")
     public String exercises;
     
     //
@@ -62,6 +64,7 @@ public class Redox extends Model {
     
     public String injured;
     
+    @Column(columnDefinition = "varchar(1024)")
     public String additionalNotes;
     
     
@@ -70,8 +73,10 @@ public class Redox extends Model {
     
     public Double muscleSoreness;
     
+    @Column(columnDefinition = "varchar(1024)")
     public String sportscientistComment = "";
     
+    @Column(columnDefinition = "varchar(1024)")
     public String orrecoScientist = "";
     
     public Double stress;
@@ -225,7 +230,13 @@ public class Redox extends Model {
     	for(Redox r : redoxReadings){
 
     		if(firstreading){
-    			r.defenceThreshold = 1.1;
+    			
+    			if(r.defence > 0.0) {
+    				r.defenceThreshold = 1.1;
+    			} else {
+    				r.defenceThreshold = 0.0;
+    			}
+    			
     			r.stressThreshold = 2.5;
     			
     			if(r.includeInCritDiff){
@@ -239,7 +250,12 @@ public class Redox extends Model {
     				// for stress => 2.129
     				// for defence = > 1.44357 
     				stressqueue.add(2.129);
-    				defencequeue.add(1.44357);
+    				
+        			if(r.defence > 0.0) {
+        				defencequeue.add(1.44357);
+        			} else {
+        				defencequeue.add(0.0);
+        			}
     			}
     			
     			firstreading = false;

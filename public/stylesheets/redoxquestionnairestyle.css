@@ -6,51 +6,83 @@
 }
 
 .mypill {
-	
-	background-color: lightgrey;
+	padding: 10px;
+	background-color: none;
 }
 
 .nav-pills > .active > a, .nav-pills > .active > a:hover {
     background-color: red;
 }
 
-.radio-inline {
-	vertical-align: baseline;
-	display: inline-block;
-	width: 75px;
+input[type="radio"] {
+	margin-right: 10px;
+	transform:scale(1.5, 1.5);
 }
+
+input[type="checkbox"] {
+	margin-right: 10px;
+  	transform:scale(1.5, 1.5);
+}
+
 .txt {
-	width: 300px;
+	padding-left: 40px;
 }
 
-.floatingboxleft {
-	font-size: 18px;
-	display: inline-block;
-	vertical-align: top;
-    width: 45%;
-    height: 275px;
-    margin: 10px;
-    border: 3px solid #73AD21;
+.col-centered{
+margin: 0 auto;
 }
 
-.floatingboxright {
-	display: inline-block;
-	vertical-align: top;
-    width: 45%;
-    height: 275px;
-    margin: 10px;
-    border: 3px solid #73AD21;
+.tab-pane {
+	height: 400px;
 }
 
-.EATENQ, EXERCISEQ {
 
-	vertical-align: middle;
-	margin-top: 20px;
-}
 
-.NEXTBUTTON {
-	font-size: 18px;
-	margin-top: 10%;
-	margin-left: 10%;
-	cursor: pointer;
-}
+/* .radio-inline { */
+/* 	vertical-align: baseline; */
+/* 	display: inline-block; */
+/* 	width: 75px; */
+/* } */
+
+/* .checkbox-inline { */
+/* 	vertical-align: baseline; */
+/* 	display: inline-block; */
+/* 	width: 150px; */
+/* } */
+
+/* .txt { */
+/* 	width: 500px; */
+/* } */
+
+/* .floatingboxleft { */
+/* 	font-size: 18px; */
+/* 	display: inline-block; */
+/* 	vertical-align: top; */
+/* /*     width: 90%; */ */
+/* /*     height: 275px; */ */
+/*     margin: 10px; */
+/*     border: 3px solid #73AD21; */
+/* } */
+
+/* .floatingboxright { */
+/* 	display: inline-block; */
+/* 	vertical-align: top; */
+/*     width: 25%; */
+/*     height: 275px; */
+/*     margin: 10px; */
+/*     border: 3px solid #73AD21; */
+/* } */
+
+/* .EATENQ, .EXERCISEQ, .SYMPTOMSQ { */
+
+/* 	vertical-align: middle; */
+/* 	margin-top: 20px; */
+/* } */
+
+/* .NEXTBUTTON { */
+/* 	font-size: 18px; */
+/* 	padding-right: 100px; */
+/* /* 	margin-top: 10%; */ */
+/* /* 	margin-left: 10%; */ */
+/* 	cursor: pointer; */
+/* } */

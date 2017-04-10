@@ -1,3 +1,126 @@
+
+.rdxviewrow {
+	margin-left: 20px;
+	margin-right: 20px;
+	
+	margin-top: 5px;
+	margin-bottom: 5px;
+	
+	border: 1px solid #ddd7d4;
+	border-radius: 5px;
+	
+	padding: 10px;
+	
+	background-color: #fafafa;
+}
+
+.rdxcommentrow {
+	
+	margin-left: 20px;
+	margin-right: 20px;
+	
+	margin-top: 10px;
+	margin-bottom: 10px;
+	
+	border: none;
+	border-radius: 5px;
+	
+	padding: 10px;
+	
+	background-color: none;
+	
+	
+}
+
+.rdxcomment {
+/* 	margin-left: 20px; */
+/* 	margin-right: 20px; */
+	
+/* 	margin-top: 10px; */
+/* 	margin-bottom: 10px; */
+	
+	border: 1px solid #ddd7d4;
+	border-radius: 5px 25px 5px 25px;
+	
+	padding: 10px;
+	
+	background-color: #eee;
+}
+
+.resultsshow {
+	height: 40px;
+	line-height: 40px;
+	color: #696540;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.resultstext {
+/* 	height: 40px; */
+/* 	line-height: 40px; */
+	color: #696540;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.resultstexts {
+	margin: 0 0 10px;
+	color: #696540;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.orrecobullet {
+	 margin: 0 auto; 
+	 margin-top: 10px;
+	 max-width: 25px;
+	 height: 25px;
+}
+
+.potentialoutcomes {
+/* 	height: 40px; */
+/* 	line-height: 40px; */
+	color: #696540;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.potentialoutcomestext p{
+	margin: 0 0 10px;
+	color: #696540;
+	text-align: left;
+	vertical-align: middle;
+}
+
+#POTOUTS {
+	margin: 0 0 10px;
+}
+
+#RESULTSHOW {
+	margin: 0 0 10px;
+}
+
+
+
+
+
+.backgrounddiv {
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-top: 0px;
+	border: 1px solid #ddd7d4;
+	border-top: 0px solid white;
+	border-radius: 15px;
+	background-color: white;
+}
+
+#redoxanswersrow {
+	padding-top:20px;
+}
+
+
+
+
 .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3 {
 	padding: 0px;
 }
@@ -74,20 +197,23 @@
 
 
 #EATEN, #TRAINED, #ENERGY, #MUSCLE_SORENESS, #ILL, #INJURED {
-	display:inline-block;
-	height: 40px;
-	line-height: 40px;
+	font-size: 13px;
+/* 	display:inline-block; */
+/* 	height: 40px; */
+/* 	line-height: 40px; */
 	
 }
 
 #EATENVALUE, #TRAINEDVALUE, #MUSCSOREVALUE, #ILLVALUE, #INJUREDVALUE  {
-	display:inline-block;
- 	float:right;
-	height: 40px;
-	line-height: 40px;
-/* 	padding-right:20px; */
-	font-size: 24px;
+/* 	display:inline-block; */
+/*  	float:right; */
+/* 	height: 40px; */
+/* 	line-height: 40px; */
+/* /* 	padding-right:20px; */ */
+	font-size: 8px;
 }
+
+
 
 #NRGVALUE {
 	display:inline-block;
@@ -99,11 +225,18 @@
 }
 
 #MUSCSOREVALUE {
-	display:inline-block; 
-	float:right;
-	margin: 5px auto; 
-	height:30px;
+	display:inline-block;
+ 	float:right;
+	height: 40px;
+	line-height: 40px;
+	padding-right:20px;
+	font-size: 24px;
 } 
+
+#INJUREDVALUE {
+	font-size: 24px;
+	}
+
 
 #MUSCSOREICON {
 /* 	margin: 5px auto;  */
@@ -128,28 +261,56 @@
 	color: green;
 }
 
+.glyphicon-exclamation-sign {
+	color: red;
+}
+
+.mytext {
+	color: black;
+}
+
 #nrgcliprect {
 	rx: 10px;
 	ry: 10px;
 }
 
 .nrgbackgroundrect {
-	fill: #e2e2e2;
+	fill: #fafafa;
 	clip-path: url(#nrgcliprect);
-/* 	rx: 10px; */
-/* 	ry: 10px; */
+	rx: 10px;
+	ry: 10px;
+	stroke: grey;
+	stroke-width: 2px;
 }
 
 .nrgforegroundrect {
-/* 	rx: 10px; */
-/* 	ry: 10px; */
+	rx: 10px;
+	ry: 10px;
 	fill: #fda934;
 	clip-path: url(#nrgcliprect);
 }
 
-#RESULTSHOW {
-	min-height: 75px;
+#musccliprect {
+	rx: 10px;
+	ry: 10px;
 }
+
+.muscbackgroundrect {
+	fill: #fafafa;
+	clip-path: url(#musccliprect);
+	stroke-width: 2px;
+	rx: 10px;
+	ry: 10px;
+}
+
+.muscforegroundrect {
+	rx: 10px;
+	ry: 10px;
+	fill: #fda934;
+	clip-path: url(#musccliprect);
+}
+
+
 
 .resultsparas {
 	font-size: 16px;
@@ -203,11 +364,7 @@
 	border-right: 2px solid lightgrey;
 }
 
-.POTOUTS {
-	color: grey;
-	height: 40px;
-	line-height: 40px;
-}
+
 
 .ACTION {
 	height: 255px;

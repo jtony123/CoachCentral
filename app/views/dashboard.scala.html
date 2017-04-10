@@ -1075,9 +1075,10 @@ function drawRedox(data3) {
 	focus.append("path").datum(data3).attr("class", "dashstressline").attr("id", "stressline").attr("d", stressline);
     
 	focus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "dashSTRESS").attr("id", "STRESS").attr("r", 10)
+    .append("circle").attr("class", "dashSTRESS").attr("id", "STRESS").attr("r", 6)
 	.style("fill", function(d) { 
-		if(d.STRESS_INC > 0) {
+		
+		
 			var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
 			var tenpercent = diff * amberzone;
 			if (d.STRESS >= d.STRESS_CDT) { return "red";
@@ -1085,39 +1086,16 @@ function drawRedox(data3) {
 				if(d.STRESS >= (d.STRESS_CDT - tenpercent)){ return "orange";
 				} else { return "green"; }
 			}
-		}else { return "#FBFBFB"; }
+		
 		})
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); })
-// 	.on("mouseover", function(d) {
-// 		rdxtip.transition()
-// 		.style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-// 		.style("width", "auto").style("height", "auto")
-// 		.attr("id", "rdxtip")
-// 		.on("end", function(d){this.className='rdxtip'});;
-// 	rdxtip .html(rdxnotes(d))
-// 		.style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-// 	})
-// 	.on("mouseout", function(d) {       
-// 		rdxtip.transition().delay(2000)
-// 		.style("width", "0px").style("height", "0px")
-// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
-// 	})
-	.on("click", function(d) {
-		linktip
-		.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-			+"<button>Toggle</button></form> ") 
-		.style("left", "200px").style("top", "50px");
-		document.getElementById("fordtoggle").submit();
-	});
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); });
 	
 	
 	//Defence(DEFENCE)
 	focus.append("g").attr("class", "DEFENCEGROUP").selectAll().data(data3).enter()
-    .append("circle").attr("class", "dashDEFENCE").attr("id", "DEFENCE").attr("r", 10)
+    .append("circle").attr("class", "dashDEFENCE").attr("id", "DEFENCE").attr("r", 6)
 	.style("fill", function(d) { 
-		if(d.DEFENCE_INC > 0) { 
+		
 			var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
 			var tenpercent = diff * amberzone; 
 			if (d.DEFENCE <= d.DEFENCE_CDT) { return "red";
@@ -1125,27 +1103,9 @@ function drawRedox(data3) {
 				if(d.DEFENCE <= (d.DEFENCE_CDT + tenpercent)){ return "orange";
 				} else { return "green"; }
 			}
-		}else { return "#FBFBFB"; }
+		
 	}) 
-	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); })
-// 	.on("mouseover", function(d) {
-// 		rdxtip.transition().style("opacity", 1).style("color", "red").style("background", "#F2eaea").style("border-color", "#c9b7b7")
-// 			.style("width", "auto").style("height", "auto").attr("id", "rdxtip")
-// 	.on("end", function(d){this.className='rdxtip'});;
-// 		rdxtip .html(rdxnotes(d)).style("left", (d3.event.pageX + 100) + "px").style("top", (d3.event.pageY -50) + "px");
-// 	})
-// 	.on("mouseout", function(d) {       
-// 		rdxtip.transition().delay(2000).style("width", "0px").style("height", "0px")
-// 		.on("end", function(d){rdxtip.html(""); this.className=''; });
-// 	})
-	.on("click", function(d) {
-		linktip.style("opacity", 0).style("color", "none").style("background", "rgba(128,0,128, 0.1)").style("border-color", "none").style("z-index", 99999);
-		linktip .html("<form id='fordtoggle' action='@routes.Application.updateRedoxToggleState(player.playernumber, category)' method='POST'  enctype='multipart/form-data' >"
-			+"<input id='timekey' type='text' name='timekey' value='"+d.TIME_KEY+"'/>"
-			+"<button>Toggle</button></form> ") 
-		.style("left", "200px").style("top", "50px");
-		document.getElementById("fordtoggle").submit();
-	});
+	.attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); });
 	
 
 

@@ -206,24 +206,26 @@ var stressamberarea = d3.area()
 
 var defenceline = d3.line()
 .curve(d3.curveMonotoneX)
+.defined(function(d) { return  d.DEFENCE > 0.01;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.DEFENCE); });
 
 var defenceline2 = d3.line()
 .curve(d3.curveMonotoneX)
+//.defined(function(d) { return  d.DEFENCE > 0.01;})
 .x(function(d) { return xfocus(0); })
 .y(function(d) { return yfocus2(d.DEFENCE); });
 
 var defenceadjline = d3.line()
 .curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
+.defined(function(d,i) { return i != 0 && d.DEFENCE > 0.01;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.DEFENCE_CDT); });
 
 
 var defenceamberarea = d3.area()
 .curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
+.defined(function(d,i) { return i != 0 })
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y0(function(d) { 
 	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
@@ -233,7 +235,7 @@ var defenceamberarea = d3.area()
 
 var safearea = d3.area()
 .curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0;})
+.defined(function(d,i) { return i != 0 ;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y0(function(d) { 
 	var tenpercent = (d.STRESS_CDT - d.DEFENCE_CDT) * amberzone;
@@ -252,10 +254,6 @@ function dangerarea(h) {
 	.y1(0);
 }
 
-var defencestressratio = d3.line()
-.curve(d3.curveMonotoneX)
-.x(function(d) { return xfocus(d.TEST_TIME); })
-.y(function(d, i) { return yfocus2((d.STRESS/d.DEFENCE)); });
 
 
 

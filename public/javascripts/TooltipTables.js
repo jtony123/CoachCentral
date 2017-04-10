@@ -1,12 +1,3 @@
-var rdxtooltip = d3.select("body").append("div")   
-.attr("class", "rdxtooltip")               
-.style("opacity", 0)
-.style("z-index", 999999);
-
-var stresstooltip = d3.select("body").append("div")   
-.attr("class", "stresstooltip")               
-.style("opacity", 0)
-.style("z-index", 999999);
 
 
 
@@ -18,53 +9,55 @@ var acutetooltip = d3.select("body").append("div")
 	.style("z-index", 999999);
 
 
-var rdxtip = d3.select("body").append("div")   
-	.attr("class", "rdxtip")
-	.attr("id", "rdxtip")
-	.style("font", "8px")
-	.style("opacity", 1)
-	.style("z-index", 999999);
+//var rdxtip = d3.select("body").append("div")   
+//	.attr("class", "rdxtip")
+//	.attr("id", "rdxtip")
+//	.style("font", "8px")
+//	.style("opacity", 1)
+//	.style("z-index", 999999);
+//
+//
+//var rdxnotes = function(d){
+//	
+//	var notesarray = d.NOTES.split(':');
+//	
+//	var text = "<p><font face='verdana' size='3' color='black'>Date : " + d.TEST_TIME.toString().substring(0, 15) + "</p>"
+//			+ "<p><font face='verdana' size='3' color='purple'>Anti-Oxidant : " + d.FORT + "</p>"
+//			+ "<p><font face='verdana' size='3' color='blue'>Pro-Oxidant : " + d.FORD  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Energy Level : " + d.EnergyLevel  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>MuscleSoreness : " + d.MuscleSoreness  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Trained Today : " + d.TrainedToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Ate Today : " + d.AteToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Exercised Gym Yesterday     : " + d.ExerciseGymYesterday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Exercise Training Yesterday : " + d.ExerciseTrainingYesterday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Exercise Game Yesterday     : " + d.ExerciseGameYesterday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Exercise None Yesterday     : " + d.ExerciseNoneYesterday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Exercise Other Yesterday    : " + d.ExerciseOtherYesterday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Today : " + d.SymptomFeverToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Previously : " + d.SymptomFeverPreviously  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Today : " + d.SymptomSoreThroatToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Previously : " + d.SymptomSoreThroatPreviously  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Today : " + d.SymptomHeadacheToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Previously : " + d.SymptomHeadachePreviously  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Today : " + d.SymptomJointorMuscleAcheToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Previously : " + d.SymptomJointorMuscleAchePreviously  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Today : " + d.SymptomDiarrheaToday  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Previously : " + d.SymptomDiarrheaPreviously  + "</p>"
+//			+ "<p><font face='verdana' size='2' color='blue'>Symptom Other : " + d.SymptomOther  + "</p>";
+//	
+//			for(var i=0; i<notesarray.length; i++){
+//				text += "<p>" + notesarray[i].trim() + "</p>";
+//			}
+//			
+//			//@restrict(roles = allOfGroup("redoxadmin")) {
+//				text += "<a title='add notes' href='#' onclick='addRdxNote("+d.TIME_KEY+ "); return false;'>" + "Add note" +"</a>";
+//				
+//			//}
+//			
+//  		return text;
+//}
 
 
-var rdxnotes = function(d){
-	
-	var notesarray = d.NOTES.split(':');
-	
-	var text = "<p><font face='verdana' size='3' color='black'>Date : " + d.TEST_TIME.toString().substring(0, 15) + "</p>"
-			+ "<p><font face='verdana' size='3' color='purple'>Anti-Oxidant : " + d.FORT + "</p>"
-			+ "<p><font face='verdana' size='3' color='blue'>Pro-Oxidant : " + d.FORD  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Energy Level : " + d.EnergyLevel  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>MuscleSoreness : " + d.MuscleSoreness  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Trained Today : " + d.TrainedToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Ate Today : " + d.AteToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Exercised Gym Yesterday     : " + d.ExerciseGymYesterday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Exercise Training Yesterday : " + d.ExerciseTrainingYesterday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Exercise Game Yesterday     : " + d.ExerciseGameYesterday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Exercise None Yesterday     : " + d.ExerciseNoneYesterday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Exercise Other Yesterday    : " + d.ExerciseOtherYesterday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Today : " + d.SymptomFeverToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Fever Previously : " + d.SymptomFeverPreviously  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Today : " + d.SymptomSoreThroatToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Sore Throat Previously : " + d.SymptomSoreThroatPreviously  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Today : " + d.SymptomHeadacheToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Headache Previously : " + d.SymptomHeadachePreviously  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Today : " + d.SymptomJointorMuscleAcheToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Joint or Muscle Ache Previously : " + d.SymptomJointorMuscleAchePreviously  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Today : " + d.SymptomDiarrheaToday  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Diarrhea Previously : " + d.SymptomDiarrheaPreviously  + "</p>"
-			+ "<p><font face='verdana' size='2' color='blue'>Symptom Other : " + d.SymptomOther  + "</p>";
-	
-			for(var i=0; i<notesarray.length; i++){
-				text += "<p>" + notesarray[i].trim() + "</p>";
-			}
-			
-			//@restrict(roles = allOfGroup("redoxadmin")) {
-				text += "<a title='add notes' href='#' onclick='addRdxNote("+d.TIME_KEY+ "); return false;'>" + "Add note" +"</a>";
-				
-			//}
-			
-  		return text;
-}
 var gametiptable = function(d){
 	
 	var test = d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold);
@@ -98,15 +91,19 @@ var tooltip = d3.select("body").append("div")
 	.attr("class", "tooltip")               
 	.style("opacity", 0)
 	.style("z-index", 999999);
-	
+//	
 var gametip = d3.select("body").append("div")   
 .attr("class", "gametip")               
 .style("opacity", 0)
 .style("z-index", 999999);
+
+
 var datatip = d3.select("body").append("div")   
 .attr("class", "datatip")               
 .style("opacity", 0)
 .style("z-index", 999999);
+
+
 var datatiptable = function(d){
 	
 	var test = d.ACUTE > (d.CHRONIC * acuteloadupperthreshold) | d.ACUTE < (d.CHRONIC * acuteloadlowerthreshold);

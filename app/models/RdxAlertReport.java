@@ -39,10 +39,13 @@ public class RdxAlertReport extends Model {
 	
 	public String defenceStatus;
     
+	@Column(columnDefinition = "varchar(1024)")
     public String result;
     
+    @Column(columnDefinition = "varchar(1024)")
     public String potentialoutcomes;
     
+    @Column(columnDefinition = "varchar(1024)")
     public String actions;
     
     @Column(columnDefinition = "varchar(1024)")

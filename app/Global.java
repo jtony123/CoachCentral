@@ -18,19 +18,7 @@ import play.libs.concurrent.HttpExecutionContext;
 
 public class Global extends GlobalSettings {
 	
-//	@Inject 
-//	private  Configuration configuration;
-//	String filepath;
-//	
-//    private final HttpExecutionContext ec;
-//
-//    @Inject
-//    public Global(final HttpExecutionContext ec, Configuration configuration)
-//    {
-//        this.ec = ec;
-//        this.configuration = configuration;
-//        filepath = configuration.getString("filepath");
-//    }
+
 
     @Override
     public void onStart(Application application) {
@@ -43,8 +31,8 @@ public class Global extends GlobalSettings {
         if (SecurityRole.find.findRowCount() < 5)
         {
         	System.out.println("adding default SecurityRoles");
-        	
-            for (String name : Arrays.asList("admin", "redoxadmin", "redoxview", "coach", "assistant", "player", "fan"))
+
+            for (String name : Arrays.asList("admin", "redoxadmin", "redoxcomment", "redoxtoggle", "redoxvalues", "redoxtester", "redoxview", "coach", "assistant", "player", "fan"))
             {
                 SecurityRole role = new SecurityRole();
                 role.roleName = name;
