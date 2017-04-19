@@ -179,6 +179,7 @@ var amberzone = 0.1;
 
 var stressline = d3.line()
 .curve(d3.curveMonotoneX)
+.defined(function(d) { return  d.STRESS > 0.01;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.STRESS); });
 
@@ -206,7 +207,7 @@ var stressamberarea = d3.area()
 
 var defenceline = d3.line()
 .curve(d3.curveMonotoneX)
-.defined(function(d) { return  d.DEFENCE > 0.01;})
+.defined(function(d) { return d.DEFENCE > 0.01;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.DEFENCE); });
 
@@ -216,9 +217,16 @@ var defenceline2 = d3.line()
 .x(function(d) { return xfocus(0); })
 .y(function(d) { return yfocus2(d.DEFENCE); });
 
+function defenceline3(x1, y1) {
+	return d3.line()
+	.curve(d3.curveMonotoneX)
+	.x(function(d) { return x1; })
+	.y(function(d) { return y1; });
+}
+
 var defenceadjline = d3.line()
 .curve(d3.curveMonotoneX)
-.defined(function(d,i) { return i != 0 && d.DEFENCE > 0.01;})
+.defined(function(d,i) { return i != 0;})
 .x(function(d) { return xfocus(d.TEST_TIME); })
 .y(function(d) { return yfocus2(d.DEFENCE_CDT); });
 

@@ -73,7 +73,7 @@ public class Redox extends Model {
     
     public Double muscleSoreness;
     
-    @Column(columnDefinition = "varchar(1024)")
+    @Column(columnDefinition = "varchar(2048)")
     public String sportscientistComment = "";
     
     @Column(columnDefinition = "varchar(1024)")
@@ -183,22 +183,32 @@ public class Redox extends Model {
         	double diff = Math.abs(r.stressThreshold - r.defenceThreshold);
         	double tenpercent = diff*0.1;
         	
-        	if(r.stress >= r.stressThreshold){
-        		r.stressStatus = "RED";
-        	} else if (r.stress >= (r.stressThreshold - tenpercent)){
-        		r.stressStatus = "AMBER";
+        	if(r.stress > 0.01) {
+        		if(r.stress >= r.stressThreshold){
+            		r.stressStatus = "RED";
+            	} else if (r.stress >= (r.stressThreshold - tenpercent)){
+            		r.stressStatus = "AMBER";
+            	} else {
+            		r.stressStatus = "GREEN";
+            	}
         	} else {
-        		r.stressStatus = "GREEN";
+        		r.stressStatus = "GREY";
         	}
         	
         	
-        	if(r.defence <= r.defenceThreshold){
-        		r.defenceStatus = "RED";
-        	} else if (r.defence <= (r.defenceThreshold + tenpercent)){
-        		r.defenceStatus = "AMBER";
+        	if(r.defence > 0.01){
+            	if(r.defence <= r.defenceThreshold){
+            		r.defenceStatus = "RED";
+            	} else if (r.defence <= (r.defenceThreshold + tenpercent)){
+            		r.defenceStatus = "AMBER";
+            	} else {
+            		r.defenceStatus = "GREEN";
+            	}
         	} else {
-        		r.defenceStatus = "GREEN";
+        		r.defenceStatus = "GREY";
         	}
+        	
+
         	r.determineReport(r);
         	r.save();
     	}

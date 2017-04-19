@@ -22,7 +22,10 @@ import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+
 import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
@@ -34,6 +37,7 @@ import play.Configuration;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
@@ -50,12 +54,19 @@ import utilities.GameDataLoader;
 import utilities.RedoxCSVLoader;
 import utilities.RedoxCSVUpdater;
 import utilities.RedoxUtilities;
+import utilities.RandRQueryRequest;
+import utilities.WatsonDocument;
 //import play.db.jpa.*;
+import views.html.Admin.users;
 import views.html.dashboard;
 import views.html.index;
 import views.html.Admin.users;
 import views.html.redox;
 import views.html.redoxQuestionnaire;
+
+
+import com.ibm.watson.developer_cloud.conversation.v1.*;
+import com.ibm.watson.developer_cloud.retrieve_and_rank.v1.RetrieveAndRank;
 
 public class Application extends Controller {
 	
@@ -93,12 +104,136 @@ public class Application extends Controller {
     	return CompletableFuture.completedFuture(ok(index.render()));
     }
     
+    
+
+    public Result askWatson(String query) {
+    	System.out.println("askWatson called");
+    	User user = User.findByEmail(session().get("connected"));
+    	
+//       	DynamicForm requestData = formFactory.form().bindFromRequest();
+//       	
+//       	Map<String, String> mydata = requestData.data();
+//       	
+//       	System.out.println("got this query : "+mydata.get("query"));
+    	
+ //   	System.out.println("query is : " +query);
+    	
+		List<WatsonDocument> watsonResponse=null;
+		
+	    try {
+		
+			RandRQueryRequest request = new RandRQueryRequest();
+			
+			watsonResponse = request.searchAllDocs(query);
+			
+			
+//			for(WatsonDocument d : watsonResponse){
+//				System.out.println(d.getBodytext());
+//				System.out.println();
+//				System.out.println();
+//			}
+		
+
+	    } catch (Exception e)  {
+	    	System.out.println(e.getMessage());
+	    }
+	    
+	    ObjectNode result = Json.newObject();
+	    
+	    if(watsonResponse != null){
+	    	for(int i = 0; i < watsonResponse.size(); ++i){
+				
+				result.put("doc"+i, watsonResponse.get(i).getBodytext());
+			}
+	    }
+		
+		
+		
+		return ok(result);
+	    
+	    
+    	
+//    	String category = "All";
+//    	Category categoryFound = Category.findByName(category);
+//    	Player player;
+//    	List<Player> players;
+//    	Integer playernumber = 2;
+//    	if(categoryFound != null){
+//    		System.out.println("cat not null");
+//    		players = user.getPlayersCategorisedWith(categoryFound);
+//    		
+//    		// check for empty category for this user
+//    		if(players == null || players.isEmpty()){
+//    		//empty category, return 'no players'
+//    			System.out.println("players is null, sending no players");
+//    			player = Player.findByPlayername("no players");
+//    			players.add(player);
+//    		} else {
+//    		// the category is not empty
+//    			System.out.println("players not null");
+//    	    	if (playernumber == 0) {
+//    	    		// to handle initial call
+//    	    		System.out.println("handle initial call, sending player 0");
+//    	    		player = players.get(0);
+//    	    	} else {
+//    	    		player = Player.findByNumber(playernumber);
+//    	    		
+//    	    		
+//    	    		
+//    	    		
+//    	    		
+//    	    		System.out.println("finding player by number");
+//    	    		
+//    	    		// check first if the player is null(out of range)
+//    	    		if(player == null) {
+//    	    			player = players.get(0);
+//    	    		} else {
+//    	    			// check if the player that the user had highlighted is in this category
+//        	    		if (!player.categories.contains(categoryFound)){
+//        	    			System.out.println("player not in this category, sending player 0");
+//        	    			player = players.get(0);
+//        	    		}
+//        	    		
+//        	    		if(players.contains(player)){
+//        	    			System.out.println("player is in the list");
+//        	    		} else {
+//        	    			System.out.println("player not in the list");
+//        	    			player = players.get(0);
+//        	    		}
+//        	    		
+//        	    		
+//    	    		}
+//    	    		
+//    	    		 
+//    	    	}
+//    		}
+//    		
+//    	} else {
+//    		//System.out.println("cat is null");
+//    		players = user.getPlayersCategorisedWith(Category.findByName("All"));
+//    		player = players.get(0);
+//    		category = "All";
+//    	}
+//    	
+//    	List<Category> categories = Category.find.all();
+//    	//System.out.println("player count = " + players.size());
+//    	int playerIndex = players.indexOf(player);
+//    	//System.out.println("......");
+//    			
+//    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+//    	
+
+    }
+    
+    
+    
     @Restrict({@Group({"admin"})})
     public CompletionStage<Result> admin() {
     	System.out.println("get admin called");
     	User user = User.findByEmail(session().get("connected"));
+    	Player player = Player.findByNumber(1);
     	List<User> allusers = User.find.all();
-    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
     }
     
     
@@ -112,6 +247,87 @@ public class Application extends Controller {
     	//Player test = Player.findByNameOrAlias("quincyacy");
     	
     	//System.out.println("player alias found is " + test.playername);
+    	
+    	User user = User.findByEmail(session().get("connected"));
+    	Category categoryFound = Category.findByName(category);
+    	Player player;
+    	List<Player> players;
+    	
+    	if(categoryFound != null){
+    		System.out.println("cat not null");
+    		players = user.getPlayersCategorisedWith(categoryFound);
+    		
+    		// check for empty category for this user
+    		if(players == null || players.isEmpty()){
+    		//empty category, return 'no players'
+    			System.out.println("players is null, sending no players");
+    			player = Player.findByPlayername("no players");
+    			players.add(player);
+    		} else {
+    		// the category is not empty
+    			System.out.println("players not null");
+    	    	if (playernumber == 0) {
+    	    		// to handle initial call
+    	    		System.out.println("handle initial call, sending player 0");
+    	    		player = players.get(0);
+    	    	} else {
+    	    		player = Player.findByNumber(playernumber);
+    	    		
+    	    		
+    	    		
+    	    		
+    	    		
+    	    		System.out.println("finding player by number");
+    	    		
+    	    		// check first if the player is null(out of range)
+    	    		if(player == null) {
+    	    			player = players.get(0);
+    	    		} else {
+    	    			// check if the player that the user had highlighted is in this category
+        	    		if (!player.categories.contains(categoryFound)){
+        	    			System.out.println("player not in this category, sending player 0");
+        	    			player = players.get(0);
+        	    		}
+        	    		
+        	    		if(players.contains(player)){
+        	    			System.out.println("player is in the list");
+        	    		} else {
+        	    			System.out.println("player not in the list");
+        	    			player = players.get(0);
+        	    		}
+        	    		
+        	    		
+    	    		}
+    	    		
+    	    		 
+    	    	}
+    		}
+    		
+    	} else {
+    		//System.out.println("cat is null");
+    		players = user.getPlayersCategorisedWith(Category.findByName("All"));
+    		player = players.get(0);
+    		category = "All";
+    	}
+    	
+    	List<Category> categories = Category.find.all();
+    	//System.out.println("player count = " + players.size());
+    	int playerIndex = players.indexOf(player);
+    	//System.out.println("......");
+    			
+    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
+    	
+    }
+    
+
+    
+    
+    
+    @Restrict({@Group({"coach"})})
+    public CompletionStage<Result> redox(int playernumber, String category) {
+    	System.out.println("redox called");
+    	
+    	
     	
     	User user = User.findByEmail(session().get("connected"));
     	Category categoryFound = Category.findByName(category);
@@ -148,74 +364,11 @@ public class Application extends Controller {
         	    			//System.out.println("player not in this category, sending player 0");
         	    			player = players.get(0);
         	    		}
-    	    		}
-    	    		
-    	    		 
-    	    	}
-    		}
-    		
-    	} else {
-    		//System.out.println("cat is null");
-    		players = user.getPlayersCategorisedWith(Category.findByName("All"));
-    		player = players.get(0);
-    		category = "All";
-    	}
-    	
-    	List<Category> categories = Category.find.all();
-    	//System.out.println("player count = " + players.size());
-    	int playerIndex = players.indexOf(player);
-    	//System.out.println("......");
-    			
-    	return CompletableFuture.completedFuture(ok(dashboard.render(user, "dashboard", player, playerIndex, players, category, categories)));
-    	
-    }
-    
-
-    
-    
-    
-    @Restrict({@Group({"coach"})})
-    public CompletionStage<Result> redox(int playernumber, String category) {
-    	System.out.println("redox called");
-    	
-    	
-    	//Player test = Player.findByNameOrAlias("quincyacy");
-    	
-    	//System.out.println("player alias found is " + test.playername);
-    	
-    	User user = User.findByEmail(session().get("connected"));
-    	Category categoryFound = Category.findByName(category);
-    	Player player;
-    	List<Player> players;
-    	
-    	if(categoryFound != null){
-    		//System.out.println("cat not null");
-    		players = user.getPlayersCategorisedWith(categoryFound);
-    		
-    		// check for empty category for this user
-    		if(players == null || players.isEmpty()){
-    		//empty category, return 'no players'
-    			//System.out.println("players is null, sending no players");
-    			player = Player.findByPlayername("no players");
-    			players.add(player);
-    		} else {
-    		// the category is not empty
-    			//System.out.println("players not null");
-    	    	if (playernumber == 0) {
-    	    		// to handle initial call
-    	    		//System.out.println("handle initial call, sending player 0");
-    	    		player = players.get(0);
-    	    	} else {
-    	    		player = Player.findByNumber(playernumber);
-    	    		//System.out.println("finding player by number");
-    	    		
-    	    		// check first if the player is null(out of range)
-    	    		if(player == null) {
-    	    			player = players.get(0);
-    	    		} else {
-    	    			// check if the player that the user had highlighted is in this category
-        	    		if (!player.categories.contains(categoryFound)){
-        	    			//System.out.println("player not in this category, sending player 0");
+        	    		
+        	    		if(players.contains(player)){
+        	    			System.out.println("player is in the list");
+        	    		} else {
+        	    			System.out.println("player not in the list");
         	    			player = players.get(0);
         	    		}
     	    		}
@@ -367,11 +520,14 @@ public class Application extends Controller {
 				out.close();
 			}
 
+			Player player = Player.findByNumber(1);
 			flash("success", "Calendar file uploaded successfully");
-			return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+			
+			return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 		} else {
+			Player player = Player.findByNumber(1);
 			flash("error", "Missing file");
-			return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+			return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 		}
 
 	}
@@ -419,9 +575,11 @@ public class Application extends Controller {
  				+"exergym,"+"exertrain,"+"exergame,"+"exerrest,"+r.other+","
  				+r.energy.toString()+","+r.muscleSoreness.toString()+","
  				+r.fever+","+r.sorethroat+","+r.headache+","+r.jointmuscleache+","+r.diarrhea+","+","
- 				+r.illness+","+r.injured+","+r.additionalNotes+","
+ 				+r.illness+","+r.injured+","
+ 				+r.additionalNotes+","
  				+r.date.getTime()+","+r.defence.toString()+","+included.toString()+","+r.defenceThreshold.toString()+","+r.stress.toString()+","+included.toString()+","+r.stressThreshold.toString();
  		
+ 		//System.out.println(aline);
  		
  		timestamps.put(r.date.getTime(), aline);
  	}
@@ -434,7 +592,8 @@ public class Application extends Controller {
 			+"TrainedToday,AteToday,Exercises,ExerciseGym,ExerciseTraining,ExerciseGame,ExerciseRest,ExerciseOther,"
 			+"EnergyLevel,MuscleSoreness,"
 			+"Fever,SoreThroat,Headache,JointorMuscleAche,Diarrhea,Other,"
-			+"Ill,Injured,testernotes,"
+			+"Ill,Injured,"
+			+ "testernotes,"
 			+"TEST_TIME,DEFENCE,DEFENCE_INC,DEFENCE_CDT,STRESS,STRESS_INC,STRESS_CDT";
  	
  	
@@ -596,8 +755,8 @@ public class Application extends Controller {
     	
     	
     	
-    	
-    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    	Player player = Player.findByNumber(1);
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
     }
     
     
@@ -714,8 +873,8 @@ public class Application extends Controller {
            }
            
    	}
-   	
-   	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+   	Player player = Player.findByNumber(1);
+   	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 //	   System.out.println("uploadRedoxCSV called");
 //    	User user = User.findByEmail(session().get("connected"));
 //    	List<User> allusers = User.find.all();
@@ -846,7 +1005,19 @@ public class Application extends Controller {
 	
 	
 	Double nrg = Double.parseDouble(mydata.get("nrglevel"));
+	if(nrg < 0.75) {
+		nrg = 0.0;
+	}
+	
+	System.out.println("nrg level is "+nrg);
+	
+	
 	Double musc = Double.parseDouble(mydata.get("musclevel"));
+	if(musc < 0.75) {
+		nrg = 0.0;
+	}
+	
+	System.out.println("nrg level is "+nrg);
 	
 	Double stress = 0.0;
 	if(mydata.get("stress") != null){
@@ -863,9 +1034,17 @@ public class Application extends Controller {
 		}
 	}
 	
+	
+	boolean include = stress > 0.01 ? true : false;
+	
+	
+	
 	String addnotes = "";
 	if(mydata.get("notes") != null || mydata.get("notes") != "") {
-		String cleanString = mydata.get("notes").replace(",", "§");
+		
+		String cleanString = mydata.get("notes").replaceAll(",", "§");
+		cleanString = mydata.get("notes").replaceAll("(\\r|\\n|\\r\\n)+", ";");
+
 		addnotes += cleanString +";";
    	}
 	
@@ -890,7 +1069,7 @@ public class Application extends Controller {
    			musc,//muscleSoreness, 
    			stress,//stress, 
    			defence,//defence, 
-   			true,
+   			include,
    			mydata.get("illness"),
    			mydata.get("injury"),
    			addnotes
@@ -1123,8 +1302,8 @@ public class Application extends Controller {
     	
     	
     	
-    	
-    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+    	Player player = Player.findByNumber(1);
+    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
     }
     
     

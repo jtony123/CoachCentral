@@ -125,7 +125,7 @@ create table redox (
   additional_notes              varchar(1024),
   energy                        double,
   muscle_soreness               double,
-  sportscientist_comment        varchar(1024),
+  sportscientist_comment        varchar(2048),
   orreco_scientist              varchar(1024),
   stress                        double,
   defence                       double,

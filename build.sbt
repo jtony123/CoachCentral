@@ -1,6 +1,6 @@
 name := """CoachCentralDemo"""
 
-version := "1.0.17"
+version := "1.0.19"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
@@ -15,6 +15,9 @@ libraryDependencies ++= Seq(
   "be.objectify" %% "deadbolt-java" % "2.5.3",
   "org.mindrot" % "jbcrypt" % "0.3m"
 )
+
+libraryDependencies += "com.ibm.watson.developer_cloud" % "java-sdk" % "3.5.3"
+libraryDependencies += "org.apache.solr" % "solr-solrj" % "5.5.0"
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.36"
 libraryDependencies += evolutions

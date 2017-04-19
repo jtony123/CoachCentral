@@ -7,7 +7,7 @@
 @main(title = "CoachCentral") {
     
       <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
-    @navigationbar(user: models.User, active: String)
+    @navigationbar(user: models.User, player: models.Player, active: String)
     
         
 <style> 
@@ -385,10 +385,12 @@
       	
       	<div class="row">
 		 		<label class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		 		Tester notes
 			   </label>
 			   
 			   <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-			      	<input type="text" name="notes" style="display:table-cell; width:100%" placeholder="enter additional notes here">
+<!-- 			      	<input type="text" name="notes" style="display:table-cell; width:100%" placeholder="enter additional notes here"> -->
+			      	<textarea rows="4" cols="50" name="notes" form="rdxquestionnaire"></textarea>
 			    </label>
 		</div>
 		
@@ -399,7 +401,7 @@
 		      FORT Result
 		    </label>
 		    <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="stress" placeholder="stress reading">
+		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="stress" placeholder="fort reading">
 		    </label>
 		</div>
    
@@ -410,7 +412,7 @@
 		      FORD Result
 		    </label>
 		    <label class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="defence" placeholder="defence reading">
+		      <input class="myradio" style="display:table-cell; width:100%" type="number" step="0.01" min="0" max="5" name="defence" placeholder="ford reading">
 		    </label>
 		</div>
 		  
@@ -426,7 +428,8 @@
 				<a onclick="updateTab('energymusclesorepill')" data-toggle="pill" href="#energymusclesore"><< Back</a>
 			</label>
 			<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-centered">
-				<a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult" style="float: right;">Next >></a>
+				<button class="btn btn-success" style="float: right;">Save</button>
+<!-- 				<a onclick="updateTab('testerpill')" data-toggle="pill" href="#testresult" style="float: right;">Next >></a> -->
 			</label>
 			<label class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
 			</label>
@@ -434,7 +437,7 @@
 			
 			
 
-	<button>Save</button>
+	
 
     </div>
   </div>
@@ -472,13 +475,13 @@
  slide_h = +nrgslidersvg.attr("height") - slider_margin.top - slider_margin.bottom;
 
  var xnrgslide = d3.scaleLinear()
- .domain([0, 4])
+ .domain([0, 5])
  .range([0, 300])
  .clamp(true);
 
  var yslidecolor = d3.scaleLinear()
- .domain([0,1,3, 5])
- .range(["red", "orange", "lightgreen", "green"])
+ .domain([0,1,2,3,4,5])
+ .range(["lightgrey","red", "orange", "lightgreen", "green", "darkgreen"])
  .clamp(true);
 
  var nrgslider = nrgslidersvg.append("g")
@@ -508,7 +511,7 @@
      }));
      
    //var nrgtextarray = ["high", "Good", "OK", "Low", "Very low", ""];
-   var nrgtextarray = ["Very low", "Low", "OK", "Good", "High", ""];
+   var nrgtextarray = ["", "Very low", "Low", "OK", "Good", "High"];
      
    nrgslider.insert("g", ".nrgtrack-overlay")
  .attr("class", "ticks")
@@ -529,6 +532,9 @@
 
 
  function nrgtrackcolor(c) {
+	 if(c < 0.75){
+		 c = 0.0;
+	 }
  	nrghandle.attr("cx", xnrgslide(c));
  	d3.select(".nrgtrack-inset").style("stroke", yslidecolor(c));
  	}
@@ -548,7 +554,7 @@
  muscslider.append("text").attr("class", "slidertext").attr("transform", "translate(20,-50)").text("Rate your muscle soreness");
 
  var xmuscslide = d3.scaleLinear()
- .domain([0, 4])
+ .domain([0, 5])
  .range([0, 300])
  .clamp(true);
 
@@ -574,7 +580,7 @@
      );
      
    //var musctextarray = ["Feel great", "Not sore", "Average", "Sore", "Very sore", ""];
-   var musctextarray = ["Very sore", "Sore", "Average", "Not sore", "Feel great", ""];
+   var musctextarray = ["", "Very sore", "Sore", "Average", "Not sore", "Feel great", ""];
      
    muscslider.insert("g", ".musctrack-overlay")
  .attr("class", "ticks")
@@ -594,6 +600,9 @@
  .attr("r", 30);
 
  function musctrackcolor(c) {
+	 if(c < 0.75){
+		 c = 0.0;
+	 }
  	muschandle.attr("cx", xnrgslide(c));
  	d3.select(".musctrack-inset").style("stroke", yslidecolor(c));
  	}

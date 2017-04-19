@@ -46,8 +46,10 @@ public class CategoryAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	
 	    	List<Category> categories = Category.find.all();
+	    	
+	    	Player player = Player.findByNumber(1);
 
-	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", player, categories)));
 
 	    	
 	    }
@@ -63,8 +65,10 @@ public class CategoryAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	
 	    	List<Category> categories = Category.find.all();
+	    	
+	    	Player player = Player.findByNumber(1);
 
-	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories",  player, categories)));
 	    	
 	    }
 	    
@@ -79,8 +83,10 @@ public class CategoryAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	
 	    	List<Category> categories = Category.find.all();
+	    	
+	    	Player player = Player.findByNumber(1);
 
-	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories", categories)));
+	    	return CompletableFuture.completedFuture(ok(categorysList.render(user, "playercategories",  player, categories)));
 	    	
 	    }
 	

@@ -1,9 +1,9 @@
 @import tags._
-@(user : models.User, active: String, roles: List[models.SecurityRole])
+@(user : models.User, active: String, player: models.Player, roles: List[models.SecurityRole])
 
 @main(title = "Player Admin") {
 
-@navigationbar(user: models.User, active: String)
+@navigationbar(user: models.User, player: models.Player, active: String)
 @adminNav(active: String)
 
 

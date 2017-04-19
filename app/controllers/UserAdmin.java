@@ -53,8 +53,9 @@ public class UserAdmin extends Controller {
 	    	System.out.println("get admin called");
 	    	User user = User.findByEmail(session().get("connected"));
 	    	List<User> allusers = User.find.all();
+	    	Player player = Player.findByNumber(1);
 
-	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 	    }
 	    
 	    public CompletionStage<Result> newUser(){
@@ -62,7 +63,8 @@ public class UserAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	
-	    	return CompletableFuture.completedFuture(ok(userAdd.render(user, "users", roles)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userAdd.render(user, "users", player, roles)));
 	    	
 	    }
 	    
@@ -85,7 +87,8 @@ public class UserAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	List<User> allusers = User.find.all();
 	    	
-	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 	    	
 	    }
 	    
@@ -101,7 +104,8 @@ public class UserAdmin extends Controller {
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	List<Player> players = Player.find.all();
 	    			
-	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", thisuser, roles, players)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", player, thisuser, roles, players)));
 	    }
 	    
 	    public CompletionStage<Result> updateUser(String email){
@@ -118,7 +122,8 @@ public class UserAdmin extends Controller {
 	    	User user = User.findByEmail(session().get("connected"));
 	    	List<User> allusers = User.find.all();
 	    	
-	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", allusers)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(users.render(user, "users", player, allusers)));
 	    	
 	    }
 	    
@@ -133,7 +138,8 @@ public class UserAdmin extends Controller {
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	List<Player> players = Player.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", thisuser, roles, players)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", player, thisuser, roles, players)));
 	    	
 	    	
 	    }
@@ -149,7 +155,8 @@ public class UserAdmin extends Controller {
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	List<Player> players = Player.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", thisuser, roles, players)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", player, thisuser, roles, players)));
 	    	
 	    	
 	    }
@@ -166,7 +173,8 @@ public class UserAdmin extends Controller {
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	List<Player> players = Player.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", thisuser, roles, players)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", player, thisuser, roles, players)));
 	    	
 	    	
 	    }
@@ -183,7 +191,8 @@ public class UserAdmin extends Controller {
 	    	List<SecurityRole> roles = SecurityRole.find.all();
 	    	List<Player> players = Player.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", thisuser, roles, players)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(userEdit.render(user, "users", player, thisuser, roles, players)));
 	    	
 	    	
 	    }

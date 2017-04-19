@@ -76,7 +76,8 @@ public class PlayerAdmin extends Controller {
 	    	//List<Player> players = user.getPlayersCategorisedWith(Category.findByName("All"));
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", player, players, categories)));
 	    	
 	    }
 	    
@@ -85,8 +86,8 @@ public class PlayerAdmin extends Controller {
 	    	System.out.println("get playerAdd called");
 	    	User user = User.findByEmail(session().get("connected"));
 	    	
-
-	    	return CompletableFuture.completedFuture(ok(playerAdd.render(user, "players")));
+	    	Player player = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(playerAdd.render(user, "players", player)));
 	    	
 	    }
 	    
@@ -329,7 +330,8 @@ public class PlayerAdmin extends Controller {
 	    	List<Player> players = Player.find.all();
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
+	    	//Player player1 = Player.findByNumber(1);
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", player, players, categories)));
 	    	
 	    }
 	    
@@ -358,8 +360,9 @@ public class PlayerAdmin extends Controller {
 	    	}
 	    	
 	    	if(Player.findByNumber(anumber) != null){
+	    		Player player = Player.findByNumber(1);
 	    		flash("error", "Number already used, must be unique.  Leave number blank if you want it assigned automatically");
-	    		return CompletableFuture.completedFuture(ok(playerAdd.render(user, "players")));
+	    		return CompletableFuture.completedFuture(ok(playerAdd.render(user, "players", player)));
 	    	}
 	    	
 	    	Player player = new Player(name, anumber, null, user);
@@ -402,7 +405,7 @@ public class PlayerAdmin extends Controller {
 	        List<Player> players = Player.find.all();
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", player, players, categories)));
 	    	
 	    }
 	    
@@ -432,7 +435,7 @@ public class PlayerAdmin extends Controller {
 	    	List<Player> players = Player.find.all();
 	    	List<Category> categories = Category.find.all();
 
-	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", players, categories)));
+	    	return CompletableFuture.completedFuture(ok(playersList.render(user, "players", player, players, categories)));
 	    	
 	    }
 	    

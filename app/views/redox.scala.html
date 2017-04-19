@@ -7,7 +7,7 @@
 @main(title = "CoachCentral") {
     
       <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
-    @navigationbar(user: models.User, active: String)
+    @navigationbar(user: models.User, player: models.Player, active: String)
     
         <style> 
 #player_icon {
@@ -73,9 +73,9 @@
 	  
 	  <div class="btn-group btn-group-justified">
 	  
-	   @if(players.size() > 5){
+	   @if(players.size() > 7){
 	   
-	   <a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex - 4), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
+	   <a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex - 5), players.size())).playernumber, category)' class="btn btn-default"  class="thumbnail" style="margin-bottom: 0px; border:none;">
 						<div >
 					
 						</div>
@@ -84,6 +84,12 @@
 						</div>
 					</a>
 	   }
+	   
+	  @if(players.size() > 7){
+	  
+	  		@player_icon(players.get(Math.floorMod((playerIndex - 4), players.size())), category, active)
+	  		
+	  }
 	   
 	  
 	  @if(players.size() > 5){
@@ -158,8 +164,12 @@
 	  	@player_icon(players.get(Math.floorMod((playerIndex + 3), players.size())), category, active)
 	 }
 	 
-	  @if(players.size() > 6){
-	 		<a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex + 4), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
+	 @if(players.size() > 8){
+	  	@player_icon(players.get(Math.floorMod((playerIndex + 4), players.size())), category, active)
+	 }
+	 
+	  @if(players.size() > 8){
+	 		<a href='@routes.Application.redox(players.get(Math.floorMod((playerIndex + 5), players.size())).playernumber, category)' class="btn btn-default" class="thumbnail" style="margin-bottom: 0px;  border:none;">
 					
 			<div class="text-nowrap" style="text-align: center;">
 				>>
@@ -493,13 +503,17 @@
 				</div>
 			</div>
 			
+<!-- 		<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9"> -->
+<!-- 			<div class="resultstext" id="RESULTSHOW"> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+			
 			<div class="row">
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div class="">
 						Tester Notes
 						<div>
-							
-							<div class="anssubheadingsright"  id="TESTERNOTESVALUE">
+							<div class="testernotestext"  id="TESTERNOTESVALUE">
 							</div>
 						</div>
 					</div>
@@ -553,7 +567,7 @@ var oneweekahead = new Date(Date.now() + 7*24*3600*1000);
 var xl = threeweeksago, xr = oneweekahead;
 var rdxval = -1;
 
-checkcookie();
+
 
 
 var amberzone = 0.1;
@@ -587,7 +601,7 @@ var ctx_height = 40;
 var nrgsvg = d3.select("#nrgsvg").attr("width", 100).attr("height", 20);
 var muscsvg = d3.select("#muscsvg").attr("width", 100).attr("height", 20);
 
-
+checkcookie();
 
 
 
@@ -684,8 +698,8 @@ grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("st
 
 var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undefbottom")
 .attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
-grad.append("stop").attr("offset", "50%").style("stop-color", "#f4f2f1");
-grad.append("stop").attr("offset", "50%").style("stop-color", "#f4f2f1").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "#eae7e5");
+grad.append("stop").attr("offset", "50%").style("stop-color", "#eae7e5").style("stop-opacity", 0);
 
 var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "greentop")
 .attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
@@ -704,8 +718,8 @@ grad.append("stop").attr("offset", "50%").style("stop-color", "red");
 
 var grad = redoxsvg.append("defs").append("linearGradient").attr("id", "undeftop")
 .attr("x1", "0%").attr("x2", "0%").attr("y1", "100%").attr("y2", "0%");
-grad.append("stop").attr("offset", "50%").style("stop-color", "white").style("stop-opacity", 0);
-grad.append("stop").attr("offset", "50%").style("stop-color", "white");
+grad.append("stop").attr("offset", "50%").style("stop-color", "#eae7e5").style("stop-opacity", 0);
+grad.append("stop").attr("offset", "50%").style("stop-color", "#eae7e5");
 
 
 
@@ -735,8 +749,11 @@ var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', funct
 data3.forEach(function(d, i) {
 	
 	 //replacing proxy characters for commas, because the commas corrupt the csv file formatting
+	 
+	 //  /§/gi
 	 for(var y in d){
-		 d[y] = d[y].replace("§", ",");
+		 //console.log(d[y]);
+		 d[y] = d[y].replace(/§/gi, ",");
 	 }
 	
 	d.TIME_KEY = +d.TEST_TIME;
@@ -795,7 +812,8 @@ function drawRedox(data3) {
 	
 context.append("g")
 .attr("transform", "translate(0," + 20 + ")")
-.attr("class", "brush").call(brush) .call(brush.move, xcontext.range());
+.attr("class", "brush").call(brush).call(brush.move, xcontext.range());
+
 context.select(".brush").append("rect").attr("class", "leftbookend").attr("width", xl).attr("height", 20);
 context.select(".brush").append("rect").attr("class", "rightbookend").attr("width", width).attr("height", 20);
 
@@ -838,13 +856,15 @@ redoxctx.append("g").attr("class", "CTXGROUP").selectAll().data(data3).enter()
 	//if(d.STRESS_INC > 0) {
 		var diff = Math.abs(d.STRESS_CDT - d.DEFENCE_CDT);
 		var tenpercent = diff * amberzone;
-		
+		if(d.DEFENCE === 0.0){
+			return "url(#undeftop)";
+		}else{
 			if (d.STRESS >= d.STRESS_CDT) { return "url(#redtop)";
 			} else { 
 				if(d.STRESS >= (d.STRESS_CDT - tenpercent)){ return "url(#ambertop)";
 				} else { return "url(#greentop)"; }
 			}
-		
+		}
 	//}else { return "#FBFBFB"; }
 	})
 .attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", 95);
@@ -960,6 +980,7 @@ redoxfocus.append("rect").attr("class", "zoom").attr("width", width).attr("heigh
 
 
 redoxfocus.append("path").datum(data3).attr("class", "defenceline").attr("id", "defenceline").attr("d", defenceline);
+
 redoxfocus.append("path").datum(data3).attr("class", "defenceadjline").attr("id", "defenceadjline").attr("d", defenceadjline);
 
 
@@ -969,6 +990,7 @@ redoxfocus.append("path").datum(data3).attr("class", "stressadjline").attr("id",
 
 
 redoxfocus.append("g").attr("class", "STRESSGROUP").selectAll().data(data3).enter()
+.filter(function(d){ return d.STRESS > 0.01;})
 .append("circle").attr("class", "STRESS").attr("id", "STRESS").attr("r", 10)
 .style("fill", function(d) { 
 	if(d.STRESS_INC > 0) {
@@ -1068,11 +1090,15 @@ d3.select("#muscsvg").append("rect").attr("class", "muscforegroundrect");
 d3.select("#muscsvg").append("text").attr("id", "musctext").attr("transform", "translate(5,15)").style("font-size", "12px");//.text("howdy");
 
 
+//sets the viewport to the last set in the cookie
+// console.log("before remembering zoom : "+xl+" - "+xr);
+// console.log("three weeks ago is " + threeweeksago);
+// console.log("mapped three weeks " + xfocus(threeweeksago));
+redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
 
 updateanswerfields(data3[data3.length -1]);
 
-//sets the viewport to the last set in the cookie
-redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity.scale(width / (xr - xl)).translate(-xl, 0));
+
 
 function updateanswerfields(d) {
 	
@@ -1226,59 +1252,51 @@ function updateanswerfields(d) {
 	
 	
 	
-	d3.select("#TESTERNOTESVALUE").text(function() {
-		
-		var replaceChars = d.testernotes.replace(/§/gi, ",");
-			//txt += dietarray[i].replace(/§/gi, ",") + "<br><br>";
-		
-		return replaceChars});
-	//
-	var nrgcolorarray = ["#ffabbe", "#ffe0a8", "#71f2e4", "#68f7a3", "#deff8a"];
-	//var nrgcolorarray = ["#deff8a", "#68f7a3", "#71f2e4", "#ffe0a8", "#ffabbe"];
-	//var nrgcolorarray = ["#ff0202", "#f00", "#ffa100", "#008900", "#008900"];
+
+	
+	
+	
+	
+	var nrgcolorarray = ["#fff", "#ffabbe", "#ffe0a8", "#71f2e4", "#68f7a3", "#deff8a"];
 	d3.select(".nrgforegroundrect")
-	.attr("width", function() { return d.EnergyLevel > 0 ? (d.EnergyLevel * 100)/5 + 20 : 20; })
+	.attr("width", function() { 
+		return d.EnergyLevel >= 0.5 ? (d.EnergyLevel * 100)/5 : 0; })
 	.attr("height", 20)
-	.style( "fill", nrgcolorarray[Math.ceil(parseFloat(d.EnergyLevel))]  );
+	.style( "fill", nrgcolorarray[Math.round(parseFloat(d.EnergyLevel))]  );
 	
-	d3.select(".nrgbackgroundrect").style( "stroke", nrgcolorarray[Math.ceil(parseFloat(d.EnergyLevel))]  );
+	d3.select(".nrgbackgroundrect").style( "stroke", nrgcolorarray[Math.round(parseFloat(d.EnergyLevel))]  );
 	
-	var nrgtextarray = ["Very low", "Low", "OK", "Good", "High" ];
-	d3.select("#nrgtext").text(  nrgtextarray[Math.ceil(parseFloat(d.EnergyLevel))]  );
+	var nrgtextarray = ["Unknown", "Very low", "Low", "OK", "Good", "High" ];
+	d3.select("#nrgtext").text(  nrgtextarray[Math.round(parseFloat(d.EnergyLevel))]  );
 	
 
 	
 	
-	var musccolorarray = ["#deff8a", "#68f7a3", "#71f2e4", "#ffe0a8", "#ffabbe"];
+	//var musccolorarray = ["#fff", "#deff8a", "#68f7a3", "#71f2e4", "#ffe0a8", "#ffabbe"];
+	var musccolorarray = ["#fff", "#ffabbe", "#ffe0a8", "#71f2e4", "#68f7a3", "#deff8a"];
 	d3.select(".muscforegroundrect")
-	.attr("width", function() { return d.MuscleSoreness > 0 ? (d.MuscleSoreness * 100)/5 + 20 : 20; })
+	.attr("width", function() { 
+		return d.MuscleSoreness >= 0.5 ? (d.MuscleSoreness * 100)/5: 0; })
 	.attr("height", 20)
-	.style( "fill", musccolorarray[Math.ceil(parseFloat(d.MuscleSoreness))]  );
+	.style( "fill", musccolorarray[Math.round(parseFloat(d.MuscleSoreness))]  );
 	
-	d3.select(".muscbackgroundrect").style( "stroke", musccolorarray[Math.ceil(parseFloat(d.MuscleSoreness))]  );
+	d3.select(".muscbackgroundrect").style( "stroke", musccolorarray[Math.round(parseFloat(d.MuscleSoreness))]  );
 	
-	var musctextarray = ["Feel great", "Not sore", "Average", "Sore", "Very sore"];
-	d3.select("#musctext").text(  musctextarray[Math.ceil(parseFloat(d.MuscleSoreness))]  );
+	//var musctextarray = ["Unknown", "Feel great", "Not sore", "Average", "Sore", "Very sore"];
+	var musctextarray = ["Unknown", "Very sore", "Sore", "Average", "Not sore", "Feel great"];
+	d3.select("#musctext").text(  musctextarray[Math.round(parseFloat(d.MuscleSoreness))]  );
 
 	
-	//d3.select(".nrgforegroundrect").style( "fill", musccolorarray[Math.ceil(parseFloat(d.MuscleSoreness))]  );
-	
-	
-// 	if(d.MuscleSoreness > 0 && d.MuscleSoreness >= 4) {
-// 		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/happy.png"; })
-// 	}
-// 	if(d.MuscleSoreness > 1 && d.MuscleSoreness >= 3) {
-// 		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/smile.png"; })
-// 	}
-// 	if(d.MuscleSoreness > 2 && d.MuscleSoreness >= 2) {
-// 		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/neutral.png"; })
-// 	}
-// 	if(d.MuscleSoreness > 3 && d.MuscleSoreness >= 1) {
-// 		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/sad.png"; })
-// 	}
-// 	if(d.MuscleSoreness > 4 && d.MuscleSoreness >= 0) {
-// 		d3.select("#MUSCSOREICON").attr("src", function(d){ return "/assets/images/emoticons/crying.png"; })
-// 	}
+	d3.selectAll(".testernotestexts").remove();
+	var replaceChars = d.testernotes.replace(/§/gi, ",");
+	var testernotesarray = replaceChars.split(';');
+	for (var i = 0; i < testernotesarray.length; i++){
+		d3.select("#TESTERNOTESVALUE").append("p").attr("class", "testernotestexts").text(function() {
+			return testernotesarray[i];
+		});	
+	}
+
+
 	
 	var resultsarray = d.ResultShow.split(';');
 	d3.selectAll(".resultstexts").remove();
@@ -1597,24 +1615,29 @@ redoxfocus.select(".axis--x").call(xAxis);
 
 function brushed() {
 
-//console.log("brushing");
 var s = d3.event.selection || xcontext.range();
 
 if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") {
 	//console.log("brushing and returning");
 	document.cookie="xl="+ s[0] +";";
 	document.cookie="xr="+ s[1] +";";
+// 	console.log("s[0] is "+s[0]);
+// 	console.log("s[1] is "+s[1]);
+// 	console.log("wid  is "+width);
 	xl = s[0];
 	xr = s[1];
 	return;
 }
+
+
+
 xfocus.domain(s.map(xcontext.invert, xcontext));
 
 redrawChart();
 
-// redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-// 		  .scale(width / (s[1] - s[0]))
-// 		  .translate(-s[0], 0));
+redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+		  .scale(width / (s[1] - s[0]))
+		  .translate(-s[0], 0));
 
 context.select(".leftbookend").attr("width", s[0]);
 context.select(".rightbookend").attr("x", s[1]);
@@ -1679,10 +1702,16 @@ redoxsvg.select(".zoom").call(zoom.transform, d3.zoomIdentity
 
 function checkcookie() {
 
+	//console.log("checking cookie");
 //RDXview_state
 if(document.cookie.indexOf("rdxviewstate") >= 0) {
 	
 	var cookiearray = document.cookie.split(';');
+	
+// 	for(var i=0; i<cookiearray.length; i++){
+// 		console.log(cookiearray[i]);
+// 	}
+	
 	
 	for(var i=0; i<cookiearray.length; i++){
         if(cookiearray[i].split('=')[0].trim() === "rdxviewstate"){
@@ -1710,19 +1739,20 @@ if(document.cookie.indexOf("xl") >= 0) {
         	
         
         	if(isNaN(cookiearray[i].split('=')[1].trim())){
-        		console.log("here Nan");
+        		//console.log("xl is Nan");
         		
-        		xl = threeweeksago;
+        		xl = 0;
         		document.cookie="xl="+ xl +";";
         	} else {
+
         		xl = cookiearray[i].split('=')[1].trim();
-        		//console.log("not Nan");
+        		//console.log("xl is " + xl);
         	}
         	
         }
         if(cookiearray[i].split('=')[0].trim() === "xr") {
         	if(isNaN(cookiearray[i].split('=')[1].trim())){
-        		xr = oneweekahead;
+        		xr = width;
         		document.cookie="xr="+ xr +";";
         	} else {
         		xr = cookiearray[i].split('=')[1].trim();
@@ -1732,8 +1762,10 @@ if(document.cookie.indexOf("xl") >= 0) {
      }
 	
 } else {
-	xl = threeweeksago;
-	xr = oneweekahead;
+	console.log("cookie not found ");
+	xl = 0;
+	xr = width;
+	console.log("setting xl to " +xl);
 }
 
 

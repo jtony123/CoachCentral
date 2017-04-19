@@ -1,32 +1,69 @@
 @import be.objectify.deadbolt.java.views.html.{restrict, restrictOr}
 @import be.objectify.deadbolt.java.utils.TemplateUtils.{allOf, anyOf, allOfGroup}
-@(user : models.User, active: String)
+@(user : models.User, player: models.Player, active: String)
+
+<script type="text/javascript">
+$('a[rel="external"]').attr('target', '_blank');
+</script>
+
+<style>
+
+div.watsonpanel {   
+  position: absolute;   
+  overflow:scroll;        
+  text-align: left;           
+  width: 50%;                
+    max-height: 800px;                  
+  padding: 2px; 
+  padding-left:5px;            
+  font: 16px Open Sans;     
+   border: 1px; 
+   border-style: solid; 
+   border-radius: 10px;
+   box-shadow: 0px 0px 10px grey;
+        
+}
+
+hr {
+ border-top: 1px solid #555;
+}
+
+</style>
 
 <div class="container-fluid">
 	<nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #FED202;">
 
 		<div class="navbar-header" >
-			<a class="navbar-brand" href="#"> <span> <img
-					src="@routes.Assets.at("images/orreco-logo2.png")" alt="Orreco" />
+			<a class="navbar-brand" href="#"> <span> <img src="@routes.Assets.at("images/orreco-logo2.png")" alt="Orreco" />
 			</span>
 			</a>
 		</div>
 		<ul class="nav navbar-nav">
 		@if(active.equals("dashboard")){
-		<li class="active"><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
+		<li class="active"><a href='@routes.Application.dashboard(player.playernumber, "All")'>Dashboard</a></li>
 		} else {
-		<li><a href='@routes.Application.dashboard(1, "All")'>Dashboard</a></li>
+		<li><a href='@routes.Application.dashboard(player.playernumber, "All")'>Dashboard</a></li>
 		}
 		
 		@if(active.equals("redox")){
-		<li class="active"><a href='@routes.Application.redox(1, "All")'>Redox</a></li>
+		<li class="active"><a href='@routes.Application.redox(player.playernumber, "All")'>Redox</a></li>
 		} else {
-		<li><a href='@routes.Application.redox(1, "All")'>Redox</a></li>
+		<li><a href='@routes.Application.redox(player.playernumber, "All")'>Redox</a></li>
 		}
 		
 		
 		</ul>
+		
 		<ul class="nav navbar-nav navbar-right">
+			<li>
+			@if(active.equals("redox")){
+			<input style="margin-top: 10px; padding-top: 5px; border-radius: 12px;" id='query' type='text' name='query' placeholder='What is Redox?'/>
+			} else {
+			<input style="margin-top: 10px; padding-top: 5px; border-radius: 12px;" id='query' type='text' name='query' placeholder='ask watson'/>
+			}
+
+			</li>		
+		
 			<li><a href="#"> <span class="glyphicon glyphicon-user"></span>
 					@user.userName
 			</a></li> 
@@ -40,3 +77,167 @@
 		</ul>
 	</nav>
 </div>
+
+<script>
+
+var watsonpanel = d3.select("body").append("div")   
+.attr("class", "watsonpanel")
+.attr("id", "watsonpanel") 
+.style("opacity", 0)
+.style("z-index", 999999);
+
+
+
+d3.select("#query")
+.on("mouseover", function(d) {
+	
+
+	watsonpanel.transition().duration(200)
+	.style("opacity", 1).style("color", "grey").style("background", "#f4f2f1")
+	.style("max-height", "800px")
+	.style("border-color", "grey")
+	.style("z-index", 1);
+	
+	@if(active.equals("redox")){
+	watsonpanel .html("<br><button id='hidebutton'>Hide</button><br>"
+					+ "<br>Suggested Queries...<br><br>"
+					+ "<br>Related to Redox<br>"
+					+ "<a id='a1' value='What is redox homeostasis?' href='#' onclick='test(a1)'>What is redox homeostasis?</a>" + "<br>"
+					+ "<a id='a2' value='What is oxidative stress?' href='#' onclick='test(a2)'>What is oxidative stress?</a>" + "<br>"
+					+ "<a id='a3' value='Why is redox homeostasis important?' href='#' onclick='test(a3)'>Why is redox homeostasis important?</a>" + "<br>"
+					+ "<a id='a4' value='What is the link between exercise and redox homeostasis?' href='#' onclick='test(a4)'>What is the link between exercise and redox homeostasis?</a>" + "<br>"
+					+ "<a id='a5' value='What is the role of reactive oxygen species when training?' href='#' onclick='test(a5)'>What is the role of reactive oxygen species when training?</a>" + "<br>"
+					+ "<a id='a6' value='What is the effect of high levels of reactive oxygen species?' href='#' onclick='test(a6)'>What is the effect of high levels of reactive oxygen species?</a>" + "<br>"
+					+ "<a id='a7' value='What causes reactive oxygen species levels to increase?' href='#' onclick='test(a7)'>What causes reactive oxygen species levels to increase?</a>" + "<br>"
+					+ "<a id='a8' value='How are reactive oxygen species formed?' href='#' onclick='test(a8)'>How are reactive oxygen species formed?</a>" + "<br>"
+					+ "<a id='a9' value='What is the effect of exercise on redox balance?' href='#' onclick='test(a9)'>What is the effect of exercise on redox balance?</a>" + "<br>"
+					+ "<a id='a10' value='What is the FORD/FORT test?' href='#' onclick='test(a10)'>What is the FORD/FORT test?</a>" + "<br>"
+					+ "<a id='a11' value='What are useful research articles on redox homeostasis?' href='#' onclick='test(a11)'>What are useful research articles on redox homeostasis?</a>" + "<br>"
+					+ "<br><img class='img-responsive' src='@routes.Assets.at("images/watson-grey.png")' alt='' style='margin-left: 25px; max-width:100px;'/>"
+	)
+	} else {
+		
+			watsonpanel .html("<br><button id='hidebutton'>Hide</button><br>"
+					+ "<br>Suggested queries<br>"
+					+ "<br>Related to Travel<br>"
+					+ "<a id='a12' value='What are the recommended techniques to prepare for travel?' href='#' onclick='test(a12)'>What are the recommended techniques to prepare for travel?</a>" + "<br>"
+					+ "<a id='a13' value='What are the best in-flight strategies?' href='#' onclick='test(a13)'>What are the best in-flight strategies?</a>" + "<br>"
+					+ "<a id='a19' value='What are the best sleep strategies to reduce travel fatigue?' href='#' onclick='test(a19)'>What are the best sleep strategies to reduce travel fatigue?</a>" + "<br>"
+					+ "<a id='a14' value='What determines the severity of jet lag?' href='#' onclick='test(a14)'>What determines the severity of jet lag?</a>" + "<br>"
+					+ "<a id='a15' value='What are the symptoms of jet lag?' href='#' onclick='test(a15)'>What are the symptoms of jet lag?</a>" + "<br>"
+					+ "<a id='a16' value='What are useful journal articles on travel and sleep?' href='#' onclick='test(a16)'>What are useful journal articles on travel and sleep?</a>" + "<br>"
+					
+					+ "<br>Related to Sleep<br>"		
+					+ "<a id='a17' value='Why is sleep important for recovery?' href='#' onclick='test(a17)'>Why is sleep important for recovery?</a>" + "<br>"
+					+ "<a id='a18' value='How can athletes maximize the quality of their sleep?' href='#' onclick='test(a18)'>How can athletes maximize the quality of their sleep?</a>" + "<br>"
+					+ "<a id='a20' value='How can athletes establish good circadian rhythms?' href='#' onclick='test(a20)'>How can athletes establish good circadian rhythms?</a>" + "<br>"
+					+ "<a id='a21' value='How is sleep measured?' href='#' onclick='test(a21)'>How is sleep measured?</a>" + "<br>"
+					+ "<a id='a22' value='What are useful journal articles on travel and sleep?' href='#' onclick='test(a22)'>What are useful journal articles on travel and sleep?</a>" + "<br>"
+					
+					+ "<br>Related to Gluthathione<br>"	
+					+ "<a id='a23' value='Why is glutathione important?' href='#' onclick='test(a23)'>Why is glutathione important?</a>" + "<br>"
+					+ "<a id='a24' value='What nutritional advice can I follow to increase glutathione levels?' href='#' onclick='test(a24)'>What nutritional advice can I follow to increase glutathione levels?</a>" + "<br>"
+					+ "<a id='a25' value='What are useful journal articles on glutathione?' href='#' onclick='test(a25)'>What are useful journal articles on glutathione?</a>" + "<br>"
+					
+					+ "<br>Related to C Reactive Protein<br>"	
+					+ "<a id='a26' value='Why is C reactive protein important?' href='#' onclick='test(a26)'>Why is C reactive protein important?</a>" + "<br>"
+					+ "<a id='a27' value='How can C reactive protein affect performance?' href='#' onclick='test(a27)'>How can C reactive protein affect performance?</a>" + "<br>"
+					
+					+ "<br>Related to Creatine Kinase<br>"	
+					+ "<a id='a28' value='What is the effect of having high creatine kinase levels?' href='#' onclick='test(a28)'>What is the effect of having high creatine kinase levels?</a>" + "<br>"
+					+ "<a id='a29' value='What is a normal creatine kinase range?' href='#' onclick='test(a29)'>What is a normal creatine kinase range?</a>" + "<br>"
+					
+					+ "<br>Related to Vitamin D<br>"	
+					+ "<a id='a30' value='Why is vitamin D important?' href='#' onclick='test(a30)'>Why is vitamin D important?</a>" + "<br>"
+					+ "<a id='a31' value='How can a low vitamin D level affect performance?' href='#' onclick='test(a31)'>How can a low vitamin D level affect performance?</a>" + "<br>"
+					+ "<a id='a32' value='What nutritional advice can I follow to increase vitamin D levels?' href='#' onclick='test(a32)'>What nutritional advice can I follow to increase vitamin D levels?</a>" + "<br>"
+						
+					+ "<br><img class='img-responsive' src='@routes.Assets.at("images/watson-grey.png")' alt='' style='margin-left: 25px; max-width:100px;'/>"
+	)
+		
+		
+		
+	}
+	.style("left", (d3.event.pageX - 400) + "px").style("top", (d3.event.pageY + 20) + "px");
+	
+		d3.select("#query").on("keydown", function() {
+
+		
+		if(d3.event.keyCode == 13){
+			var retrieved = d3.select("#query").property("value");
+			getAnswers(retrieved);
+		}
+		});
+		
+		 d3.select("#hidebutton").on("click", function() {
+				console.log("clicking");
+				
+				watsonpanel.transition().duration(300)
+				.style("max-height", "0px")
+				.style("top", "0px")
+				.style("z-index", -999999)
+				.on("end", function(){
+					watsonpanel .html("");
+				});
+		 
+	});
+		
+		
+});
+
+
+
+function test(str) {
+	//console.log(str);
+	var txt = d3.select(str).attr("value");
+	//console.log("testing" + txt);
+	getAnswers(txt);
+	return;
+}
+
+
+function getAnswers(retrieved){
+	
+	var watsonanswers = d3.json("/askWatson?query="+retrieved, function(error4, data4) {
+		var txt = "<br><button id='hidebutton'>Hide</button><br>";
+		
+		txt += "You asked : " + retrieved + "<br><br>";
+		 for(var y in data4){
+			 //console.log(data4[y]);
+			 txt += data4[y] + "<hr>";
+		 }
+		 
+		 watsonpanel .html(txt);
+		 
+		 
+		 
+		 var x = document.getElementById("watsonpanel").children;
+		 for (var y in x){
+			var z = x[y].children;
+			for(var i in z) {
+				z[i].target = "_blank";
+			}
+		 }
+		 
+		 d3.select("#hidebutton").on("click", function() {
+				console.log("clicking");
+				
+				watsonpanel.transition().duration(300)
+				.style("max-height", "0px")
+				.style("top", "0px")
+				.style("z-index", -999999)
+				.on("end", function(){
+					watsonpanel .html("");
+				});
+		 
+	});
+	
+
+})
+	
+
+	
+}
+
+</script>
+

@@ -16,6 +16,8 @@ POST    /saveRedox/:category     	controllers.Application.saveRedox(playernumber
 POST	/saveComment/:category		controllers.Application.saveComment(playernumber: Integer, category :String)
 GET		/getFullRedoxCSV			controllers.Application.getFullRedoxCSV()
 
+GET 	/askWatson					controllers.Application.askWatson(query :String)
+
 GET		/record/:category			controllers.Application.record(playernumber: Integer, category :String)
 
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)

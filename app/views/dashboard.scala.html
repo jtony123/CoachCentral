@@ -7,7 +7,7 @@
 @main(title = "CoachCentral") {
     
     <div class="container-fluid" id="outer_container" style="background-color: #FBFBFB">
-    @navigationbar(user: models.User, active: String)
+    @navigationbar(user: models.User, player: models.Player, active: String)
     
     <style> 
 #player_icon {
@@ -228,6 +228,7 @@
 	</div>
 </div>
 </div><!-- end  outer container-->
+
 <script src="@routes.Assets.at("javascripts/ChartHelperMethods.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/TooltipTables.js")" type="text/javascript"></script>
 <script>
@@ -244,23 +245,25 @@ var max_gpssvg_h = 500,
 	max_schedsvg_h = 50,
 	max_rdxsvg_h = 400;
 	
+
+	
 	
 var	gpsdatasvg_h = Math.max(((windowHeight/2)), max_gpssvg_h),
 	schedpane_h = Math.max(((windowHeight/32)), max_schedsvg_h),
 	redoxpane_h = Math.max(((windowHeight/8)), max_rdxsvg_h);
 
 var gpsdatasvg = d3.select("#gpsdatasvg").attr("width", windowwidth).attr("height", gpsdatasvg_h),
-	gps_margin = {top: 20, right: 20, bottom: 20, left: 70},
+	gps_margin = {top: 20, right: 20, bottom: 20, left: 20},
 	width = +gpsdatasvg.attr("width") - gps_margin.left - gps_margin.right,
 	height = +gpsdatasvg.attr("height") - gps_margin.top - gps_margin.bottom;
 	
 var schedulesvg = d3.select("#schedulesvg").attr("width", windowwidth).attr("height", schedpane_h),
-	sch_margin = {top: 0, right: 20, bottom: 0, left: 70},
+	sch_margin = {top: 0, right: 20, bottom: 0, left: 20},
 	height4 = +schedulesvg.attr("height") - sch_margin.top - sch_margin.bottom;
 	
 	
 var contextsvg = d3.select("#contextsvg").attr("width", windowwidth).attr("height", 100),
-	context_margin = {top: 20, right: 20, bottom: 30, left: 70},
+	context_margin = {top: 20, right: 20, bottom: 30, left: 20},
 	height2 = +contextsvg.attr("height") - context_margin.top - context_margin.bottom;
 	
 	
@@ -335,7 +338,6 @@ var context = contextsvg.append("g")
 
 
 
-var GPSview_state;
 var RDXview_state = true;
 var ACview_state = true;
 var LOADview_state = true;
@@ -401,18 +403,12 @@ var now = new Date();
 	
 	
 // drawing graph elements
-	if(GPSview_state){
-		gpsdatasvg.selectAll(".closedgpsfocus").remove();
+
 		gpsdatasvg.attr("height", gpsdatasvg_h);
 		focus = gpsdatasvg.append("g").attr("class", "focus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
 		drawGPS(data);
 		redrawChart();
-	} else {
-		gpsdatasvg.selectAll(".focus").remove();
-	    gpsdatasvg.attr("height", 45);
-	    var gpsclosed = gpsdatasvg.append("g").attr("class", "closedgpsfocus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
-		gpsclosed.append("rect").attr("class", "closedgpsrect").attr("width", width).attr("height", 25);
-	}
+
 	//drawGPS(data);
 	drawGPSButtons(data);
 	
@@ -619,46 +615,10 @@ function drawGPS(data) {
 
 function drawGPSButtons(data){
 	
-
-			
-	var GPS_showhide_button = gpsdatasvg.append("g").attr("class", "GPSDATA_Button")
-		.attr("transform", "translate("+ 12 + "," + 20 + ")");
-		
-	GPS_showhide_button.append("text").attr("id", "gpsbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640")
-	.text(function() {
-		return GPSview_state? "hide" : "GPS";
-	});
-	
-	var textWidth = GPS_showhide_button.select("text").node().getBBox().width;
-					
-	GPS_showhide_button.append("rect").attr("rx", 8).attr("ry", 8)
-    .attr("width", textWidth + 20).attr("height", 20)
-    .attr("class", "showhidebuttons").attr("id", "GPSDATA_Button") 
-    .on("click", function(){
-    	
-    	//showhideGPS focus panel()
-    	GPSview_state = !GPSview_state;
-    	document.cookie="gpsviewstate="+ GPSview_state +";";
-    	d3.select(".showhidebuttons").style("stroke-width", GPSview_state ? 1 : 0);
-    	if(GPSview_state){
-    		gpsdatasvg.selectAll(".closedgpsfocus").remove();
-    		gpsdatasvg.attr("height", gpsdatasvg_h);
-    		focus = gpsdatasvg.append("g").attr("class", "focus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
-    		drawGPS(data);
-    		redrawChart();
-    	} else {
-    		gpsdatasvg.selectAll(".focus").remove();
-		    gpsdatasvg.attr("height", 45);
-		    var gpsclosed = gpsdatasvg.append("g").attr("class", "closedgpsfocus").attr("transform", "translate(" + gps_margin.left + "," + gps_margin.top + ")");
-    		gpsclosed.append("rect").attr("class", "closedgpsrect").attr("width", width).attr("height", 25);
-    	}
-		d3.selectAll("#gpsbutton").text(function(d) {return GPSview_state ? "hide" : "GPS";});        	
-		});
-	
 	
 	
 	var AC_showhide_button = gpsdatasvg.append("g").attr("class", "AC_Button")
-		.attr("transform", "translate("+ 12 + "," + 80 + ")");
+		.attr("transform", "translate("+ ((width/15)*1) + "," + 30 + ")");
 	
 	AC_showhide_button.append("text").attr("id", "acbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-A:C");
 	var actextWidth = AC_showhide_button.select("text").node().getBBox().width;
@@ -691,7 +651,7 @@ function drawGPSButtons(data){
 	
 	
 	var LOADS_showhide_button = gpsdatasvg.append("g").attr("class", "LOAD_Button")
-	.attr("transform", "translate("+ 12 + "," + 140 + ")");
+	.attr("transform", "translate("+ ((width/15)*2) + "," + 30 + ")");
 
 	LOADS_showhide_button.append("text").attr("id", "loadbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-LOD");
 	var actextWidth = LOADS_showhide_button.select("text").node().getBBox().width;
@@ -790,7 +750,7 @@ function drawGPSButtons(data){
 	
 	
 	var OTHERS_showhide_button = gpsdatasvg.append("g").attr("class", "OTHERS_Button")
-	.attr("transform", "translate("+ 12 + "," + 200 + ")");
+	.attr("transform", "translate("+ ((width/15)*3)  + "," + 30 + ")");
 
 	OTHERS_showhide_button.append("text").attr("id", "othersbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640").text("-OTH");
 	var actextWidth = OTHERS_showhide_button.select("text").node().getBBox().width;
@@ -1121,7 +1081,7 @@ function drawRedoxButtons(data3) {
 	
 	
 	var RDXFOCUS_showhide_button = gpsdatasvg.append("g").attr("class", "RDXDATA_Button")
-	.attr("transform", "translate("+ 12 + "," + 260 + ")");
+	.attr("transform", "translate("+ ((width/15)*4)  + "," + 30 + ")");
 
 	RDXFOCUS_showhide_button.append("text").attr("id", "dashboardrdxbutton").attr("x", 8).attr("y", 15).attr("fill", "#464640")
 	.text(function() {
@@ -1298,31 +1258,13 @@ function resize() {
 
 function checkcookie() {
 	
-// 	var GPSview_state = true;
+
 // 	var ACview_state = true;
 // 	var LOADview_state = true;
 // 	var OTHERSview_state = true;
 	
-	if(document.cookie.indexOf("gpsviewstate") >= 0) {
-		
-		var cookiearray = document.cookie.split(';');
-		
-		for(var i=0; i<cookiearray.length; i++){
-	        if(cookiearray[i].split('=')[0].trim() === "gpsviewstate"){
-	        	
-        		var setting = cookiearray[i].split('=')[1].trim();
-        		if(setting === "true") {
-        			GPSview_state = true;
-        		} else {
-        			GPSview_state = false;
-        		}
-	        }
-            
-         }
-		
-	} else {
-		GPSview_state = true;
-	}
+	
+
 	
 	if(document.cookie.indexOf("xl") >= 0) {
 		var lhs,rhs;
