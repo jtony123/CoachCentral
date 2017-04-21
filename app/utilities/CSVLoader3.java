@@ -273,7 +273,7 @@ public class CSVLoader3 {
 			//System.out.println("AVG is " + sessionAverage);
 
 			fileReader.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO return an error to the user
 			e.printStackTrace();
 		}

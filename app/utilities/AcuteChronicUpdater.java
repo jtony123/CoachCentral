@@ -201,7 +201,7 @@ import com.avaje.ebean.enhance.agent.SysoutMessageOutput;
 //		        		}
 				
 				fileReader.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO return an error to the user
 				e.printStackTrace();
 			} 

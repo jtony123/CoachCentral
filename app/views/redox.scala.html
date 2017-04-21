@@ -56,17 +56,17 @@
 }
 </style>
 
-<div class="container-fluid" id="groupings_toggle_buttons">
-	<div>
-	@for(c <- categories) {
-		@if(c.name.equals(category)){
-		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
-		} else {
-		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
-   		}
-	}
-	</div>
-</div>
+<!-- <div class="container-fluid" id="groupings_toggle_buttons"> -->
+<!-- 	<div> -->
+<!-- 	@for(c <- categories) { -->
+<!-- 		@if(c.name.equals(category)){ -->
+<!-- 		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a> -->
+<!-- 		} else { -->
+<!-- 		<a href="@routes.Application.redox(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a> -->
+<!--    		} -->
+<!-- 	} -->
+<!-- 	</div> -->
+<!-- </div> -->
 
 <div class="row" id ="player_carousel">
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">

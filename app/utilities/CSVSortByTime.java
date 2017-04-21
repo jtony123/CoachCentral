@@ -81,7 +81,7 @@ public class CSVSortByTime {
 			
 			
 			fileReader.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO return an error to the user
 			e.printStackTrace();
 		}
@@ -96,7 +96,7 @@ public class CSVSortByTime {
 			try {
 				
 				file.createNewFile();
-			} catch (IOException e1) {
+			} catch (Exception e1) {
 				// TODO return an error message to the user
 				e1.printStackTrace();
 			}

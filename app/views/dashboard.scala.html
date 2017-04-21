@@ -55,17 +55,17 @@
   background-color: #aaa;
 }
 </style>
-<div class="container-fluid" id="groupings_toggle_buttons">
-	<div>
-	@for(c <- categories) {
-		@if(c.name.equals(category)){
-		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a>
-		} else {
-		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a>
-   		}
-	}
-	</div>
-</div>
+<!-- <div class="container-fluid" id="groupings_toggle_buttons"> -->
+<!-- 	<div> -->
+<!-- 	@for(c <- categories) { -->
+<!-- 		@if(c.name.equals(category)){ -->
+<!-- 		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge active" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color:yellow;">@c.name</span></a> -->
+<!-- 		} else { -->
+<!-- 		<a href="@routes.Application.dashboard(player.playernumber, c.name)" class="badge" style="background-color: white;"><span class="badge" style=" color: #337ab7; background-color: white;">@c.name</span></a> -->
+<!--    		} -->
+<!-- 	} -->
+<!-- 	</div> -->
+<!-- </div> -->
 <div class="row" id ="player_carousel">
 	  <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5"><p class="text-center">
 	  
@@ -1140,13 +1140,17 @@ function drawRedoxButtons(data3) {
 
 function redrawRedox() {
 	
-	focus.selectAll("#defenceline").attr("d", defenceline);
-	focus.selectAll("#defenceadjline").attr("d", defenceadjline);
-	focus.selectAll("#DEFENCE").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); });
-	focus.selectAll("#stressline").attr("d", stressline);
-	focus.selectAll("#stressadjline").attr("d", stressadjline);
-	focus.selectAll("#STRESS").attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); });
-
+	if(RDXview_state){
+		focus.select(".dashdefenceline").attr("d", defenceline);
+		focus.select(".dashstressline").attr("d", stressline);
+		focus.selectAll(".dashSTRESS").attr("r", 10).attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.STRESS); });
+		focus.selectAll(".dashDEFENCE").attr("r", 10).attr("cx", function(d) { return xfocus(d.TEST_TIME); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); });
+	} else {
+		focus.select(".dashdefenceline").attr("d", defenceline2);
+		focus.select(".dashstressline").attr("d", stressline2);
+		focus.selectAll(".dashSTRESS").attr("r", 0).attr("cx", function(d) { return xfocus(0); }).attr("cy", function(d) { return yfocus2(d.STRESS); });
+		focus.selectAll(".dashDEFENCE").attr("r", 0).attr("cx", function(d) { return xfocus(0); }).attr("cy", function(d) { return yfocus2(d.DEFENCE); });
+	}
 	
 }  //end redrawRedox()
 
