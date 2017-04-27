@@ -3,7 +3,7 @@
 
 
 @if(active.equals("redox")){
-<a href='@routes.Application.redox(player.playernumber, category)' class="btn btn-default" style="margin-bottom: 0px; border:none;">
+<a href='@routes.RedoxController.redox(player.playernumber, category)' class="btn btn-default" style="margin-bottom: 0px; border:none;">
 	<div >
 	@if(player.playerPhoto != null){
 		<img class="img-responsive" src="@routes.Application.playerPhoto(player.id)" alt="" style="margin: 0 auto; max-width:150px;height:100px"/>

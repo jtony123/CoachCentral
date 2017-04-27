@@ -96,16 +96,22 @@ public class RandRQueryRequest {
 
  public  RandRQueryRequest()
   {		
-	  	USERNAME = "35100b2b-5803-4483-8682-b96c0ccd96e2";
-	  	PASSWORD = "KhY2DSfn2gsu";
-	  	SOLR_CLUSTER_ID = "sc3974150c_5830_4f58_8772_2d27667c96a3";	  	
-	  	RANKER_ID="c852c8x19-rank-1978"; // This is the ranker paul created from manual training.
-	  /**
-	   * The name of the collection to create, index data into, and search.
-	   */
-	  	//COLLECTION_NAME="ForImportTest";
-	  	
-	  	COLLECTION_NAME="test_collection";
+	 	// the standard plan instance
+	  	USERNAME = "dcac166b-e514-4b6b-8977-d2d420ad1ffd";
+	  	PASSWORD = "E2bLz1K5fpIz";
+	  	SOLR_CLUSTER_ID = "sc7e7fe48f_1a9c_454e_a661_82a21767817b";	  	
+	  	RANKER_ID="81aacex30-rank-1347";
+	  	COLLECTION_NAME="CorpusProduction";
+	 
+	 
+	 
+	  	// the old eco (free) plan
+//	  	USERNAME = "35100b2b-5803-4483-8682-b96c0ccd96e2";
+//	  	PASSWORD = "KhY2DSfn2gsu";
+//	  	SOLR_CLUSTER_ID = "sc3974150c_5830_4f58_8772_2d27667c96a3";	  	
+//	  	RANKER_ID="c852c8x19-rank-1978"; // This is the ranker paul created from manual training.
+//	  	COLLECTION_NAME="test_collection";
+	 
 	  	
 	  	service = new RetrieveAndRank();
 	  	service.setUsernameAndPassword(USERNAME, PASSWORD);
@@ -131,37 +137,21 @@ public class RandRQueryRequest {
     	SolrDocumentList newresults ;
     	newresults =  response.getResults();
     	
-    	//System.out.println(response);
-    	
-//    	for(int i=0;i<newresults.size();i++){
-//    		
-//    		
-//    	}
 
     	for(int i=0;i<newresults.size();i++)
     	{
-    		
-    		
-    		
     		SolrDocument hitDoc=newresults.get(i);
     		Double confid = (Double) hitDoc.getFieldValue("ranker.confidence");
     		
     		if(confid > 0.01) {
     			WatsonDocument docnode=new WatsonDocument();
         		docnode.setId(hitDoc.getFieldValue("id").toString());
-        		
         		docnode.setBodytext(hitDoc.getFieldValue("contentHtml").toString().replace("<p dir=\"ltr\"> </p>", "")); //body contains the text response.
-        		//System.out.println(hitDoc.getFieldValue("ranker.confidence"));
-        		//System.out.println(docnode.getBodytext());
-        		
         		list.add(docnode);
     		}
-    		
-
     	}
 
     	return  list;
-    //  return newresults.toString();
     } catch (final SolrServerException e) {
       throw new RuntimeException("Failed to search!", e);
     }

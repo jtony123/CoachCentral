@@ -32,7 +32,7 @@ public class Global extends GlobalSettings {
         {
         	System.out.println("adding default SecurityRoles");
 
-            for (String name : Arrays.asList("admin", "redoxadmin", "redoxcomment", "redoxtoggle", "redoxvalues", "redoxtester", "redoxview", "coach", "assistant", "player", "fan"))
+            for (String name : Arrays.asList("admin", "redoxadmin", "redoxcomment", "redoxtoggle", "redoxvalues", "redoxtester", "redoxview", "coach", "assistant", "player", "fan", "watson"))
             {
                 SecurityRole role = new SecurityRole();
                 role.roleName = name;

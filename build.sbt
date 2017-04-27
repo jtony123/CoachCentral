@@ -1,6 +1,6 @@
-name := """CoachCentralDemo"""
+name := """CoachCentralDev"""
 
-version := "1.0.21"
+version := "1.0.23"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m"
 )
 
+libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.11.82"
 libraryDependencies += "com.ibm.watson.developer_cloud" % "java-sdk" % "3.5.3"
 libraryDependencies += "org.apache.solr" % "solr-solrj" % "5.5.0"
 

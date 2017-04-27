@@ -11,27 +11,45 @@ POST	/login						controllers.AccessControl.login()
 GET		/logout						controllers.AccessControl.logout()
 
 GET     /dashboard/:category       	controllers.Application.dashboard(playernumber: Integer, category :String)
-GET     /redox/:category     		controllers.Application.redox(playernumber: Integer, category :String)
-POST    /saveRedox/:category     	controllers.Application.saveRedox(playernumber: Integer, category :String)
-POST	/saveComment/:category		controllers.Application.saveComment(playernumber: Integer, category :String)
-GET		/getFullRedoxCSV			controllers.Application.getFullRedoxCSV()
+
+
+
+
+GET     /redox/:category     		controllers.RedoxController.redox(playernumber: Integer, category :String)
+GET		/getFullRedoxCSV			controllers.RedoxController.getFullRedoxCSV()
+GET		/getRedoxCSV/:playernumber	controllers.RedoxController.getRedoxCSV(playernumber: Integer)
+GET		/record/:category			controllers.RedoxController.redoxQ(playernumber: Integer, category :String)
+POST    /saveRedox/:category     	controllers.RedoxController.saveRedox(playernumber: Integer, category :String)
+POST	/saveComment/:category		controllers.RedoxController.saveComment(playernumber: Integer, category :String)
+POST	/updateRedoxToggleState()	controllers.RedoxController.updateRedoxToggleState(playernumber: Integer, category :String)
+POST	/uploadRedoxCSV()			controllers.RedoxController.uploadRedoxCSV()
+
+
+
+
 
 GET 	/askWatson					controllers.Application.askWatson(query :String)
 
-GET		/record/:category			controllers.Application.record(playernumber: Integer, category :String)
+
+GET 	/backupPlayerPhotos			controllers.BackupRecovery.backupPlayerPhotos()
+GET 	/recoverPlayerPhotos		controllers.BackupRecovery.recoverPlayerPhotos()
+
+GET		/backupPlayerGPSData		controllers.BackupRecovery.backupPlayerGPSData()
+GET		/recoverPlayerGPSData		controllers.BackupRecovery.recoverPlayerGPSData()
+
 
 GET		/playerPhoto/:playerid		controllers.Application.playerPhoto(playerid: Long)
 
 GET		/getCSV/:playernumber		controllers.Application.getCSV(playernumber: Integer)
-GET		/getRedoxCSV/:playernumber	controllers.Application.getRedoxCSV(playernumber: Integer)
+
 GET		/getCalendarCSV				controllers.Application.getCalendarCSV()
 
 POST	/uploadMultipleCSV			controllers.Application.uploadMultipleCSV()
 POST	/uploadCalender				controllers.Application.uploadCalender()
 POST	/uploadGamedata()			controllers.Application.uploadGamedata()
-POST	/uploadRedoxCSV()			controllers.Application.uploadRedoxCSV()
-POST	/updateRedoxToggleState()	controllers.Application.updateRedoxToggleState(playernumber: Integer, category :String)
-POST	/updateRedoxNote()			controllers.Application.updateRedoxNote(playernumber: Integer, category :String)
+
+
+
 
 
 # admin routes

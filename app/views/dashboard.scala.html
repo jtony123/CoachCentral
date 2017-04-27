@@ -109,7 +109,7 @@
 	  		
 	  			<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
-					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
+					<a href="@routes.RedoxController.redoxQ(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px;">
 						<div>
 						
 						@if(player.playerPhoto != null){
@@ -129,7 +129,7 @@
 			<div class="back face">
 				<h4 style="margin-bottom: 5px; margin-top:5px;">
 	  			
-					<a href="@routes.Application.record(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
+					<a href="@routes.RedoxController.redoxQ(player.playernumber, category)" class="thumbnail" style="margin-bottom: 0px; text-decoration:none;">
 						
 						<div>
 						
@@ -159,16 +159,7 @@
 						<div class="text-nowrap" style="text-align: center;">
 							@player.playername
 						</div>
-						
-						
-						
-<!-- 						<div style="margin: 0 auto; max-width:150px;height:150px;"> -->
-<!-- 						alerts go here<br> -->
-<!-- 						alert 1<br> -->
-<!-- 						alert 2<br> -->
-<!-- 						<a href="@routes.Application.record(player.playernumber, category)" class="btn btn-info btn-lg"> -->
-<!--           				<span class="glyphicon glyphicon-plus"></span> Add data -->
-        				
+				
         				
 						
 					</a>
@@ -1006,7 +997,7 @@ function redrawSchedule(){
 
 
 // redox
-var redox = d3.csv('@routes.Application.getRedoxCSV(player.playernumber)', function(error3, data3) {
+var redox = d3.csv('@routes.RedoxController.getRedoxCSV(player.playernumber)', function(error3, data3) {
 	
 	data3.forEach(function(d, i) {
 		d.TIME_KEY = +d.TEST_TIME;

@@ -59,6 +59,8 @@ public class Player extends Model {
 	 public String filename;
 	 
 	 public String redoxFilename;
+	 
+
 
 	// @Required
 	@ManyToMany(cascade = CascadeType.PERSIST)

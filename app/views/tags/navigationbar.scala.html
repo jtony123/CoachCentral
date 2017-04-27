@@ -46,9 +46,9 @@ hr {
 		}
 		
 		@if(active.equals("redox")){
-		<li class="active"><a href='@routes.Application.redox(player.playernumber, "All")'>Redox</a></li>
+		<li class="active"><a href='@routes.RedoxController.redox(player.playernumber, "All")'>Redox</a></li>
 		} else {
-		<li><a href='@routes.Application.redox(player.playernumber, "All")'>Redox</a></li>
+		<li><a href='@routes.RedoxController.redox(player.playernumber, "All")'>Redox</a></li>
 		}
 		
 		
@@ -122,36 +122,40 @@ d3.select("#query")
 					+ "<br>Related to Travel<br>"
 					+ "<a id='a12' value='What are the recommended techniques to prepare for travel?' href='#' onclick='test(a12)'>What are the recommended techniques to prepare for travel?</a>" + "<br>"
 					+ "<a id='a13' value='What are the best in-flight strategies?' href='#' onclick='test(a13)'>What are the best in-flight strategies?</a>" + "<br>"
-					+ "<a id='a19' value='What are the best sleep strategies to reduce travel fatigue?' href='#' onclick='test(a19)'>What are the best sleep strategies to reduce travel fatigue?</a>" + "<br>"
-					+ "<a id='a14' value='What determines the severity of jet lag?' href='#' onclick='test(a14)'>What determines the severity of jet lag?</a>" + "<br>"
-					+ "<a id='a15' value='What are the symptoms of jet lag?' href='#' onclick='test(a15)'>What are the symptoms of jet lag?</a>" + "<br>"
-					+ "<a id='a16' value='What are useful journal articles on travel and sleep?' href='#' onclick='test(a16)'>What are useful journal articles on travel and sleep?</a>" + "<br>"
+					+ "<a id='a14' value='What are the best sleep strategies to reduce travel fatigue?' href='#' onclick='test(a14)'>What are the best sleep strategies to reduce travel fatigue?</a>" + "<br>"
+					+ "<a id='a15' value='What determines the severity of jet lag?' href='#' onclick='test(a15)'>What determines the severity of jet lag?</a>" + "<br>"
+					+ "<a id='a16' value='What are the symptoms of jet lag?' href='#' onclick='test(a16)'>What are the symptoms of jet lag?</a>" + "<br>"
+					+ "<a id='a17' value='What are useful journal articles on travel and sleep?' href='#' onclick='test(a17)'>What are useful journal articles on travel and sleep?</a>" + "<br>"
 					
 					+ "<br>Related to Sleep<br>"		
-					+ "<a id='a17' value='Why is sleep important for recovery?' href='#' onclick='test(a17)'>Why is sleep important for recovery?</a>" + "<br>"
-					+ "<a id='a18' value='How can athletes maximize the quality of their sleep?' href='#' onclick='test(a18)'>How can athletes maximize the quality of their sleep?</a>" + "<br>"
+					+ "<a id='a18' value='Why is sleep important for recovery?' href='#' onclick='test(a18)'>Why is sleep important for recovery?</a>" + "<br>"
+					+ "<a id='a19' value='How can athletes maximize the quality of their sleep?' href='#' onclick='test(a19)'>How can athletes maximize the quality of their sleep?</a>" + "<br>"
 					+ "<a id='a20' value='How can athletes establish good circadian rhythms?' href='#' onclick='test(a20)'>How can athletes establish good circadian rhythms?</a>" + "<br>"
 					+ "<a id='a21' value='How is sleep measured?' href='#' onclick='test(a21)'>How is sleep measured?</a>" + "<br>"
 					+ "<a id='a22' value='What are useful journal articles on travel and sleep?' href='#' onclick='test(a22)'>What are useful journal articles on travel and sleep?</a>" + "<br>"
 					
 					+ "<br>Related to Gluthathione<br>"	
-					+ "<a id='a23' value='Why is glutathione important?' href='#' onclick='test(a23)'>Why is glutathione important?</a>" + "<br>"
-					+ "<a id='a24' value='What nutritional advice can I follow to increase glutathione levels?' href='#' onclick='test(a24)'>What nutritional advice can I follow to increase glutathione levels?</a>" + "<br>"
-					+ "<a id='a25' value='What are useful journal articles on glutathione?' href='#' onclick='test(a25)'>What are useful journal articles on glutathione?</a>" + "<br>"
+					+ "<a id='a23' value='What is glutathione? GSH GSH Glutathione tri-peptide' href='#' onclick='test(a23)'>What is glutathione?</a>" + "<br>"
+					+ "<a id='a24' value='Why is glutathione important?' href='#' onclick='test(a24)'>Why is glutathione important?</a>" + "<br>"
+					+ "<a id='a25' value='What nutritional advice can I follow to increase glutathione levels?' href='#' onclick='test(a25)'>What nutritional advice can I follow to increase glutathione levels?</a>" + "<br>"
+					+ "<a id='a26' value='What are useful journal articles on glutathione?' href='#' onclick='test(a26)'>What are useful journal articles on glutathione?</a>" + "<br>"
 					
 					+ "<br>Related to C Reactive Protein<br>"	
-					+ "<a id='a26' value='Why is C reactive protein important?' href='#' onclick='test(a26)'>Why is C reactive protein important?</a>" + "<br>"
-					+ "<a id='a27' value='How can C reactive protein affect performance?' href='#' onclick='test(a27)'>How can C reactive protein affect performance?</a>" + "<br>"
+					+ "<a id='a27' value='What is C reactive protein? CRP CRP Acute phase protein secreted by liver cells' href='#' onclick='test(a27)'>What is C reactive protein?</a>" + "<br>"
+					+ "<a id='a28' value='Why is C reactive protein important?' href='#' onclick='test(a28)'>Why is C reactive protein important?</a>" + "<br>"
+					+ "<a id='a29' value='How can C reactive protein affect performance?' href='#' onclick='test(a29)'>How can C reactive protein affect performance?</a>" + "<br>"
 					
 					+ "<br>Related to Creatine Kinase<br>"	
-					+ "<a id='a28' value='What is the effect of having high creatine kinase levels?' href='#' onclick='test(a28)'>What is the effect of having high creatine kinase levels?</a>" + "<br>"
-					+ "<a id='a29' value='What is a normal creatine kinase range?' href='#' onclick='test(a29)'>What is a normal creatine kinase range?</a>" + "<br>"
+					+ "<a id='a30' value='What is creatine kinase? CK CK Creatine phosphokinase' href='#' onclick='test(a30)'>What is creatine kinase?</a>" + "<br>"
+					+ "<a id='a31' value='What is the effect of having high creatine kinase levels?' href='#' onclick='test(a31)'>What is the effect of having high creatine kinase levels?</a>" + "<br>"
+					+ "<a id='a32' value='What is a normal creatine kinase range?' href='#' onclick='test(a32)'>What is a normal creatine kinase range?</a>" + "<br>"
 					
 					+ "<br>Related to Vitamin D<br>"	
-					+ "<a id='a30' value='Why is vitamin D important?' href='#' onclick='test(a30)'>Why is vitamin D important?</a>" + "<br>"
-					+ "<a id='a31' value='How can a low vitamin D level affect performance?' href='#' onclick='test(a31)'>How can a low vitamin D level affect performance?</a>" + "<br>"
-					+ "<a id='a32' value='What nutritional advice can I follow to increase vitamin D levels?' href='#' onclick='test(a32)'>What nutritional advice can I follow to increase vitamin D levels?</a>" + "<br>"
-						
+					+ "<a id='a33' value='What is vitamin D? Vitamin D is a fat-soluble vitamin that is produced in the skin from cholesterol' href='#' onclick='test(a33)'>What is vitamin D?</a>" + "<br>"
+					+ "<a id='a34' value='Why is vitamin D important?' href='#' onclick='test(a34)'>Why is vitamin D important?</a>" + "<br>"
+					+ "<a id='a35' value='How can a low vitamin D level affect performance?' href='#' onclick='test(a35)'>How can a low vitamin D level affect performance?</a>" + "<br>"
+					+ "<a id='a36' value='What nutritional advice can I follow to increase vitamin D levels?' href='#' onclick='test(a36)'>What nutritional advice can I follow to increase vitamin D levels?</a>" + "<br>"
+							
 					+ "<br><img class='img-responsive' src='@routes.Assets.at("images/watson-grey.png")' alt='' style='margin-left: 25px; max-width:100px;'/>"
 	)
 		
@@ -198,10 +202,11 @@ function test(str) {
 
 function getAnswers(retrieved){
 	
+	
 	var watsonanswers = d3.json("/askWatson?query="+retrieved, function(error4, data4) {
 		var txt = "<br><button id='hidebutton'>Hide</button><br>";
-		
-		txt += "You asked : " + retrieved + "<br><br>";
+		var ret = retrieved.split('?');
+		txt += "You asked : " + ret[0] + "?<br><br>";
 		 for(var y in data4){
 			 //console.log(data4[y]);
 			 txt += data4[y] + "<hr>";
